@@ -29,7 +29,14 @@ function borrar(k) { delete memoria[k]; try { localStorage.removeItem('rosario.'
 const pad = n => String(n).padStart(2, '0');
 function hoyISO() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
 
-const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true }, leer('ajustes', {}));
+const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia' }, leer('ajustes', {}));
+
+// Formas de rezar (ver Decisiones.md, 6 de octubre)
+const FORMAS = [
+  ['solo', 'Solo', 'Rezás a tu ritmo, sin voz. Cada oración aparece entera.'],
+  ['guia', 'A dos voces', 'Una voz guía y vos respondés, como cuando se reza en grupo. Tu parte va en letra grande.'],
+  ['todo', 'Escuchar', 'Una voz reza todo y la app avanza sola. La acompañás en voz alta o en silencio.'],
+];
 let grupoInicio = DEL_DIA[new Date().getDay()];
 
 const grupo = id => D.grupos.find(g => g.id === id);
@@ -52,6 +59,61 @@ function soltarPantalla() { try { bloqueo && bloqueo.release(); } catch (e) {} b
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S && $('.rezo')) mantenerEncendida(); });
 const vibrar = () => { try { navigator.vibrate && navigator.vibrate(10); } catch (e) {} };
 
+/* ---------- Voz ---------- */
+// Provisoria: la voz del celular. Cuando estén los audios grabados se cambia esta
+// pieza y el resto de la app queda igual.
+const voz = (() => {
+  const sintesis = window.speechSynthesis;
+  const RARAS = /eddy|flo|grand|reed|rocko|sandy|shelley|bahh|bells|boing|bubbles|cellos|wobble|news|jester|organ|superstar|trinoids|whisper|zarvox|albert|fred|junior|kathy|ralph/i;
+  const ORDEN = ['es-ar', 'es-419', 'es-us', 'es-mx', 'es-co', 'es-cl', 'es-es'];
+  let elegida = null, turno = 0, vivas = [], reloj = null;
+  function elegir() {
+    const nota = v => { const i = ORDEN.indexOf(v.lang.replace('_', '-').toLowerCase()); return i < 0 ? ORDEN.length : i; };
+    elegida = sintesis.getVoices().filter(v => /^es/i.test(v.lang) && !RARAS.test(v.name)).sort((a, b) => nota(a) - nota(b))[0] || null;
+  }
+  if (sintesis) { elegir(); sintesis.onvoiceschanged = elegir; }
+  function callar() { turno++; vivas = []; clearTimeout(reloj); if (sintesis) sintesis.cancel(); }
+  // trozos: frases a decir en orden. al: { trozo(i), fin(), falla() }
+  function decir(trozos, al = {}) {
+    callar();
+    if (!sintesis || !trozos.length) return;
+    const yo = turno;
+    vivas = trozos.map((t, i) => {
+      const u = new SpeechSynthesisUtterance(t);
+      u.lang = elegida ? elegida.lang : 'es-AR';
+      if (elegida) u.voice = elegida;
+      u.rate = .92;
+      u.onstart = () => { if (yo === turno && al.trozo) al.trozo(i); };
+      u.onerror = () => { if (yo === turno && al.falla) al.falla(); };
+      if (i === trozos.length - 1) u.onend = () => { if (yo === turno) { clearTimeout(reloj); if (al.fin) al.fin(); } };
+      return u;
+    });
+    vivas.forEach(u => sintesis.speak(u));
+    // Seguro: si la voz del celular se traba y no avisa que terminó, se sigue igual.
+    // Con la pantalla oculta no se hace nada, para no avanzar a escondidas.
+    const limite = 4000 + trozos.join('').length * 150;
+    const vigilar = () => {
+      if (yo !== turno) return;
+      if (document.visibilityState !== 'visible') { reloj = setTimeout(vigilar, 2000); return; }
+      callar(); if (al.fin) al.fin();
+    };
+    reloj = setTimeout(vigilar, limite);
+  }
+  return { decir, callar, hablando: () => !!sintesis && sintesis.speaking };
+})();
+
+// Frases cortas: algunos navegadores cortan la voz a mitad de una frase muy larga.
+function partir(texto) {
+  const out = [];
+  (texto.match(/[^.;!?]+[.;!?]*\s*/g) || [texto]).forEach(f => {
+    if (f.length <= 200) return out.push(f);
+    let t = '';
+    (f.match(/[^,]+,?\s*/g) || [f]).forEach(c => { if (t && (t + c).length > 160) { out.push(t); t = ''; } t += c; });
+    if (t) out.push(t);
+  });
+  return out;
+}
+
 /* ---------- Pintura ---------- */
 function heroHTML(mis) {
   return `<div class="hero"><div class="arte on" style="${estiloArte(mis)}"></div><div class="fundido"></div></div>`;
@@ -60,7 +122,7 @@ function estiloArte(mis) { return `background-image:url('${mis.imagen}');backgro
 
 /* ---------- Inicio ---------- */
 function vistaInicio() {
-  S = null; soltarPantalla(); aplicarTema();
+  S = null; silencio(); soltarPantalla(); aplicarTema();
   const g = grupo(grupoInicio), m = proximo(g.id), mis = g.misterios[m], hoy = new Date();
   const ses = leer('sesion', null);
   let retomar = '';
@@ -130,11 +192,23 @@ function construirPasos(ses) {
   return P;
 }
 
-function textos(p) {
+function partesDe(p) {
   const partes = D.oraciones[p.o].partes;
-  if (p.o === 'salve') return p.parte === 0 ? { guia: '', todos: partes[0].texto } : { guia: partes[1].texto, todos: partes[2].texto };
-  const de = q => partes.filter(x => x.quien === q).map(x => x.texto).join(' ');
+  if (p.o === 'salve') return p.parte === 0 ? partes.slice(0, 1) : partes.slice(1);
+  return partes;
+}
+function textos(p) {
+  const de = q => partesDe(p).filter(x => x.quien === q).map(x => x.texto).join(' ');
   return { guia: de('guia'), todos: de('todos') };
+}
+
+// Lo que dice la voz en cada paso. A dos voces, solo la parte de quien guía
+// (las oraciones que se rezan todos juntos, como el Credo, las reza con vos).
+function locucion(p, g) {
+  if (p.t === 'anuncio') { const mis = g.misterios[p.m]; return [`${cap(ORDINAL[p.m])} misterio ${SINGULAR[g.id]}. ${mis.titulo}.`, `En este misterio pedimos ${mis.pedir}.`]; }
+  if (p.t === 'vida') return [g.misterios[p.m].vida];
+  const partes = partesDe(p), guia = partes.filter(x => x.quien === 'guia');
+  return (cfg.forma === 'guia' && guia.length ? guia : partes).flatMap(x => partir(x.texto));
 }
 
 function fraseMirar(mis, p) {
@@ -144,10 +218,48 @@ function fraseMirar(mis, p) {
 
 /* ---------- Rezo ---------- */
 let S = null; // { ses, pasos }
+let pausa = false, espera = null, sonando = false;
+
+function silencio() { voz.callar(); clearTimeout(espera); sonando = false; }
+
+function hablar() {
+  silencio();
+  if (cfg.forma === 'solo' || pausa) return;
+  const p = S.pasos[S.ses.paso], todos = $('.todos');
+  const marcas = cfg.forma === 'todo' && p.t === 'oracion' ? todos.querySelectorAll('span') : [];
+  sonando = true;
+  voz.decir(locucion(p, grupo(S.ses.grupo)), {
+    trozo: i => { todos.classList.toggle('sonando', marcas.length > 0); marcas.forEach((s, j) => s.classList.toggle('ahora', j === i)); },
+    fin: () => {
+      sonando = false; todos.classList.remove('sonando');
+      if (cfg.forma === 'todo' && p.t !== 'vida') espera = setTimeout(() => avanzar(true), p.t === 'anuncio' ? 1500 : 700);
+    },
+    falla: () => { sonando = false; todos.classList.remove('sonando'); if (cfg.forma === 'todo') ponerPausa(true); },
+  });
+}
+
+function ponerPausa(v) {
+  pausa = v;
+  const b = $('[data-accion="pausa"]');
+  if (b) { b.innerHTML = `<i class="ti ti-player-${v ? 'play' : 'pause'}"></i>`; b.setAttribute('aria-label', v ? 'Seguir con la voz' : 'Pausar la voz'); }
+  $('.etq').textContent = etiqueta(S.pasos[S.ses.paso]);
+  if (v) silencio(); else hablar();
+}
+
+function etiqueta(p) {
+  if (cfg.forma === 'todo') return pausa ? 'En pausa' : (p.t === 'anuncio' ? '' : p.etq);
+  return p.etq + (p.t === 'oracion' ? ' · tocá para seguir' : '');
+}
+
+// Si el celular cortó la voz al bloquearse o al cambiar de app, retoma el paso.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && S && $('.rezo') && sonando && !voz.hablando()) hablar();
+});
 
 function iniciar(modo, gid, m) { abrirSesion({ fecha: hoyISO(), modo, grupo: gid, misterio: m || 0, paso: 0 }); }
 
 function abrirSesion(ses) {
+  pausa = false;
   S = { ses, pasos: construirPasos(ses) };
   if (ses.paso >= S.pasos.length) ses.paso = 0;
   montarRezo();
@@ -186,7 +298,7 @@ function montarRezo() {
       <div class="pie">
         <button class="ic chico" data-accion="atras" aria-label="Volver a la oración anterior"><i class="ti ti-arrow-back-up"></i></button>
         <span class="etq"></span>
-        <span class="ic chico fantasma"></span>
+        ${cfg.forma === 'todo' ? '<button class="ic chico" data-accion="pausa" aria-label="Pausar la voz"><i class="ti ti-player-pause"></i></button>' : '<span class="ic chico fantasma"></span>'}
       </div>
     </div>
   </section>`;
@@ -226,10 +338,15 @@ function actualizar() {
   if (p.tira) dibujarTira(tira, p.tira.n, p.tira.i);
 
   if (p.t === 'oracion') {
-    const t = textos(p);
-    $('.guia').textContent = t.guia;
-    $('.todos').textContent = t.todos;
-    $('.todos').classList.toggle('largo', t.todos.length > 230);
+    // A dos voces se separa lo que reza cada uno. Solo o escuchando, la oración va entera.
+    const t = textos(p), separar = cfg.forma === 'guia';
+    const entera = separar ? t.todos : [t.guia, t.todos].filter(Boolean).join(' ');
+    const todos = $('.todos');
+    $('.guia').textContent = separar ? t.guia : '';
+    if (cfg.forma === 'todo') todos.innerHTML = partesDe(p).map(x => partir(x.texto).map(f => `<span>${esc(f)}</span>`).join('')).join(' ');
+    else todos.textContent = entera;
+    todos.classList.remove('sonando');
+    todos.classList.toggle('largo', entera.length > 230);
   }
   const acc = $('.acciones');
   if (p.t === 'anuncio') acc.innerHTML = '<button class="btn principal" data-accion="seguir" style="justify-content:center">Empezar</button>';
@@ -240,7 +357,7 @@ function actualizar() {
       (!p.ultimo ? '<button class="enlace" data-accion="terminar">Terminar acá</button>' : '');
   } else acc.innerHTML = '';
   $('.kicker').textContent = p.t === 'vida' ? 'Antes de seguir' : $('.kicker').textContent;
-  $('.etq').textContent = p.etq + (p.t === 'oracion' ? ' · tocá para seguir' : '');
+  $('.etq').textContent = etiqueta(p);
 
   // Cinco círculos: uno por misterio del grupo
   const propios = pasos.filter(x => x.m === p.m);
@@ -253,12 +370,13 @@ function actualizar() {
 
   actualizarMapa(p, mis, g);
   guardar('sesion', ses);
+  hablar();
 }
 
-function avanzar() {
+function avanzar(solo) {
   const { ses, pasos } = S, p = pasos[ses.paso];
   if (p.o === 'gloria' && p.m != null) marcarRezado(ses.grupo, p.m);
-  if (ses.paso < pasos.length - 1) { ses.paso++; vibrar(); actualizar(); }
+  if (ses.paso < pasos.length - 1) { ses.paso++; if (!solo) vibrar(); actualizar(); }
   else terminar();
 }
 function atras() { if (S.ses.paso > 0) { S.ses.paso--; actualizar(); } }
@@ -319,13 +437,18 @@ function actualizarMapa(p, mis, g) {
   });
   $('.mapa-k').textContent = p.m != null ? `${cap(ORDINAL[p.m])} misterio ${SINGULAR[g.id]}` : g.nombre;
   $('.mapa-t').textContent = p.m != null ? mis.titulo : (ses.modo === 'salve' ? 'Salve' : 'Las oraciones del comienzo');
-  const lugar = p.t === 'anuncio' ? 'anuncio del misterio' : p.t === 'vida' ? 'pausa antes de seguir' : p.etq;
-  $('.aqui').textContent = 'Estás acá: ' + lugar;
+  // En la pausa final, la pregunta va abajo del mapa y un toque sigue de largo.
+  const vida = p.t === 'vida', aqui = $('.aqui');
+  aqui.classList.toggle('es-pregunta', vida);
+  if (vida) aqui.innerHTML = `<span class="k">Antes de seguir</span>${esc(mis.vida)}`;
+  else aqui.textContent = 'Estás acá: ' + (p.t === 'anuncio' ? 'anuncio del misterio' : p.etq);
+  $('.pista').textContent = !vida ? 'Tocá para seguir rezando desde acá'
+    : !p.ultimo ? 'Tocá para pasar al siguiente misterio' : ses.modo === 'entero' ? 'Tocá para rezar la Salve' : 'Tocá para terminar';
 }
 
 /* ---------- Fin ---------- */
 function vistaFin(ses) {
-  soltarPantalla();
+  silencio(); soltarPantalla();
   const g = grupo(ses.grupo), uno = ses.modo === 'uno', mis = g.misterios[uno ? ses.misterio : 4];
   const quedan = 5 - rezados(g.id).length;
   const manana = new Date(Date.now() + 864e5).getDay();
@@ -357,8 +480,8 @@ const PRIMERA = [
     b: 'Cada cuenta es una oración. En las grandes se reza el Padrenuestro y en las chicas, el Avemaría. Con el Rosario en la mano, pasás una cuenta por oración y sabés siempre por dónde vas.' },
   { t: '¿Por qué se repite tanto?',
     b: 'Las Avemarías marcan un ritmo, como la respiración. Cuando ya no tenés que pensar las palabras, la atención queda libre para la escena.' },
-  { t: 'No hace falta saberse nada',
-    b: 'La app reza con vos. Arriba, en letra chica, va la parte de quien guía. Abajo, en grande, la parte que rezás vos. Tocás la pantalla para pasar a la cuenta siguiente, y con el ícono del Rosario ves en qué parte estás.' },
+  { t: 'No hace falta saberse nada', formas: true,
+    b: 'La app reza con vos. Tocás la pantalla para pasar a la cuenta siguiente, y con el ícono del Rosario ves en qué parte estás. Elegí cómo querés rezar (lo podés cambiar cuando quieras en Ajustes).' },
 ];
 function vistaPrimera(i) {
   const c = PRIMERA[i], ultimo = i === PRIMERA.length - 1;
@@ -371,6 +494,7 @@ function vistaPrimera(i) {
       <h1 class="t1">${esc(c.t)}</h1>
       ${c.tira ? '<svg class="tira" viewBox="0 0 264 26" aria-hidden="true"></svg>' : ''}
       <p>${esc(c.b)}</p>
+      ${c.formas ? selectorForma() : ''}
       <button class="btn principal" data-accion="${ultimo ? 'uno' : 'pv'}" data-v="${i + 1}" style="justify-content:center">${ultimo ? 'Rezar un misterio' : 'Siguiente'}</button>
     </div>
   </section>`;
@@ -415,11 +539,16 @@ function hojaGrupos() {
   hoja('<h3>Elegí qué misterios rezar</h3>' + D.grupos.map(g =>
     `<button class="fila${g.id === grupoInicio ? ' sel' : ''}" data-accion="grupo" data-v="${g.id}"><span><b>${g.nombre}</b><small>${g.dias}</small></span>${g.id === hoy ? '<span class="etiqueta">Hoy</span>' : ''}</button>`).join(''));
 }
+function selectorForma() {
+  return `<div class="segmentos formas">${FORMAS.map(([v, t]) => `<button class="${cfg.forma === v ? 'sel' : ''}" data-accion="forma" data-v="${v}">${t}</button>`).join('')}</div>
+    <small class="forma-desc">${FORMAS.find(f => f[0] === cfg.forma)[2]}</small>`;
+}
 function hojaAjustes() {
   const seg = (v, t) => `<button class="${cfg.modo === v ? 'sel' : ''}" data-accion="modo" data-v="${v}">${t}</button>`;
   const sw = (k, t, d) => `<button class="fila" data-accion="alternar" data-v="${k}" role="switch" aria-checked="${cfg[k]}"><span><b>${t}</b><small>${d}</small></span><span class="interruptor${cfg[k] ? ' on' : ''}"></span></button>`;
   hoja(`<h3>Ajustes</h3>
-    <div style="padding-bottom:14px"><b style="font-size:14px">Modo</b><small style="display:block;font-size:12px;color:var(--muted)">En automático, de 19 a 7 se usa el modo noche.</small>
+    <div style="padding-bottom:14px"><b style="font-size:14px">Forma de rezar</b>${selectorForma()}</div>
+    <div style="padding:14px 0;border-top:1px solid var(--line)"><b style="font-size:14px">Modo</b><small style="display:block;font-size:12px;color:var(--muted)">En automático, de 19 a 7 se usa el modo noche.</small>
       <div class="segmentos">${seg('auto', 'Automático')}${seg('dia', 'Día')}${seg('noche', 'Noche')}</div></div>
     ${sw('ohJesus', 'Oh Jesús mío', 'Después de cada Gloria')}
     ${sw('vida', 'Pregunta para tu vida', 'Al terminar cada misterio')}`);
@@ -444,6 +573,14 @@ const acciones = {
   grupo: b => { grupoInicio = b.dataset.v; cerrarHoja(); vistaInicio(); },
   ajustes: () => hojaAjustes(),
   modo: b => { cfg.modo = b.dataset.v; guardar('ajustes', cfg); aplicarTema(); hojaAjustes(); },
+  forma: b => {
+    cfg.forma = b.dataset.v; guardar('ajustes', cfg);
+    document.querySelectorAll('.formas button').forEach(x => x.classList.toggle('sel', x.dataset.v === cfg.forma));
+    document.querySelectorAll('.forma-desc').forEach(x => { x.textContent = FORMAS.find(f => f[0] === cfg.forma)[2]; });
+    // Una muestra corta para escuchar la voz (y, en el iPhone, habilitarla con este toque).
+    if (cfg.forma === 'solo') voz.callar(); else voz.decir(['Dios te salve, María, llena eres de gracia.']);
+  },
+  pausa: () => ponerPausa(!pausa),
   alternar: b => { cfg[b.dataset.v] = !cfg[b.dataset.v]; guardar('ajustes', cfg); hojaAjustes(); },
   cerrar: () => cerrarHoja(),
   nada: () => {},
@@ -454,13 +591,13 @@ document.addEventListener('click', e => {
   if (b) { acciones[b.dataset.accion](b); return; }
   // En la pantalla de rezo, un toque en cualquier parte pasa a la cuenta siguiente.
   if (S && S.pasos.length && e.target.closest('.rezo')) {
-    if (S.pasos[S.ses.paso].t === 'vida') return;
+    if (S.pasos[S.ses.paso].t === 'vida' && !e.target.closest('.con-mapa')) return;
     avanzar();
   }
 });
 document.addEventListener('keydown', e => {
   if (!S || !S.pasos.length || !$('.rezo')) return;
-  if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); if (S.pasos[S.ses.paso].t !== 'vida') avanzar(); }
+  if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); if (S.pasos[S.ses.paso].t !== 'vida' || $('.con-mapa')) avanzar(); }
   if (e.key === 'ArrowLeft') atras();
 });
 
