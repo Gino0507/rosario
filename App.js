@@ -48,8 +48,13 @@ const pad = n => String(n).padStart(2, '0');
 function hoyISO() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
 
 // mudo: la voz callada con el parlante del rezo (A dos voces). Se recuerda para la próxima vez.
-const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia', voz: 'Amanda', vozLatin: 'Marco', lengua: 'es', musica: 'ninguna', imagenes: 'ilustraciones', mudo: false, textos: 'auto', letra: 'normal' }, leer('ajustes', {}));
+const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia', voz: 'Amanda', vozLatin: 'Marco', lengua: 'es', musica: 'ninguna', velocidad: 1, imagenes: 'ilustraciones', mudo: false, textos: 'auto', letra: 'normal' }, leer('ajustes', {}));
 
+// Velocidad de la voz, que se cambia rezando con el botón "1×" de abajo (ver Decisiones.md, 8 de
+// octubre). Cada toque pasa a la siguiente, como la velocidad de los audios de WhatsApp. Las eligió José.
+const VELOCIDADES = [1, 1.1, 1.25];
+if (!VELOCIDADES.includes(cfg.velocidad)) cfg.velocidad = 1;
+const textoVelocidad = v => String(v).replace('.', ',') + '×';
 // Formas de rezar (ver Decisiones.md, 6 de octubre)
 const FORMAS = [
   ['solo', 'Solo', 'Rezás a tu ritmo, sin voz. Cada oración aparece entera.'],
@@ -223,7 +228,7 @@ const voz = (() => {
       const u = new SpeechSynthesisUtterance(t);
       u.lang = elegida ? elegida.lang : 'es-AR';
       if (elegida) u.voice = elegida;
-      u.rate = .92;
+      u.rate = .92 * cfg.velocidad;
       u.onstart = () => { if (yo === turno && al.trozo) al.trozo(i); };
       u.onerror = () => { if (yo === turno && al.falla) al.falla(); };
       if (i === trozos.length - 1) u.onend = () => { if (yo === turno) { clearTimeout(reloj); despues(al, yo); } };
@@ -244,6 +249,13 @@ const voz = (() => {
   /* La voz grabada */
   const audio = new Audio();
   audio.preload = 'auto';
+  // La velocidad: el celular acelera o frena el audio sin cambiar el tono de la voz. Los
+  // silencios van siempre a velocidad normal, para que duren lo que tienen que durar.
+  let enSilencio = false;
+  const ritmo = () => enSilencio ? 1 : cfg.velocidad;
+  function velocidad() { audio.defaultPlaybackRate = audio.playbackRate = ritmo(); }
+  // Algunos Safari vuelven a la velocidad normal al empezar un audio: se repone.
+  audio.addEventListener('playing', () => { if (audio.playbackRate !== ritmo()) velocidad(); });
   // Que suene aunque el iPhone esté en silencio.
   try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
   // Silencio de los segundos que se pidan, como audio: con la pantalla bloqueada, Safari frena
@@ -339,6 +351,7 @@ const voz = (() => {
         celular(partes.slice(i).flatMap(partir), { ...al, trozo: k => al.trozo && al.trozo(desde + k) }, 'es', yo);
       };
       audio.src = pistas[i].url;
+      enSilencio = false; velocidad();
       audio.play().then(() => { if (yo === turno) marcar(); }).catch(e => {
         if (yo !== turno || e.name === 'AbortError') return;
         grabada = false;
@@ -358,6 +371,7 @@ const voz = (() => {
     audio.onended = fin;
     audio.onerror = () => { reloj = setTimeout(fin, s * 1000); };
     audio.src = silencioDe(s);
+    enSilencio = true; velocidad();
     audio.play().catch(e => { if (e.name !== 'AbortError') reloj = setTimeout(fin, s * 1000); });
   }
 
@@ -374,7 +388,7 @@ const voz = (() => {
     if (!grabadas(partes, al, yo)) celular(partes.flatMap(partir), al, lengua, yo);
   }
   const hablando = () => grabada || (!!sintesis && sintesis.speaking);
-  return { decir, callar, preparar, precargar, hablando, silencioDe };
+  return { decir, callar, preparar, precargar, hablando, silencioDe, velocidad };
 })();
 
 /* ---------- Música de fondo ---------- */
@@ -681,6 +695,15 @@ function ponerPausa(v) {
 function pintarVoz(b) {
   b.innerHTML = icono(cfg.mudo ? 'volume-off' : 'volume');
   b.setAttribute('aria-label', cfg.mudo ? 'Activar la voz' : 'Callar la voz');
+  pintarVelocidad();
+}
+// El botón de la velocidad, junto al de la voz. Con la voz callada no se muestra.
+function pintarVelocidad() {
+  const b = $('[data-accion="velocidad"]');
+  if (!b) return;
+  b.hidden = cfg.forma === 'guia' && cfg.mudo;
+  b.innerHTML = `<span>${textoVelocidad(cfg.velocidad)}</span>`;
+  b.setAttribute('aria-label', `Velocidad de la voz: ${textoVelocidad(cfg.velocidad)}. Tocá para cambiarla`);
 }
 
 // El anuncio ya tiene su botón "Empezar" y la pregunta para tu vida el suyo: ahí no va etiqueta.
@@ -767,8 +790,8 @@ function montarRezo() {
         <button class="ic chico" data-accion="atras" aria-label="Volver a la oración anterior">${icono('arrow-back-up')}</button>
         <button class="etq" data-accion="texto"></button>
         <button class="siguiente" data-accion="seguir">Pasar a la siguiente</button>
-        ${cfg.forma === 'todo' ? `<button class="ic chico" data-accion="pausa" aria-label="Pausar la voz">${icono('player-pause')}</button>`
-          : cfg.forma === 'guia' ? '<button class="ic chico" data-accion="voz"></button>' : '<span class="ic chico fantasma"></span>'}
+        <span class="controles">${cfg.forma !== 'solo' ? '<button class="ic chico vel" data-accion="velocidad"></button>' : ''}${cfg.forma === 'todo' ? `<button class="ic chico" data-accion="pausa" aria-label="Pausar la voz">${icono('player-pause')}</button>`
+          : cfg.forma === 'guia' ? '<button class="ic chico" data-accion="voz"></button>' : '<span class="ic chico fantasma"></span>'}</span>
       </div>
       <p class="pista-rezo"></p>
     </div>
@@ -776,6 +799,7 @@ function montarRezo() {
   dibujarMapa($('.ros'));
   const bv = $('[data-accion="voz"]');
   if (bv) pintarVoz(bv);
+  pintarVelocidad();
 }
 
 function ponerArte(mis) {
@@ -1261,6 +1285,10 @@ const acciones = {
     if (k === 'musica') musica.muestra();
   },
   pausa: () => ponerPausa(!pausa),
+  velocidad: () => {
+    cfg.velocidad = VELOCIDADES[(VELOCIDADES.indexOf(cfg.velocidad) + 1) % VELOCIDADES.length];
+    guardar('ajustes', cfg); pintarVelocidad(); voz.velocidad();
+  },
   voz: b => { cfg.mudo = !cfg.mudo; guardar('ajustes', cfg); pintarVoz(b); if (cfg.mudo) silencio(); else hablar(); },
   alternar: b => {
     const k = b.dataset.v; cfg[k] = !cfg[k]; guardar('ajustes', cfg);

@@ -118,15 +118,22 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .sin-texto .guia,.sin-texto .todos{display:none}
 .todos.sonando span{opacity:.38}
 .todos.sonando span.ahora{opacity:1}
-.pie{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+.pie{position:relative;display:grid;grid-template-columns:1fr max-content 1fr;column-gap:8px;align-items:center;margin-top:12px}
+.pie > .ic{justify-self:start}
+.controles{display:flex;justify-self:end}
+/* La velocidad de la voz: una píldora chica, como la de los audios de WhatsApp. */
+.ic.chico.vel{width:auto;min-width:44px}
+/* Con la letra muy grande, la píldora crece menos, para dejarle lugar al nombre de la oración. */
+.vel span{min-width:46px;text-align:center;padding:4px 7px;border-radius:999px;background:rgba(127,127,127,.16);font-size:calc(12px*min(var(--letra),1.15));font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.01em;color:var(--soft)}
+.vel[hidden]{display:none}
 /* El nombre de la oración: tocarlo muestra u oculta el texto entero. */
 .etq{flex:1;min-height:44px;display:flex;align-items:center;justify-content:center}
-.etq span{display:inline-flex;align-items:center;gap:6px;padding:6px 10px 6px 14px;border:1px solid var(--line);border-radius:999px;font-size:calc(12px*var(--letra));color:var(--soft);background:rgba(var(--rgb),.35)}
+.etq span{display:inline-flex;align-items:center;gap:6px;padding:6px 10px 6px 14px;border:1px solid var(--line);border-radius:999px;font-size:calc(12px*min(var(--letra),1.2));white-space:nowrap;color:var(--soft);background:rgba(var(--rgb),.35)}
 .etq .ico{width:14px;height:14px;color:var(--muted)}
 .etq.vacia{visibility:hidden}
 /* Para VoiceOver y teclado: invisible hasta que recibe el foco. */
 .siguiente{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-.siguiente:focus-visible{position:static;width:auto;height:44px;clip-path:none;padding:0 14px;border-radius:999px;font-size:calc(13px*var(--letra));background:var(--accent);color:var(--on)}
+.siguiente:focus-visible{left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);width:auto;height:44px;clip-path:none;padding:0 14px;border-radius:999px;font-size:calc(13px*var(--letra));background:var(--accent);color:var(--on)}
 .pista-rezo{font-size:calc(12px*var(--letra));line-height:1.4;color:var(--muted);text-align:center;margin-top:2px;text-wrap:balance}
 .pista-rezo:empty{display:none}
 
