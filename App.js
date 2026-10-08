@@ -521,11 +521,6 @@ const INTENCION = {
 };
 const PAUSAS = ['vida', 'intencion', 'ofrece']; // pasos donde un toque suelto no sigue de largo
 const ofrecida = () => INTENCION[S.ses.intencion === 'papa' ? 'papa' : 'propias'];
-// La intención del Papa de este mes (Contenido/Intenciones del Papa.md), en minúscula para seguir la frase.
-function intencionPapa() {
-  const d = new Date(), t = (D.papa || {})[`${d.getFullYear()}-${pad(d.getMonth() + 1)}`];
-  return t ? t[0].toLowerCase() + t.slice(1) : '';
-}
 // La primera vez que aparecen en cada rezo, el Gloria y el Oh Jesús mío llevan una línea que los
 // explica (en lugar de la frase para mirar). Borrador para Pablo.
 const NOTA_PRIMERA = {
@@ -761,7 +756,7 @@ function montarRezo() {
       <div class="cita lift"></div>
       <p class="mira lift"></p>
       <p class="explica"></p>
-      <div class="papa"><span class="k">Este mes, el Papa pide rezar</span><span class="papa-t"></span></div>
+      <p class="papa-t"></p>
       <div class="pide"><span class="k">En este misterio pedimos</span><span class="fruto"></span></div>
       <svg class="tira" viewBox="0 0 264 26" aria-hidden="true"></svg>
       <p class="guia"></p>
@@ -815,10 +810,10 @@ function actualizar() {
   const titulo = p.t === 'intencion' ? '¿Por quién rezás hoy?' : p.t === 'ofrece' ? ofrecida().titulo
     : enMisterio ? mis.titulo : (alFinal ? 'Salve' : g.nombre);
   $('.titulo').textContent = titulo;
-  // Por quién se reza: la pregunta, y después el momento de ofrecer (con la intención del Papa del mes).
-  const papa = p.t === 'ofrece' && S.ses.intencion === 'papa' ? intencionPapa() : '';
-  const explica = p.t === 'intencion' ? INTENCION.pregunta : p.t !== 'ofrece' ? ''
-    : ofrecida().texto + (S.ses.intencion === 'papa' && !papa ? ' Cada mes, el Papa pide rezar por una necesidad de la Iglesia y del mundo.' : '');
+  // Por quién se reza: la pregunta, y después el momento de ofrecer. Por el Papa, la línea va
+  // destacada, como el fruto del misterio (pedido de José).
+  const papa = p.t === 'ofrece' && S.ses.intencion === 'papa' ? INTENCION.papa.texto : '';
+  const explica = p.t === 'intencion' ? INTENCION.pregunta : p.t === 'ofrece' && !papa ? ofrecida().texto : '';
   $('.explica').textContent = explica;
   $('.papa-t').textContent = papa;
   r.classList.toggle('con-papa', !!papa);
@@ -857,7 +852,7 @@ function actualizar() {
   } else acc.innerHTML = '';
   ponerEtiqueta(p);
   // Para el lector de pantalla, un aviso corto por paso (no todo el texto de nuevo).
-  $('.lector').textContent = p.t === 'oracion' ? p.etq : explica ? `${kicker}. ${titulo}. ${explica} ${papa}`
+  $('.lector').textContent = p.t === 'oracion' ? p.etq : explica || papa ? `${kicker}. ${titulo}. ${explica || papa}`
     : `${kicker}. ${p.t === 'vida' ? mis.vida : mis.titulo}`;
 
   // Cinco círculos: uno por misterio del grupo
