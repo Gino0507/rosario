@@ -48,7 +48,7 @@ const pad = n => String(n).padStart(2, '0');
 function hoyISO() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
 
 // mudo: la voz callada con el parlante del rezo (A dos voces). Se recuerda para la próxima vez.
-const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia', voz: 'Amanda', lengua: 'es', imagenes: 'ilustraciones', mudo: false, textos: 'auto', letra: 'normal' }, leer('ajustes', {}));
+const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia', voz: 'Amanda', vozLatin: 'Marco', lengua: 'es', imagenes: 'ilustraciones', mudo: false, textos: 'auto', letra: 'normal' }, leer('ajustes', {}));
 
 // Formas de rezar (ver Decisiones.md, 6 de octubre)
 const FORMAS = [
@@ -67,17 +67,27 @@ const VOCES = [
   ['Pablo', 'Cordobés, de voz grave.', 'masculina'],
   ['Octavio', 'Natural y serena.', 'masculina'],
 ];
+// Las voces del latín (José, 8 de octubre): italianas, con la pronunciación del latín de la
+// Iglesia. Rezan en latín y dicen en castellano los anuncios y las preguntas. [nombre, descripción, género, cómo se escribe]
+const VOCES_LATIN = [
+  ['Marco', 'Voz italiana, grave y serena.', 'masculina', 'Marco'],
+  ['Andromeda', 'Voz italiana, clara y serena.', 'femenina', 'Andrómeda'],
+];
 // Antes se elegía "femenina" o "masculina"; ahora, una voz por su nombre. Fran se reemplazó por Edoardo.
 if (!VOCES.some(v => v[0] === cfg.voz)) cfg.voz = { masculina: 'Juan', femenina: 'Isabela', Fran: 'Edoardo' }[cfg.voz] || 'Amanda';
+if (!VOCES_LATIN.some(v => v[0] === cfg.vozLatin)) cfg.vozLatin = 'Marco';
+// Con el latín elegido, la voz es una de las del latín, que se elige aparte.
+const latin = () => cfg.lengua === 'la';
+const vozActiva = () => latin() ? cfg.vozLatin : cfg.voz;
 // El género de la voz elegida, para la voz del celular cuando falta un audio.
-const generoVoz = () => (VOCES.find(v => v[0] === cfg.voz) || VOCES[0])[2];
+const generoVoz = () => ([...VOCES, ...VOCES_LATIN].find(v => v[0] === vozActiva()) || VOCES[0])[2];
 // Opciones de Ajustes: [valor, etiqueta, descripción]
 const OPCIONES = {
   forma: { titulo: 'Forma de rezar', items: FORMAS },
-  voz: { titulo: 'Voz', items: VOCES.map(([n, d]) => [n, n, d]) },
+  voz: { titulo: 'Voz', get items() { return latin() ? VOCES_LATIN.map(([n, d, , e]) => [n, e, d]) : VOCES.map(([n, d]) => [n, n, d]); } },
   lengua: { titulo: 'Oraciones en', items: [
     ['es', 'Castellano', 'Las oraciones como se rezan en la Argentina.'],
-    ['la', 'Latín', 'Las oraciones en latín, como se rezaron durante siglos. Anuncios, escenas y preguntas siguen en castellano.']] },
+    ['la', 'Latín', 'Las oraciones en latín, como rezaron los Santos durante siglos. Anuncios, escenas y preguntas siguen en castellano.']] },
   textos: { titulo: 'Texto de las oraciones', items: [
     ['nombre', 'Solo el nombre', 'Solo el nombre de cada oración, para dejarle lugar a la pintura. El Credo y la Salve se ven siempre enteros.'],
     ['completas', 'Completas', 'Cada oración entera en pantalla, para leerla mientras rezás.']] },
@@ -99,7 +109,9 @@ const oraciones = () => cfg.lengua === 'la' ? D.latin : D.oraciones;
 // Texto de las oraciones (ver Decisiones.md, 7 de octubre): mientras no se elija, en castellano
 // se ve solo el nombre (casi todos las saben) y en latín, enteras.
 const textosEnteros = () => (cfg.textos === 'auto' ? (cfg.lengua === 'la' ? 'completas' : 'nombre') : cfg.textos) === 'completas';
-const valor = k => k === 'textos' ? (textosEnteros() ? 'completas' : 'nombre') : cfg[k];
+// Con el latín elegido, la voz que se ve y se cambia en Ajustes es la del latín.
+const clave = k => k === 'voz' && latin() ? 'vozLatin' : k;
+const valor = k => k === 'textos' ? (textosEnteros() ? 'completas' : 'nombre') : cfg[clave(k)];
 const SIEMPRE_ENTERAS = ['credo', 'salve'];
 let grupoInicio = DEL_DIA[new Date().getDay()];
 
@@ -257,9 +269,9 @@ const voz = (() => {
 
   // Las tomas de un mismo texto se van turnando, para que no suene a disco rayado.
   const tomas = {};
-  const urlDe = (archivo, t) => `Audio/${cfg.voz}/${archivo}.mp3?${t.h}`;
+  const urlDe = (archivo, t) => `Audio/${vozActiva()}/${archivo}.mp3?${t.h}`;
   function pista(texto, avanzar) {
-    const archivos = A.textos[texto], tiempos = A.tiempos[cfg.voz];
+    const archivos = A.textos[texto], tiempos = A.tiempos[vozActiva()];
     if (!archivos || !tiempos) return null;
     const n = tomas[texto] || 0, archivo = archivos[n % archivos.length], t = tiempos[archivo];
     if (!t) return null;
@@ -286,7 +298,7 @@ const voz = (() => {
   // textos: lo que se va a decir, en el orden en que se dice (con todas sus tomas). Con primero,
   // pasan adelante de lo que ya estaba esperando.
   function precargar(textos, primero) {
-    const tiempos = A.tiempos[cfg.voz];
+    const tiempos = A.tiempos[vozActiva()];
     if (!tiempos) return;
     const urls = textos.flatMap(t => (A.textos[t] || []).filter(a => tiempos[a]).map(a => urlDe(a, tiempos[a])))
       .filter(u => !pedidos.has(u));
@@ -356,7 +368,7 @@ const voz = (() => {
     if (!grabadas(partes, al, yo)) celular(partes.flatMap(partir), al, lengua, yo);
   }
   const hablando = () => grabada || (!!sintesis && sintesis.speaking);
-  return { decir, callar, preparar, precargar, latinItaliano, hablando };
+  return { decir, callar, preparar, precargar, hablando };
 })();
 
 // Frases cortas: algunos navegadores cortan la voz a mitad de una frase muy larga.
@@ -1074,9 +1086,7 @@ function descripcion(k) {
   if (k === 'voz') {
     if (cfg.forma === 'solo') return 'Rezando solo no hay voz. Se usa en "A dos voces" y en "Escuchar".';
     if (cfg.forma === 'guia' && cfg.mudo) return 'Ahora la voz está callada. Se vuelve a activar con el parlante, abajo a la derecha, mientras rezás.';
-    // El latín todavía no está grabado: lo reza la voz del celular.
-    if (cfg.lengua === 'la') return item[2] + (voz.latinItaliano() ? ' En latín, por ahora, reza la voz del celular.'
-      : ' En latín, por ahora, reza la voz del celular, y la tuya no trae una para el latín: suena con acento castellano.');
+    if (latin()) return item[2] + ' Pronuncia el latín como se reza en Roma. Tocá un nombre para escucharla.';
     return item[2] + ' Tocá un nombre para escucharla.';
   }
   if (k === 'imagenes' && !hayIlustraciones) return item[2] + ' Las ilustraciones están en preparación.';
@@ -1094,24 +1104,24 @@ function selector(k) {
       `<button class="muestra${cfg.imagenes === v ? ' sel' : ''}" role="radio" aria-checked="${cfg.imagenes === v}" data-accion="opcion" data-k="imagenes" data-v="${v}"${disponible(v) ? '' : ' disabled'}><span style="${fondo[v]}"></span>${t}</button>`).join('')}</div>${desc}`;
   }
   // Las voces van en dos renglones: primero las de mujer y abajo las de varón.
-  const corte = v => k === 'voz' && v === VOCES.find(x => x[2] === 'masculina')[0] ? '<span class="corte"></span>' : '';
+  const corte = v => k === 'voz' && !latin() && v === VOCES.find(x => x[2] === 'masculina')[0] ? '<span class="corte"></span>' : '';
   return `<div class="segmentos${k === 'voz' ? ' voces' : ''}" role="radiogroup" aria-label="${OPCIONES[k].titulo}">${OPCIONES[k].items.map(([v, t]) =>
     `${corte(v)}<button class="${valor(k) === v ? 'sel' : ''}" role="radio" aria-checked="${valor(k) === v}" data-accion="opcion" data-k="${k}" data-v="${v}"${disponible(v) ? '' : ' disabled'}>${t}</button>`).join('')}</div>${desc}`;
 }
 function hojaAjustes() {
-  const bloque = k => `<div class="ajuste"><b>${OPCIONES[k].titulo}</b>${selector(k)}</div>`;
+  const bloque = k => `<div class="ajuste" data-k="${k}"><b>${OPCIONES[k].titulo}</b>${selector(k)}</div>`;
   const sw = (k, t, d) => `<button class="fila" data-accion="alternar" data-v="${k}" role="switch" aria-checked="${cfg[k]}"><span><b>${t}</b><small>${d}</small></span><span class="interruptor${cfg[k] ? ' on' : ''}"></span></button>`;
   hoja('Ajustes', `
     ${['forma', 'voz', 'lengua', 'textos', 'letra', 'imagenes', 'modo'].map(bloque).join('')}
     ${sw('ohJesus', 'Oh Jesús mío', 'Después de cada Gloria')}
     ${sw('vida', 'Pregunta para tu vida', 'Al terminar cada misterio')}`);
 }
-// Una muestra corta para escuchar la voz (y, en el iPhone, habilitarla con este toque).
-// Al elegir una voz suena siempre, en castellano, también rezando solo: es para conocerla.
+// Una muestra corta para escuchar la voz (y, en el iPhone, habilitarla con este toque), en la
+// lengua elegida. Al elegir una voz suena siempre, también rezando solo: es para conocerla.
+// Las muestras tienen que coincidir con las que graba Generar audios.py.
 function muestra(k) {
   if (cfg.forma === 'solo' && k !== 'voz') return voz.callar();
-  const latin = cfg.lengua === 'la' && k !== 'voz';
-  voz.decir([latin ? 'Ave Maria, gratia plena, Dominus tecum.' : 'Dios te salve, María, llena eres de gracia.'], {}, latin ? 'la' : 'es');
+  voz.decir([latin() ? 'Ave Maria, gratia plena, Dominus tecum.' : 'Dios te salve, María, llena eres de gracia.'], {}, cfg.lengua);
 }
 
 /* ---------- Acciones ---------- */
@@ -1147,7 +1157,7 @@ const acciones = {
   grupo: b => { grupoInicio = b.dataset.v; transicion(() => { cerrarHoja(); vistaInicio(); }); },
   ajustes: () => hojaAjustes(),
   opcion: b => {
-    const k = b.dataset.k; cfg[k] = b.dataset.v;
+    const k = b.dataset.k; cfg[clave(k)] = b.dataset.v;
     // Elegir una forma con voz es querer escucharla: se destraba el parlante.
     if (k === 'forma' && cfg.forma !== 'solo') cfg.mudo = false;
     guardar('ajustes', cfg);
@@ -1156,6 +1166,9 @@ const acciones = {
       const sel = x.dataset.v === valor(x.dataset.k);
       x.classList.toggle('sel', sel); x.setAttribute('aria-checked', sel);
     });
+    // Con el latín cambian las voces para elegir: se rearma ese bloque.
+    const vozAj = $('.ajuste[data-k="voz"]');
+    if (k === 'lengua' && vozAj) vozAj.innerHTML = `<b>${OPCIONES.voz.titulo}</b>${selector('voz')}`;
     document.querySelectorAll('.opcion-desc').forEach(x => { x.textContent = descripcion(x.dataset.k); });
     if (k === 'modo') aplicarTema();
     if (k === 'letra') aplicarLetra();
