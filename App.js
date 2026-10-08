@@ -604,55 +604,121 @@ function terminar() {
   vistaFin(S.ses);
 }
 
-/* ---------- Tira de cuentas (un tramo del Rosario) ---------- */
-// Las cuentas se dibujan una vez por tramo; después solo cambian de estado, para que se vea
-// pasar cada una: la nueva crece y se asienta, la anterior queda marcada y más tenue.
+/* ---------- Las cuentas se deslizan, como en el Rosario físico ---------- */
+// Ver Decisiones.md, 8 de octubre. Cada decena funciona como un contador: el Padrenuestro queda
+// fijo y las diez Avemarías corren por el hilo entre dos nudos. Al empezar están todas del lado
+// de adelante; con cada Avemaría una cuenta pasa hacia el Padrenuestro, y al final queda libre
+// el hilo de adelante, donde se rezan el Gloria y el Oh Jesús mío. Lo mismo las tres del comienzo.
+// Dónde va la Avemaría j de un tramo cuando ya se pasaron k: las pasadas, juntas al principio;
+// las otras, juntas al final; la holgura del hilo, en el medio.
+const lugarCuenta = (desde, hasta, n, paso, j, k) => j < k ? desde + paso / 2 + j * paso : hasta - paso / 2 - (n - 1 - j) * paso;
+
+// Cuántas Avemarías de la decena m ya se pasaron en el paso p.
+function corridas(m, p) {
+  const { ses } = S;
+  if (p.m === m) return p.t === 'vida' ? 10 : p.tira ? Math.min(p.tira.i, 10) : 0;
+  if (ses.modo === 'entero') return (p.m != null && m < p.m) || p.o === 'salve' ? 10 : 0;
+  // Rezando por partes, las decenas que ya se rezaron hoy quedan con las cuentas pasadas.
+  return rezados(ses.grupo).includes(m) && !(ses.modo === 'uno' && m === ses.misterio) ? 10 : 0;
+}
+// Y de las tres del comienzo (solo en el Rosario entero).
+function corridasComienzo(p) {
+  if (S.ses.modo !== 'entero') return 0;
+  if (p.m != null || p.o === 'salve') return 3;
+  return p.tira ? Math.min(p.tira.i, 3) : 0;
+}
+
+/* ---------- Tira de cuentas (el tramo que se está rezando) ---------- */
+// i: 0 el Padrenuestro, 1 a n las Avemarías, n + 1 el Gloria. Todo el tramo va centrado.
+const TIRA = { grande: 8, chica: 6.2, paso: 13, holgura: 30 };
 function dibujarTira(svg, n, i) {
+  const T = TIRA, largo = n * T.paso + T.holgura;
+  const c = 132 - (2 * T.grande + 9.2 + largo) / 2 + T.grande;   // centro del Padrenuestro
+  const desde = c + T.grande + 5, hasta = desde + largo;
   if (svg.dataset.n !== String(n)) {
-    const ultimo = 38 + (n - 1) * 18;
-    let h = `<line class="hebra" x1="2" y1="13" x2="262" y2="13"/><line class="hilo" x1="${ultimo + 10}" y1="13" x2="260" y2="13"/>`;
-    for (let b = 0; b <= n; b++) h += `<circle cx="${b === 0 ? 14 : 38 + (b - 1) * 18}" cy="13" r="${b === 0 ? 7.5 : 4.6}"/>`;
+    // El hilo sale un poco de cada lado del tramo y se pierde, como el resto del Rosario.
+    const izq = c - T.grande - 22, der = hasta + 4.2 + 22, f = 22 / (der - izq);
+    let h = `<defs><linearGradient id="hebra-g" gradientUnits="userSpaceOnUse" x1="${izq}" x2="${der}" y1="0" y2="0">` +
+      `<stop offset="0" style="stop-color:var(--line);stop-opacity:0"/><stop offset="${f}" style="stop-color:var(--line)"/>` +
+      `<stop offset="${1 - f}" style="stop-color:var(--line)"/><stop offset="1" style="stop-color:var(--line);stop-opacity:0"/></linearGradient></defs>`;
+    h += `<line class="hebra" x1="${izq}" y1="13" x2="${der}" y2="13" stroke="url(#hebra-g)"/>`;
+    h += `<line class="hilo" x1="${desde + n * T.paso}" y1="13" x2="${hasta}" y2="13"/>`;
+    h += `<circle class="nudo" cx="${c + T.grande + 2.6}" cy="13" r="1.8"/><circle class="nudo" cx="${hasta + 2.4}" cy="13" r="1.8"/>`;
+    h += `<circle class="padre" cx="${c}" cy="13" r="${T.grande}"/>`;
+    for (let j = 0; j < n; j++) h += `<circle class="ave" cx="0" cy="13" r="${T.chica}" style="--x:${lugarCuenta(desde, hasta, n, T.paso, j, Math.min(i, n))}"/>`;
     svg.innerHTML = h;
     svg.dataset.n = n;
   }
-  svg.querySelectorAll('circle').forEach((c, b) => c.setAttribute('class', b < i ? 'hecha' : b === i ? 'actual' : ''));
+  svg.querySelector('.padre').setAttribute('class', 'padre ' + (i > 0 ? 'hecha' : 'actual'));
+  svg.querySelectorAll('.ave').forEach((e, j) => {
+    e.style.setProperty('--x', lugarCuenta(desde, hasta, n, T.paso, j, Math.min(i, n)));
+    e.setAttribute('class', 'ave ' + (j < i - 1 ? 'hecha' : j === i - 1 ? 'actual' : ''));
+  });
   svg.querySelector('.hilo').classList.toggle('actual', i === n + 1);
 }
 
 /* ---------- Mapa completo ---------- */
+// La vuelta se mide en grados desde la medalla (abajo), en el sentido en que se reza. Cada decena
+// tiene su tramo de hilo; entre tramo y tramo, la cuenta grande del Padrenuestro siguiente.
 const CX = 100, CY = 92, R = 74;
-function puntoVuelta(i) { const a = (90 - 14 - i * (332 / 53)) * Math.PI / 180; return [CX + R * Math.cos(a), CY + R * Math.sin(a)]; }
+const V = { inicio: 9, grande: 10, paso: 4.7, margen: 1.2 };
+V.tramo = (360 - 2 * V.inicio - 4 * V.grande) / 5;
+const enVuelta = t => { const a = (90 - t) * Math.PI / 180; return [CX + R * Math.cos(a), CY + R * Math.sin(a)]; };
+const tramo = m => { const a = V.inicio + m * (V.tramo + V.grande); return [a + V.margen, a + V.tramo - V.margen]; };
+// El comienzo, hacia arriba desde el Padrenuestro de abajo: la altura de cada punto del hilo.
+const COMIENZO = { abajo: 231.2, largo: 36.4, paso: 6 };
+const enComienzo = u => COMIENZO.abajo - u;
+
+function moverCuenta(e, x, y) { e.style.setProperty('--x', x); e.style.setProperty('--y', y); }
+function ponerCuentasMapa(svg, p) {
+  for (let m = 0; m < 5; m++) {
+    const [a, b] = tramo(m), k = p ? corridas(m, p) : 0;
+    for (let j = 0; j < 10; j++) moverCuenta(svg.querySelector(`[data-pos="L${m * 11 + j}"]`), ...enVuelta(lugarCuenta(a, b, 10, V.paso, j, k)));
+  }
+  const k = p ? corridasComienzo(p) : 0;
+  for (let j = 0; j < 3; j++) moverCuenta(svg.querySelector(`[data-pos="t${j}"]`), 100, enComienzo(lugarCuenta(0, COMIENZO.largo, 3, COMIENZO.paso, j, k)));
+}
 
 function dibujarMapa(svg) {
   let h = `<circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="var(--line)" stroke-width=".8"/>`;
   h += `<line x1="100" y1="${CY + R}" x2="100" y2="252" stroke="var(--line)" stroke-width=".8"/>`;
-  // hilos (Gloria y Oh Jesús mío)
-  // El tramo de cadena es corto y las cuentas lo tapan: al rezar ahí se enciende una marca
-  // del lado de afuera, para que se vea dónde estás.
+  // Hilos del Gloria: la holgura de cada tramo, cuando ya se pasaron todas las cuentas.
   for (let m = 0; m < 5; m++) {
-    const [x1, y1] = puntoVuelta(m * 11 + 9), [x2, y2] = m < 4 ? puntoVuelta(m * 11 + 10) : [100, 162];
-    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, d = Math.hypot(mx - CX, my - CY);
-    h += `<line class="cadena" data-pos="h${m}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
-    h += `<circle class="gloria" data-pos="h${m}" cx="${mx + (mx - CX) / d * 9}" cy="${my + (my - CY) / d * 9}" r="2.4"/>`;
+    const [a, b] = tramo(m), [x1, y1] = enVuelta(a + 10 * V.paso), [x2, y2] = enVuelta(b);
+    h += `<path class="cadena" data-pos="h${m}" d="M${x1} ${y1}A${R} ${R} 0 0 0 ${x2} ${y2}"/>`;
   }
-  h += `<line class="cadena" data-pos="c0" x1="100" y1="194" x2="100" y2="202"/>`;
-  h += `<circle class="gloria" data-pos="c0" cx="109" cy="198" r="2.4"/>`;
-  for (let i = 0; i < 54; i++) {
-    const [x, y] = puntoVuelta(i), grande = i % 11 === 10;
-    h += `<circle class="cuenta" data-pos="L${i}" cx="${x}" cy="${y}" r="${grande ? 4.6 : 2.8}"/>`;
+  h += `<line class="cadena" data-pos="c0" x1="100" y1="${enComienzo(3 * COMIENZO.paso)}" x2="100" y2="${enComienzo(COMIENZO.largo)}"/>`;
+  // Nudos al principio y al final de cada tramo, donde se frenan las cuentas.
+  for (let m = 0; m < 5; m++) {
+    const [a, b] = tramo(m);
+    [a - .9, b + .9].forEach(t => { const [x, y] = enVuelta(t); h += `<circle class="nudo" cx="${x}" cy="${y}" r="1"/>`; });
   }
+  [enComienzo(-.9), enComienzo(COMIENZO.largo + .9)].forEach(y => { h += `<circle class="nudo" cx="100" cy="${y}" r="1"/>`; });
+  // Las cuentas grandes (fijas) y las Avemarías (se mueven).
+  for (let m = 1; m < 5; m++) {
+    const [x, y] = enVuelta(V.inicio + m * (V.tramo + V.grande) - V.grande / 2);
+    h += `<circle class="cuenta" data-pos="L${m * 11 - 1}" cx="${x}" cy="${y}" r="4.6"/>`;
+  }
+  for (let m = 0; m < 5; m++) for (let j = 0; j < 10; j++) h += `<circle class="cuenta mov" data-pos="L${m * 11 + j}" cx="0" cy="0" r="2.8"/>`;
   h += `<rect class="cuenta solida" data-pos="med" x="93" y="162" width="14" height="16" rx="6"/>`;
   h += `<circle class="cuenta" data-pos="p2" cx="100" cy="188" r="4.6"/>`;
-  [['t2', 207], ['t1', 216], ['t0', 225]].forEach(([k, y]) => { h += `<circle class="cuenta" data-pos="${k}" cx="100" cy="${y}" r="2.8"/>`; });
+  for (let j = 0; j < 3; j++) h += `<circle class="cuenta mov" data-pos="t${j}" cx="0" cy="0" r="2.8"/>`;
   h += `<circle class="cuenta" data-pos="p1" cx="100" cy="238" r="4.6"/>`;
   h += `<path class="cuenta solida" data-pos="cruz" d="M98 248h4v6h6v4h-6v12h-4v-12h-6v-4h6z"/>`;
   svg.innerHTML = h;
+  ponerCuentasMapa(svg, null);
 }
 
 function actualizarMapa(p, mis, g) {
   const { ses, pasos } = S;
   const hechos = new Set(pasos.slice(0, ses.paso).map(x => x.pos));
+  // Rezando por partes, también se marcan las decenas que ya se rezaron hoy.
+  if (ses.modo !== 'entero') rezados(g.id).forEach(m => {
+    if (ses.modo === 'uno' && m === ses.misterio) return;
+    [cuentaGrande(m), 'h' + m, ...Array.from({ length: 10 }, (_, j) => 'L' + (m * 11 + j))].forEach(x => hechos.add(x));
+  });
   hechos.delete(p.pos);
+  ponerCuentasMapa($('.ros'), p);
   app.querySelectorAll('.ros [data-pos]').forEach(e => {
     e.classList.toggle('hecho', hechos.has(e.dataset.pos));
     e.classList.toggle('ahora', e.dataset.pos === p.pos);

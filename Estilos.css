@@ -17,6 +17,12 @@
 /* Redondeos: botones, etiquetas e interruptores en píldora (999px); superficies (hojas, accesos)
    en --radio-sup; miniaturas y segmentos en --radio-mini; puntos y cuentas, círculos. */
 html,body{background:var(--bg);color:var(--ink)}
+/* Cuentas macizas de la tira: el color de la cuenta mezclado con el fondo. */
+.noche,.dia{--cuenta:var(--bead);--cuenta-hecha:var(--mark)}
+@supports (color:color-mix(in srgb,red,blue)){
+  .noche{--cuenta:color-mix(in srgb,var(--ink) 24%,var(--bg));--cuenta-hecha:color-mix(in srgb,var(--mark) 55%,var(--bg))}
+  .dia{--cuenta:color-mix(in srgb,var(--ink) 18%,var(--bg));--cuenta-hecha:color-mix(in srgb,var(--mark) 55%,var(--bg))}
+}
 body{font-family:Manrope,system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;transition:background .4s}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:inherit}
 :focus-visible{outline:2px solid var(--mark);outline-offset:3px}
@@ -92,13 +98,17 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .rezo .cita{font-size:calc(12px*var(--letra));color:var(--muted);margin-bottom:10px}
 .rezo .mira{font-family:Spectral,serif;font-style:italic;font-weight:300;font-size:calc(16px*var(--letra));line-height:1.42;color:var(--soft);margin-bottom:14px;min-height:1.42em;transition:opacity .5s}
 .tira{display:block;width:100%;height:26px;margin:0 0 14px;overflow:visible}
-/* Pasar una cuenta: la nueva crece, late y se asienta; las ya rezadas quedan marcadas y más tenues. */
-.tira .hebra,.tira .hilo{stroke:var(--line);stroke-width:1.2;stroke-linecap:round;transition:stroke .35s,stroke-width .35s}
-.tira .hilo.actual{stroke:var(--mark);stroke-width:3.2}
-.tira circle{fill:var(--bead);transform-box:fill-box;transform-origin:center;transition:fill .35s,opacity .35s,transform .45s cubic-bezier(.16,1,.3,1)}
-.tira circle.hecha{fill:var(--mark);opacity:.55}
-.tira circle.actual{fill:var(--mark);transform:scale(1.35);animation:pasar .6s cubic-bezier(.16,1,.3,1)}
-@keyframes pasar{0%{transform:scale(1)}40%{transform:scale(1.75)}100%{transform:scale(1.35)}}
+/* Pasar una cuenta: se desliza por el hilo hacia el Padrenuestro, como en el Rosario físico.
+   Las cuentas son macizas, para que el hilo no se vea a través. */
+.tira .hebra{stroke-width:1.2}
+.tira .hilo{stroke:transparent;stroke-width:3.4;stroke-linecap:round;transition:stroke .35s}
+.tira .hilo.actual{stroke:var(--mark)}
+.tira .nudo{fill:var(--muted)}
+.tira .padre,.tira .ave{fill:var(--cuenta);transition:fill .35s}
+.tira .ave{transform-box:fill-box;transform-origin:center;transform:translateX(calc(var(--x)*1px));transition:fill .35s,transform .55s cubic-bezier(.2,.8,.2,1)}
+.tira .hecha{fill:var(--cuenta-hecha)}
+.tira .actual{fill:var(--mark)}
+.tira .ave.actual{transform:translateX(calc(var(--x)*1px)) scale(1.12)}
 .guia{font-size:calc(13px*var(--letra));line-height:1.5;color:var(--muted);margin-bottom:8px}
 .guia:empty{display:none}
 .todos{font-size:calc(18px*var(--letra));line-height:1.4;font-weight:500}
@@ -149,13 +159,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .ros .solida{fill:var(--muted);stroke:none}
 .ros .hecho{fill:var(--mark);stroke:var(--mark);opacity:.5}
 .ros .ahora{fill:var(--mark);stroke:var(--mark);opacity:1;transform:scale(1.55)}
-.ros .cadena{stroke:transparent;stroke-width:3;stroke-linecap:round}
+.ros .mov{transform:translate(calc(var(--x)*1px),calc(var(--y)*1px));transition:fill .35s,stroke .35s,opacity .35s,transform .55s cubic-bezier(.2,.8,.2,1)}
+.ros .mov.ahora{transform:translate(calc(var(--x)*1px),calc(var(--y)*1px)) scale(1.4)}
+.ros .nudo{fill:var(--muted);opacity:.7}
+.ros .cadena{fill:none;stroke:transparent;stroke-width:3;stroke-linecap:round}
 .ros .cadena.hecho{stroke:var(--mark);opacity:.4}
 .ros .cadena.ahora{stroke:var(--mark);stroke-width:5.5;transform:none}
-/* La marca del Gloria: apagada, salvo cuando se reza ahí. */
-.ros .gloria{fill:transparent;stroke:none;transform-box:fill-box;transform-origin:center;transition:all .35s}
-.ros .gloria.hecho{fill:transparent;stroke:none}
-.ros .gloria.ahora{fill:var(--mark);opacity:1;transform:scale(1.55)}
 
 /* Fin, Primera vez y Acerca */
 .fin .amen{font-size:calc(48px*var(--letra));line-height:1;margin:0 0 12px}
@@ -226,5 +235,5 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 
 /* Con movimiento reducido se frenan el acercamiento, el latido de la cuenta y los deslizamientos.
    Los fundidos quedan: no marean. */
-@media (prefers-reduced-motion:reduce){.tira circle.actual{animation:none}.hoja{animation:aparecer .25s}.salidas{animation-name:aparecer2}}
+@media (prefers-reduced-motion:reduce){.tira .ave,.ros .mov{transition:fill .35s,stroke .35s}.hoja{animation:aparecer .25s}.salidas{animation-name:aparecer2}}
 @keyframes aparecer2{from{opacity:0;visibility:hidden}to{opacity:1;visibility:visible}}
