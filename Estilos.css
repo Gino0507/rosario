@@ -138,9 +138,18 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .fruto{display:block;font-family:Spectral,serif;font-style:italic;font-weight:500;font-size:calc(22px*var(--letra));line-height:1.15;color:var(--mark)}
 .es-anuncio .credito{display:block;font-size:calc(11px*var(--letra));line-height:1.35;color:var(--muted);text-align:right;margin:0 0 18px 30%}
 .es-anuncio .mira,.es-anuncio .tira,.es-anuncio .guia,.es-anuncio .todos{display:none}
-.es-anuncio .acciones,.es-vida .acciones{display:flex;flex-direction:column;gap:10px;align-items:center}
-.es-vida .fundido{background:linear-gradient(180deg,rgba(var(--rgb),.55) 0%,rgba(var(--rgb),.8) 50%,var(--bg) 100%)}
-.dia .es-vida .fundido{background:linear-gradient(180deg,rgba(var(--rgb),.3) 0%,rgba(var(--rgb),.5) 50%,var(--bg) 100%)}
+.es-anuncio .acciones,.es-vida .acciones,.es-intencion .acciones{display:flex;flex-direction:column;gap:10px;align-items:center}
+.acciones .btn.alt{margin-top:0}
+.es-vida .fundido,.es-intencion .fundido{background:linear-gradient(180deg,rgba(var(--rgb),.55) 0%,rgba(var(--rgb),.8) 50%,var(--bg) 100%)}
+.dia .es-vida .fundido,.dia .es-intencion .fundido{background:linear-gradient(180deg,rgba(var(--rgb),.3) 0%,rgba(var(--rgb),.5) 50%,var(--bg) 100%)}
+/* Por quién se reza, antes de empezar (ver Decisiones.md, 8 de octubre). */
+.explica,.papa{display:none}
+.es-intencion .cita,.es-intencion .mira,.es-intencion .tira,.es-intencion .guia,.es-intencion .todos{display:none}
+.es-intencion .titulo{font-size:calc(33px*var(--letra));line-height:1.06;margin-bottom:12px}
+.es-intencion .explica{display:block;font-size:calc(15px*var(--letra));line-height:1.5;color:var(--soft);margin-bottom:26px}
+.con-papa .papa{display:block;margin:-6px 0 26px}
+.papa .k{display:block;margin-bottom:4px}
+.papa-t{display:block;font-family:Spectral,serif;font-style:italic;font-weight:500;font-size:calc(20px*var(--letra));line-height:1.2;color:var(--mark)}
 .es-vida .titulo,.es-vida .cita,.es-vida .mira,.es-vida .tira,.es-vida .guia,.es-vida .todos{display:none}
 .es-vida .vida-q{display:block;font-family:Spectral,serif;font-weight:300;font-size:calc(24px*var(--letra));line-height:1.24;margin:10px 0 30px}
 /* Escuchando, después de la pregunta: el botón se va llenando mientras dura el silencio, para
@@ -235,7 +244,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 @keyframes aparecer{from{opacity:0}}
 @keyframes subir{from{transform:translateY(40px);opacity:0}}
 /* Viudas: títulos, preguntas y frases parejas, sin una palabra sola en el último renglón. */
-.t1,.mira,.fruto,.vida-q,.aqui,.sub{text-wrap:balance}
+.t1,.mira,.fruto,.vida-q,.explica,.papa-t,.aqui,.sub{text-wrap:balance}
 .todos,.guia,.pv p{text-wrap:pretty}
 
 /* Fundido entre pantallas (View Transitions) */

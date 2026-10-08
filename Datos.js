@@ -551,5 +551,31 @@ window.DATOS = {
     }
    ]
   }
- ]
+ ],
+ "papa": {
+  "2026-01": "Por la oración con la Palabra de Dios, buscando una Iglesia más fraterna y misionera.",
+  "2026-02": "Por los niños que padecen enfermedades incurables y el apoyo a sus familias.",
+  "2026-03": "Por el desarme nuclear y el fomento del diálogo diplomático frente a la violencia.",
+  "2026-04": "Por los sacerdotes que atraviesan crisis vocacionales.",
+  "2026-05": "Por el acceso universal a los alimentos y evitar su desperdicio.",
+  "2026-06": "Por el fomento del deporte como instrumento de paz y solidaridad.",
+  "2026-07": "Por el respeto y la protección de la vida humana en todas sus etapas.",
+  "2026-08": "Por nuevas y creativas formas de evangelización en las grandes ciudades.",
+  "2026-09": "Por una gestión justa y sostenible del agua.",
+  "2026-10": "Por la integración de un ministerio de salud mental en la Iglesia.",
+  "2026-11": "Por el uso ético de la riqueza al servicio del bien común.",
+  "2026-12": "Por el apoyo espiritual y eclesial a las familias monoparentales.",
+  "2027-01": "Por el descubrimiento de la fuerza de la oración.",
+  "2027-02": "Por el cuidado de quienes cuidan.",
+  "2027-03": "Por el respeto de la dignidad de la vida humana.",
+  "2027-04": "Por el arte como don que humaniza.",
+  "2027-05": "Por las oportunidades laborales para todos.",
+  "2027-06": "Por un buen uso de la inteligencia artificial.",
+  "2027-07": "Por los abuelos y ancianos.",
+  "2027-08": "Por la vocación de los jóvenes.",
+  "2027-09": "Por una conversión ecológica integral.",
+  "2027-10": "Por las comunidades cristianas.",
+  "2027-11": "Por la integración de los migrantes.",
+  "2027-12": "Por la vocación cristiana de la familia."
+ }
 };

@@ -507,6 +507,25 @@ function vistaInicio() {
 // h0-h4 (hilo después de cada decena), med (medalla).
 function cuentaGrande(m) { return m === 0 ? 'p2' : 'L' + ((m - 1) * 11 + 10); }
 const NOTA_SALVE = 'Saludamos a María, nuestra Madre.';
+// Antes de empezar, la app pregunta por quién se reza, y después de la señal de la cruz queda un
+// momento para ofrecer el rezo, donde se dicen las intenciones en un rezo en grupo (ver Decisiones.md,
+// 8 de octubre). Quien no trae una intención propia lo ofrece por las intenciones del Papa, como se
+// acostumbra en la Iglesia. voz: lo que dice la voz, igual que INTENCIONES en Generar audios.py;
+// espera: los segundos de silencio, escuchando. Borrador para Pablo.
+const INTENCION = {
+  pregunta: 'Podés ofrecer este rezo por alguien o por algo que te importa: un examen, tu familia, un amigo que la está pasando mal. Si hoy no traés nada en particular, la Iglesia acostumbra rezar por las intenciones del Papa.',
+  propias: { titulo: 'Tus intenciones', texto: 'Decíselas a María, en silencio o en voz baja: por quién rezás, qué te preocupa, qué querés agradecer. Ella se las presenta a su Hijo.',
+    voz: 'Ponemos en manos de María nuestras intenciones, para que ella se las presente a Jesús.', espera: 20, pista: 'Un momento para tus intenciones, y el rezo sigue solo.' },
+  papa: { titulo: 'Por las intenciones del Papa', texto: 'Rezar por lo que pide el Papa es unirse a la oración de toda la Iglesia.',
+    voz: 'Ofrecemos esta oración por las intenciones del Papa.', espera: 6, pista: 'Un momento, y el rezo sigue solo.' },
+};
+const PAUSAS = ['vida', 'intencion', 'ofrece']; // pasos donde un toque suelto no sigue de largo
+const ofrecida = () => INTENCION[S.ses.intencion === 'papa' ? 'papa' : 'propias'];
+// La intención del Papa de este mes (Contenido/Intenciones del Papa.md), en minúscula para seguir la frase.
+function intencionPapa() {
+  const d = new Date(), t = (D.papa || {})[`${d.getFullYear()}-${pad(d.getMonth() + 1)}`];
+  return t ? t[0].toLowerCase() + t.slice(1) : '';
+}
 // La primera vez que aparecen en cada rezo, el Gloria y el Oh Jesús mío llevan una línea que los
 // explica (en lugar de la frase para mirar). Borrador para Pablo.
 const NOTA_PRIMERA = {
@@ -523,7 +542,11 @@ function construirPasos(ses) {
   }
   const entero = ses.modo === 'entero';
   // Si se sigue con "un misterio más", ya se hizo la señal de la cruz: se arranca en el anuncio.
+  // Los rezos que empezaron antes de que existiera la pregunta por las intenciones no la tienen.
+  const ofrece = !ses.seguido && 'intencion' in ses;
+  if (ofrece) P.push({ t: 'intencion', pos: 'cruz', etq: 'Intenciones' });
   if (!ses.seguido) P.push({ t: 'oracion', o: 'senal', pos: 'cruz', etq: 'Señal de la cruz', nota: 'Nos ponemos en presencia de Dios.' });
+  if (ofrece) P.push({ t: 'ofrece', pos: 'cruz', etq: 'Intenciones' });
   if (entero) {
     P.push({ t: 'oracion', o: 'credo', pos: 'cruz', etq: 'Credo', nota: 'Lo que creemos, en pocas palabras.' });
     P.push({ t: 'oracion', o: 'padre', pos: 'p1', tira: { n: 3, i: 0 }, etq: 'Padrenuestro' });
@@ -569,6 +592,8 @@ function textos(p) {
 function locucion(p, g) {
   if (p.t === 'anuncio') { const mis = g.misterios[p.m]; return { lengua: 'es', partes: [`${cap(ORDINAL[p.m])} misterio ${SINGULAR[g.id]}. ${mis.titulo}. En este misterio pedimos ${mis.pedir}.`] }; }
   if (p.t === 'vida') return { lengua: 'es', partes: cfg.forma === 'todo' ? [g.misterios[p.m].vida] : [] };
+  if (p.t === 'intencion') return { lengua: 'es', partes: [] };
+  if (p.t === 'ofrece') return { lengua: 'es', partes: [ofrecida().voz] };
   const partes = partesDe(p), guia = partes.filter(x => x.quien === 'guia');
   return { lengua: cfg.lengua, partes: (cfg.forma === 'guia' && guia.length ? guia : partes).map(x => x.texto) };
 }
@@ -601,15 +626,15 @@ function hablar() {
   voz.decir(partes, {
     // Escuchando, la app sigue sola: un respiro después de cada oración, uno más largo después
     // del anuncio, y ocho segundos de silencio después de la pregunta para tu vida.
-    luego: !escuchar ? 0 : p.t === 'vida' ? 8 : p.t === 'anuncio' ? 1.5 : .7,
+    luego: !escuchar ? 0 : p.t === 'vida' ? 8 : p.t === 'ofrece' ? ofrecida().espera : p.t === 'anuncio' ? 1.5 : .7,
     trozo: i => { todos.classList.toggle('sonando', marcas.length > 0); marcas.forEach((s, j) => s.classList.toggle('ahora', j === i)); },
     // Para que se vea que el rezo sigue y no que se cortó: el botón se va llenando mientras dura
     // el silencio, y una línea lo dice.
     silencio: s => {
-      if (p.t !== 'vida') return;
-      const b = $('.es-vida .acciones .principal');
+      if (p.t !== 'vida' && p.t !== 'ofrece') return;
+      const b = $('.rezo .acciones .principal');
       if (b) { b.style.setProperty('--espera', s + 's'); b.classList.add('esperando'); }
-      $('.pista-rezo').textContent = 'Un momento en silencio, y el rezo sigue solo.';
+      $('.pista-rezo').textContent = p.t === 'vida' ? 'Un momento en silencio, y el rezo sigue solo.' : ofrecida().pista;
     },
     fin: () => {
       sonando = false; todos.classList.remove('sonando');
@@ -640,7 +665,7 @@ function precargarRezo() {
 function ponerMedios(p, g) {
   if (!('mediaSession' in navigator) || !window.MediaMetadata) return;
   const { ses } = S, mis = g.misterios[p.m != null ? p.m : ses.modo === 'entero' ? (p.o === 'salve' ? 4 : 0) : ses.misterio];
-  const titulo = p.t === 'anuncio' ? mis.titulo : p.t === 'vida' ? 'Pregunta para tu vida' : p.etq;
+  const titulo = p.t === 'anuncio' ? mis.titulo : p.t === 'vida' ? 'Pregunta para tu vida' : p.t === 'ofrece' ? ofrecida().titulo : p.etq;
   const escuchar = cfg.forma === 'todo', arte = urlArte(mis);
   try {
     navigator.mediaSession.metadata = new MediaMetadata({ title: titulo, artist: g.nombre, album: 'Rosario', artwork: arte ? [{ src: new URL(arte, location.href).href }] : [] });
@@ -698,7 +723,7 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && S && $('.rezo') && sonando && !voz.hablando()) hablar();
 });
 
-function iniciar(modo, gid, m) { abrirSesion({ fecha: hoyISO(), modo, grupo: gid, misterio: m || 0, paso: 0 }); }
+function iniciar(modo, gid, m) { abrirSesion({ fecha: hoyISO(), modo, grupo: gid, misterio: m || 0, paso: 0, intencion: null }); }
 
 function abrirSesion(ses) {
   pausa = false;
@@ -735,6 +760,8 @@ function montarRezo() {
       <h2 class="t1 titulo"></h2>
       <div class="cita lift"></div>
       <p class="mira lift"></p>
+      <p class="explica"></p>
+      <div class="papa"><span class="k">Este mes, el Papa pide rezar</span><span class="papa-t"></span></div>
       <div class="pide"><span class="k">En este misterio pedimos</span><span class="fruto"></span></div>
       <svg class="tira" viewBox="0 0 264 26" aria-hidden="true"></svg>
       <p class="guia"></p>
@@ -779,12 +806,22 @@ function actualizar() {
   r.classList.toggle('es-anuncio', p.t === 'anuncio');
   r.classList.toggle('es-vida', p.t === 'vida');
   r.classList.toggle('es-oracion', p.t === 'oracion');
+  r.classList.toggle('es-intencion', p.t === 'intencion' || p.t === 'ofrece');
   ponerArte(mis);
   precargar(g.misterios[(enMisterio ? p.m : ses.modo === 'entero' ? 0 : ses.misterio) + 1]);
 
-  const kicker = p.t === 'vida' ? 'Antes de seguir' : enMisterio ? `${cap(ORDINAL[p.m])} misterio ${SINGULAR[g.id]}` : (alFinal ? 'Para terminar' : 'Para empezar');
+  const kicker = p.t === 'vida' ? 'Antes de seguir' : p.t === 'intencion' ? 'Antes de empezar' : enMisterio ? `${cap(ORDINAL[p.m])} misterio ${SINGULAR[g.id]}` : (alFinal ? 'Para terminar' : 'Para empezar');
   $('.kicker').textContent = kicker;
-  $('.titulo').textContent = enMisterio ? mis.titulo : (alFinal ? 'Salve' : g.nombre);
+  const titulo = p.t === 'intencion' ? '¿Por quién rezás hoy?' : p.t === 'ofrece' ? ofrecida().titulo
+    : enMisterio ? mis.titulo : (alFinal ? 'Salve' : g.nombre);
+  $('.titulo').textContent = titulo;
+  // Por quién se reza: la pregunta, y después el momento de ofrecer (con la intención del Papa del mes).
+  const papa = p.t === 'ofrece' && S.ses.intencion === 'papa' ? intencionPapa() : '';
+  const explica = p.t === 'intencion' ? INTENCION.pregunta : p.t !== 'ofrece' ? ''
+    : ofrecida().texto + (S.ses.intencion === 'papa' && !papa ? ' Cada mes, el Papa pide rezar por una necesidad de la Iglesia y del mundo.' : '');
+  $('.explica').textContent = explica;
+  $('.papa-t').textContent = papa;
+  r.classList.toggle('con-papa', !!papa);
   $('.cita').textContent = enMisterio ? mis.cita : '';
   ponerTexto($('.mira'), p.t === 'oracion' ? (p.nota || (enMisterio ? fraseMirar(mis, p) : '')) : '');
   $('.fruto').textContent = enMisterio ? mis.pedir : '';
@@ -809,6 +846,9 @@ function actualizar() {
   }
   const acc = $('.acciones');
   if (p.t === 'anuncio') acc.innerHTML = '<button class="btn principal centro" data-accion="seguir">Empezar</button>';
+  else if (p.t === 'intencion') acc.innerHTML = '<button class="btn principal centro" data-accion="intencion" data-v="propias">Por mis intenciones</button>' +
+    '<button class="btn alt centro" data-accion="intencion" data-v="papa">Por las intenciones del Papa</button>';
+  else if (p.t === 'ofrece') acc.innerHTML = '<button class="btn principal centro" data-accion="seguir">Seguir</button>';
   else if (p.t === 'vida') {
     $('.vida-q').textContent = mis.vida;
     const siguiente = !p.ultimo ? 'Siguiente misterio' : (ses.modo === 'entero' ? 'Rezar la Salve' : 'Terminar');
@@ -817,7 +857,8 @@ function actualizar() {
   } else acc.innerHTML = '';
   ponerEtiqueta(p);
   // Para el lector de pantalla, un aviso corto por paso (no todo el texto de nuevo).
-  $('.lector').textContent = p.t === 'oracion' ? p.etq : `${kicker}. ${p.t === 'vida' ? mis.vida : mis.titulo}`;
+  $('.lector').textContent = p.t === 'oracion' ? p.etq : explica ? `${kicker}. ${titulo}. ${explica} ${papa}`
+    : `${kicker}. ${p.t === 'vida' ? mis.vida : mis.titulo}`;
 
   // Cinco círculos: uno por misterio del grupo
   const propios = pasos.filter(x => x.m === p.m);
@@ -1180,6 +1221,7 @@ const acciones = {
   mas: () => { const { grupo: gid, texto } = S.ses; transicion(() => abrirSesion({ fecha: hoyISO(), modo: 'uno', grupo: gid, misterio: proximo(gid), paso: 0, seguido: true, texto })); },
   salve: () => { const { grupo: gid, misterio, texto } = S.ses; transicion(() => abrirSesion({ fecha: hoyISO(), modo: 'salve', grupo: gid, misterio, paso: 0, texto })); },
   seguir: () => avanzar(),
+  intencion: b => { S.ses.intencion = b.dataset.v; avanzar(); },
   // El nombre de la oración muestra u oculta su texto entero (sin cortar la voz), y así sigue.
   texto: () => {
     const p = S.pasos[S.ses.paso];
@@ -1238,7 +1280,7 @@ document.addEventListener('click', e => {
   if (b) { acciones[b.dataset.accion](b); return; }
   // En la pantalla de rezo, un toque en cualquier parte pasa a la cuenta siguiente.
   if (S && S.pasos.length && e.target.closest('.rezo')) {
-    if (S.pasos[S.ses.paso].t === 'vida' && !e.target.closest('.con-mapa')) return;
+    if (PAUSAS.includes(S.pasos[S.ses.paso].t) && !e.target.closest('.con-mapa')) return;
     avanzar();
   }
 });
@@ -1247,7 +1289,7 @@ document.addEventListener('keydown', e => {
   if (!S || !S.pasos.length || !$('.rezo') || $('.velo')) return;
   // Con un botón enfocado, la barra espaciadora lo aprieta a él (no pasa la cuenta dos veces).
   if (e.key === ' ' && e.target.closest('button')) return;
-  if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); if (S.pasos[S.ses.paso].t !== 'vida' || $('.con-mapa')) avanzar(); }
+  if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); if (!PAUSAS.includes(S.pasos[S.ses.paso].t) || $('.con-mapa')) avanzar(); }
   if (e.key === 'ArrowLeft') atras();
 });
 
