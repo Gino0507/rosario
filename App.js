@@ -52,9 +52,9 @@ const OPCIONES = {
     ['ilustraciones', 'Ilustraciones', 'Ilustraciones de hoy, más simples y serenas.'],
     ['ninguna', 'Sin imágenes', 'Solo luz y color, para rezar sin nada que mirar.']] },
   modo: { titulo: 'Modo', items: [
-    ['auto', 'Automático', 'De 19 a 7 se usa el modo noche, y el resto del día, el modo día.'],
-    ['dia', 'Día', 'Fondo claro, para rezar de día o con mucha luz.'],
-    ['noche', 'Noche', 'Fondo oscuro, para rezar de noche o con poca luz.']] },
+    ['auto', 'Automático', 'De 19 a 7 se usa el modo oscuro, y el resto del día, el claro.'],
+    ['dia', 'Claro', 'Fondo claro, para rezar de día o con mucha luz.'],
+    ['noche', 'Oscuro', 'Fondo oscuro, para rezar de noche o con poca luz.']] },
 };
 const hayIlustraciones = D.grupos.some(g => g.misterios.some(m => m.ilustracion));
 const oraciones = () => cfg.lengua === 'la' ? D.latin : D.oraciones;
@@ -64,6 +64,18 @@ const textosEnteros = () => (cfg.textos === 'auto' ? (cfg.lengua === 'la' ? 'com
 const valor = k => k === 'textos' ? (textosEnteros() ? 'completas' : 'nombre') : cfg[k];
 const SIEMPRE_ENTERAS = ['credo', 'salve'];
 let grupoInicio = DEL_DIA[new Date().getDay()];
+
+// Si este celular ya rezó alguna vez, el inicio es el de siempre; si no, la acción principal
+// es "Es mi primera vez". Queda guardado en el celular: las actualizaciones de la app no lo borran.
+// Quien rezó antes de que existiera esta marca tiene guardados sus misterios rezados o un rezo a medias.
+function yaReza() {
+  if (leer('yaReza', false)) return true;
+  try {
+    for (let i = 0; i < localStorage.length; i++)
+      if (/^rosario\.(rezados\.|sesion$)/.test(localStorage.key(i))) { guardar('yaReza', true); return true; }
+  } catch (e) {}
+  return false;
+}
 
 const grupo = id => D.grupos.find(g => g.id === id);
 const rezados = id => leer('rezados.' + hoyISO() + '.' + id, []);
@@ -83,7 +95,30 @@ let bloqueo = null;
 async function mantenerEncendida() { try { if ('wakeLock' in navigator) bloqueo = await navigator.wakeLock.request('screen'); } catch (e) {} }
 function soltarPantalla() { try { bloqueo && bloqueo.release(); } catch (e) {} bloqueo = null; }
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S && $('.rezo')) mantenerEncendida(); });
-const vibrar = () => { try { navigator.vibrate && navigator.vibrate(10); } catch (e) {} };
+
+/* ---------- Respuesta al pasar una cuenta ---------- */
+// Safari en el iPhone no tiene navigator.vibrate. Desde iOS 18, tocar un interruptor nativo
+// (<input switch>) da un toque háptico: se toca uno invisible, fuera de la pantalla de rezo.
+const tactil = matchMedia('(pointer: coarse)');
+function vibrar() {
+  try {
+    if (navigator.vibrate) return navigator.vibrate(10);
+    if (!tactil.matches) return;
+    const l = document.createElement('label'), i = document.createElement('input');
+    i.type = 'checkbox'; i.setAttribute('switch', '');
+    l.setAttribute('aria-hidden', 'true'); l.style.display = 'none';
+    l.appendChild(i); document.head.appendChild(l); l.click(); l.remove();
+  } catch (e) {}
+}
+// Un texto nuevo aparece con un fundido; si no cambió, queda quieto.
+function fundir(el) { if (el.animate && el.textContent) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 700, easing: 'ease-out' }); }
+function ponerTexto(el, t) { if (el.textContent !== t) { el.textContent = t; fundir(el); } }
+// Fundido entre pantallas (View Transitions). Donde no existe, el cambio es directo. Si el
+// navegador lo saltea (por ejemplo, con la pantalla oculta), el cambio igual se hace.
+function transicion(fn) {
+  if (!document.startViewTransition) return fn();
+  document.startViewTransition(fn).ready.catch(() => {});
+}
 
 /* ---------- Voz ---------- */
 // Provisoria: la voz del celular. Cuando estén los audios grabados se cambia esta
@@ -174,12 +209,33 @@ const conCredito = mis => cfg.imagenes === 'pinturas' || (cfg.imagenes === 'ilus
 function vistaInicio() {
   S = null; silencio(); soltarPantalla(); aplicarTema();
   const g = grupo(grupoInicio), m = proximo(g.id), mis = g.misterios[m], hoy = new Date();
-  const ses = leer('sesion', null);
-  let retomar = '';
-  if (ses && ses.fecha === hoyISO() && ses.modo !== 'salve') {
-    const pasos = construirPasos(ses), p = pasos[Math.min(ses.paso, pasos.length - 1)];
-    const donde = p.m == null ? 'en las oraciones del comienzo' : `en el ${ORDINAL[p.m]} misterio ${SINGULAR[ses.grupo]}`;
-    retomar = `<button class="retomar" data-accion="retomar"><span>Quedaste ${donde}</span><b>Retomar</b></button>`;
+  const acerca = '<button class="mini" data-accion="acerca"><i class="ti ti-book-2"></i>Acerca del Rosario</button>';
+  let opciones;
+  if (!yaReza()) {
+    // La primera vez en este celular: lo principal es que te acompañen.
+    opciones = `
+      <button class="btn principal primera" data-accion="primera"><span>Es mi primera vez<small>Te acompañamos cuenta por cuenta</small></span></button>
+      <button class="btn alt centro" data-accion="yaSe">Ya sé rezarlo</button>
+      <button class="enlace solo-acerca" data-accion="acerca"><i class="ti ti-book-2"></i>Acerca del Rosario</button>`;
+  } else {
+    // Con un rezo a medias, lo principal es retomarlo, y se dice dónde.
+    const ses = leer('sesion', null);
+    let retomar = '';
+    if (ses && ses.fecha === hoyISO() && ses.modo !== 'salve' && ses.paso > 0) {
+      const pasos = construirPasos(ses), i = Math.min(ses.paso, pasos.length - 1), p = pasos[i];
+      const donde = p.m != null ? `${cap(ORDINAL[p.m])} misterio ${SINGULAR[ses.grupo]}: ${grupo(ses.grupo).misterios[p.m].titulo}`
+        : p.o === 'salve' ? 'La Salve, para terminar' : 'Las oraciones del comienzo';
+      const faltan = Math.max(1, Math.round((ses.modo === 'entero' ? 20 : 4) * (pasos.length - i) / pasos.length));
+      retomar = `<button class="btn principal" data-accion="retomar"><span>Retomar<small>${esc(donde)}</small></span><span class="min">${faltan} min</span></button>`;
+    }
+    opciones = `
+      ${retomar || '<div class="pregunta">¿Cuánto tiempo tenés hoy?</div>'}
+      <button class="btn ${retomar ? 'alt' : 'principal'}" data-accion="uno"><span>Un misterio<small>${esc(mis.titulo)}</small></span><span class="min">4 min</span></button>
+      <button class="btn alt" data-accion="entero"><span>El Rosario entero</span><span class="min">20 min</span></button>
+      <div class="accesos">
+        <button class="mini" data-accion="primera"><i class="ti ti-sparkles"></i>Es mi primera vez</button>
+        ${acerca}
+      </div>`;
   }
   app.innerHTML = `
   <section class="vista inicio">
@@ -189,14 +245,7 @@ function vistaInicio() {
       <div class="k lift">${cap(DIAS[hoy.getDay()])} ${hoy.getDate()} de ${MESES[hoy.getMonth()]}</div>
       <button class="grupo-sel" data-accion="grupos" aria-label="Elegir otros misterios"><h1 class="t1">${g.nombre}<i class="ti ti-chevron-down"></i></h1></button>
       <p class="sub lift">${esc(g.subtitulo)}</p>
-      ${retomar}
-      <div class="pregunta">¿Cuánto tiempo tenés hoy?</div>
-      <button class="btn principal" data-accion="uno"><span>Un misterio<small>${esc(mis.titulo)}</small></span><span class="min">4 min</span></button>
-      <button class="btn alt" data-accion="entero"><span>El Rosario entero</span><span class="min">20 min</span></button>
-      <div class="accesos">
-        <button class="mini" data-accion="primera"><i class="ti ti-sparkles"></i>Es mi primera vez</button>
-        <button class="mini" data-accion="acerca"><i class="ti ti-book-2"></i>Acerca del Rosario</button>
-      </div>
+      ${opciones}
     </div>
   </section>`;
 }
@@ -330,6 +379,7 @@ function iniciar(modo, gid, m) { abrirSesion({ fecha: hoyISO(), modo, grupo: gid
 
 function abrirSesion(ses) {
   pausa = false;
+  guardar('yaReza', true);
   S = { ses, pasos: construirPasos(ses) };
   if (ses.paso >= S.pasos.length) ses.paso = 0;
   montarRezo();
@@ -406,7 +456,7 @@ function actualizar() {
   $('.kicker').textContent = kicker;
   $('.titulo').textContent = enMisterio ? mis.titulo : (alFinal ? 'Salve' : g.nombre);
   $('.cita').textContent = enMisterio ? mis.cita : '';
-  $('.mira').textContent = p.t === 'oracion' ? (enMisterio ? fraseMirar(mis, p) : (p.nota || '')) : '';
+  ponerTexto($('.mira'), p.t === 'oracion' ? (enMisterio ? fraseMirar(mis, p) : (p.nota || '')) : '');
   $('.fruto').textContent = enMisterio ? mis.pedir : '';
   $('.credito').innerHTML = enMisterio && conCredito(mis) ? `${esc(mis.autor)}, <em>${esc(mis.obra)}</em>` : '';
 
@@ -419,10 +469,11 @@ function actualizar() {
     // A dos voces se separa lo que reza cada uno. Solo o escuchando, la oración va entera.
     const t = textos(p), separar = cfg.forma === 'guia';
     const entera = separar ? t.todos : [t.guia, t.todos].filter(Boolean).join(' ');
-    const todos = $('.todos');
-    $('.guia').textContent = separar ? t.guia : '';
+    const todos = $('.todos'), antes = todos.textContent;
+    ponerTexto($('.guia'), separar ? t.guia : '');
     if (cfg.forma === 'todo') todos.innerHTML = partesDe(p).map(x => partir(x.texto).map(f => `<span>${esc(f)}</span>`).join('')).join(' ');
     else todos.textContent = entera;
+    if (todos.textContent !== antes) fundir(todos);
     todos.classList.remove('sonando');
     todos.classList.toggle('largo', entera.length > 230);
   }
@@ -454,13 +505,21 @@ function actualizar() {
   hablar();
 }
 
+// Pasar de una oración a otra es inmediato; pasar del anuncio a la oración, o de la oración a la
+// pregunta para tu vida, cambia la pantalla entera y lleva un fundido.
 function avanzar(solo) {
   const { ses, pasos } = S, p = pasos[ses.paso];
   if (p.o === 'gloria' && p.m != null) marcarRezado(ses.grupo, p.m);
-  if (ses.paso < pasos.length - 1) { ses.paso++; if (!solo) vibrar(); actualizar(); }
-  else terminar();
+  if (ses.paso < pasos.length - 1) {
+    ses.paso++;
+    if (!solo) vibrar();
+    if (pasos[ses.paso].t !== p.t) transicion(actualizar); else actualizar();
+  } else transicion(terminar);
 }
-function atras() { if (S.ses.paso > 0) { S.ses.paso--; actualizar(); } }
+function atras() {
+  const { ses, pasos } = S;
+  if (ses.paso > 0) { ses.paso--; if (pasos[ses.paso].t !== pasos[ses.paso + 1].t) transicion(actualizar); else actualizar(); }
+}
 
 function terminar() {
   borrar('sesion');
@@ -468,17 +527,18 @@ function terminar() {
 }
 
 /* ---------- Tira de cuentas (un tramo del Rosario) ---------- */
+// Las cuentas se dibujan una vez por tramo; después solo cambian de estado, para que se vea
+// pasar cada una: la nueva crece y se asienta, la anterior queda marcada y más tenue.
 function dibujarTira(svg, n, i) {
-  const ultimo = 38 + (n - 1) * 18;
-  let h = `<line x1="2" y1="13" x2="262" y2="13" stroke="var(--line)" stroke-width="1.2"/>`;
-  const hilo = i === n + 1;
-  h += `<line x1="${ultimo + 10}" y1="13" x2="260" y2="13" stroke="${hilo ? 'var(--mark)' : 'var(--line)'}" stroke-width="${hilo ? 3.2 : 1.2}" stroke-linecap="round"/>`;
-  for (let b = 0; b <= n; b++) {
-    const x = b === 0 ? 14 : 38 + (b - 1) * 18, r = (b === 0 ? 7.5 : 4.6) * (b === i ? 1.35 : 1);
-    const color = b <= i ? 'var(--mark)' : 'var(--bead)', op = b < i ? .55 : 1;
-    h += `<circle cx="${x}" cy="13" r="${r}" fill="${color}" opacity="${op}"/>`;
+  if (svg.dataset.n !== String(n)) {
+    const ultimo = 38 + (n - 1) * 18;
+    let h = `<line class="hebra" x1="2" y1="13" x2="262" y2="13"/><line class="hilo" x1="${ultimo + 10}" y1="13" x2="260" y2="13"/>`;
+    for (let b = 0; b <= n; b++) h += `<circle cx="${b === 0 ? 14 : 38 + (b - 1) * 18}" cy="13" r="${b === 0 ? 7.5 : 4.6}"/>`;
+    svg.innerHTML = h;
+    svg.dataset.n = n;
   }
-  svg.innerHTML = h;
+  svg.querySelectorAll('circle').forEach((c, b) => c.setAttribute('class', b < i ? 'hecha' : b === i ? 'actual' : ''));
+  svg.querySelector('.hilo').classList.toggle('actual', i === n + 1);
 }
 
 /* ---------- Mapa completo ---------- */
@@ -694,25 +754,28 @@ function muestra() {
 }
 
 /* ---------- Acciones ---------- */
+// Las acciones que cambian de pantalla pasan por transicion() para el fundido.
 const acciones = {
-  uno: () => iniciar('uno', grupoInicio, proximo(grupoInicio)),
-  entero: () => iniciar('entero', grupoInicio, 0),
-  retomar: () => { const s = leer('sesion', null); if (s) { grupoInicio = s.grupo; abrirSesion(s); } },
-  mas: () => { const gid = S.ses.grupo; abrirSesion({ fecha: hoyISO(), modo: 'uno', grupo: gid, misterio: proximo(gid), paso: 0, seguido: true }); },
-  salve: () => abrirSesion({ fecha: hoyISO(), modo: 'salve', grupo: S.ses.grupo, misterio: S.ses.misterio, paso: 0 }),
+  uno: () => transicion(() => iniciar('uno', grupoInicio, proximo(grupoInicio))),
+  entero: () => transicion(() => iniciar('entero', grupoInicio, 0)),
+  retomar: () => { const s = leer('sesion', null); if (s) transicion(() => { grupoInicio = s.grupo; abrirSesion(s); }); },
+  mas: () => { const gid = S.ses.grupo; transicion(() => abrirSesion({ fecha: hoyISO(), modo: 'uno', grupo: gid, misterio: proximo(gid), paso: 0, seguido: true })); },
+  salve: () => { const { grupo: gid, misterio } = S.ses; transicion(() => abrirSesion({ fecha: hoyISO(), modo: 'salve', grupo: gid, misterio, paso: 0 })); },
   seguir: () => avanzar(),
-  terminar: () => terminar(),
+  terminar: () => transicion(terminar),
   atras: () => atras(),
-  salir: () => vistaInicio(),
-  inicio: () => vistaInicio(),
+  salir: () => transicion(vistaInicio),
+  inicio: () => transicion(vistaInicio),
   mapa: () => { const r = $('.rezo'); const m = r.classList.toggle('con-mapa'); $('.mapa').setAttribute('aria-hidden', !m); $('.cuerpo').inert = m; },
-  primera: () => vistaPrimera(0),
-  pv: b => vistaPrimera(+b.dataset.v),
+  primera: () => transicion(() => vistaPrimera(0)),
+  pv: b => transicion(() => vistaPrimera(+b.dataset.v)),
   // Quien entra por "Es mi primera vez" reza con las oraciones enteras a la vista.
   primerRezo: () => { cfg.textos = 'completas'; guardar('ajustes', cfg); acciones.uno(); },
-  acerca: () => vistaAcerca(),
+  // La primera vez, "Ya sé rezarlo" lleva al inicio de siempre (y queda recordado).
+  yaSe: () => { guardar('yaReza', true); transicion(vistaInicio); },
+  acerca: () => transicion(vistaAcerca),
   grupos: () => hojaGrupos(),
-  grupo: b => { grupoInicio = b.dataset.v; cerrarHoja(); vistaInicio(); },
+  grupo: b => { grupoInicio = b.dataset.v; transicion(() => { cerrarHoja(); vistaInicio(); }); },
   ajustes: () => hojaAjustes(),
   opcion: b => {
     const k = b.dataset.k; cfg[k] = b.dataset.v;

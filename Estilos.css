@@ -60,8 +60,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .accesos{display:flex;gap:8px;margin-top:14px}
 .mini{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:500;background:rgba(var(--rgb),.5);border:1px solid var(--line);border-radius:18px;padding:10px 4px 9px;white-space:nowrap}
 .mini i{font-size:18px;color:var(--mark)}
-.retomar{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px;padding:11px 16px;border-radius:16px;border:1px dashed var(--line);font-size:13px;color:var(--soft)}
-.retomar b{color:var(--oro-texto);font-weight:600;flex-shrink:0}
+/* Retomar, o la primera vez: el botón principal va primero, sin la pregunta del tiempo. */
+.sub + .btn{margin-top:22px}
+.btn.primera{justify-content:center;text-align:center}
+.solo-acerca{display:flex;align-items:center;gap:6px;margin:12px auto 0}
+.solo-acerca i{font-size:16px;color:var(--mark)}
 
 /* Rezo */
 .cinco{display:flex;gap:7px;padding:10px 13px;border-radius:999px;background:rgba(var(--rgb),.38);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
@@ -75,7 +78,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .rezo .cita{font-size:12px;color:var(--muted);margin-bottom:10px}
 .rezo .mira{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:19px;line-height:1.28;color:var(--soft);margin-bottom:14px;min-height:1.28em;transition:opacity .5s}
 .tira{display:block;width:100%;height:26px;margin:0 0 14px;overflow:visible}
-.tira circle,.tira line{transition:all .35s cubic-bezier(.16,1,.3,1)}
+/* Pasar una cuenta: la nueva crece, late y se asienta; las ya rezadas quedan marcadas y más tenues. */
+.tira .hebra,.tira .hilo{stroke:var(--line);stroke-width:1.2;stroke-linecap:round;transition:stroke .35s,stroke-width .35s}
+.tira .hilo.actual{stroke:var(--mark);stroke-width:3.2}
+.tira circle{fill:var(--bead);transform-box:fill-box;transform-origin:center;transition:fill .35s,opacity .35s,transform .45s cubic-bezier(.16,1,.3,1)}
+.tira circle.hecha{fill:var(--mark);opacity:.55}
+.tira circle.actual{fill:var(--mark);transform:scale(1.35);animation:pasar .6s cubic-bezier(.16,1,.3,1)}
+@keyframes pasar{0%{transform:scale(1)}40%{transform:scale(1.75)}100%{transform:scale(1.35)}}
 .guia{font-size:13px;line-height:1.5;color:var(--muted);margin-bottom:8px}
 .guia:empty{display:none}
 .todos{font-size:18px;line-height:1.4;font-weight:500}
@@ -156,9 +165,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .fila small{display:block;font-size:12px;color:var(--muted)}
 .fila.sel b{color:var(--oro-texto)}
 .etiqueta{font-size:11px;font-weight:600;color:var(--on);background:var(--accent);border-radius:999px;padding:3px 9px}
-.segmentos{display:flex;background:rgba(127,127,127,.12);border-radius:12px;padding:3px;margin-top:8px}
-.segmentos button{flex:1;text-align:center;padding:8px 4px;border-radius:9px;font-size:13px}
-.segmentos button.sel{background:var(--bg);font-weight:600}
+.segmentos{display:flex;background:rgba(127,127,127,.13);border-radius:12px;padding:3px;margin-top:8px}
+.segmentos button{flex:1;text-align:center;padding:8px 4px;border-radius:9px;font-size:13px;color:var(--soft);transition:background .2s,color .2s}
+/* Lo elegido, en tinta llena: se distingue de un vistazo, de día y de noche. */
+.segmentos button.sel{background:var(--ink);color:var(--hoja);font-weight:600}
 .opcion-desc{display:block;font-size:12px;line-height:1.45;color:var(--muted);margin-top:8px;min-height:2.9em}
 .pv .segmentos{margin:-8px 0 0}
 .pv .opcion-desc{margin-bottom:20px}
@@ -167,7 +177,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .muestra{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--muted);text-align:center}
 .muestra span{display:block;width:100%;aspect-ratio:3/4;border-radius:12px;background-color:var(--bg);background-size:cover;background-position:50% 30%;background-repeat:no-repeat;border:2px solid transparent;transition:border-color .2s}
 .muestra.sel{color:var(--ink);font-weight:600}
-.muestra.sel span{border-color:var(--mark)}
+.muestra.sel span{border-color:var(--ink)}
 .muestra:disabled{opacity:.35;cursor:default}
 .ajuste{padding:14px 0;border-top:1px solid var(--line)}
 .hoja-cab + .ajuste{border-top:0;padding-top:0}
@@ -178,4 +188,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .interruptor.on::after{transform:translateX(18px)}
 @keyframes aparecer{from{opacity:0}}
 @keyframes subir{from{transform:translateY(40px);opacity:0}}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* Viudas: títulos, preguntas y frases parejas, sin una palabra sola en el último renglón. */
+.t1,.mira,.fruto,.vida-q,.aqui,.sub{text-wrap:balance}
+.todos,.guia,.pv p{text-wrap:pretty}
+
+/* Fundido entre pantallas (View Transitions) */
+::view-transition-old(root),::view-transition-new(root){animation-duration:.45s;animation-timing-function:ease}
+
+/* Con movimiento reducido se frenan el acercamiento, el latido de la cuenta y los deslizamientos.
+   Los fundidos quedan: no marean. */
+@media (prefers-reduced-motion:reduce){.tira circle.actual{animation:none}.hoja{animation:aparecer .25s}.salidas{animation-name:aparecer2}}
+@keyframes aparecer2{from{opacity:0;visibility:hidden}to{opacity:1;visibility:visible}}
