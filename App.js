@@ -62,12 +62,12 @@ const VOCES = [
   ['Nieve', 'Con la calma de una abuela.', 'femenina'],
   ['Amanda', 'Joven y cercana.', 'femenina'],
   ['Juan', 'Grave y envolvente.', 'masculina'],
-  ['Fran', 'Profunda y cálida.', 'masculina'],
+  ['Edoardo', 'Grave y firme, de ritmo más ágil.', 'masculina'],
   ['Pablo', 'Cordobés, de voz grave.', 'masculina'],
   ['Octavio', 'Natural y serena.', 'masculina'],
 ];
-// Antes se elegía "femenina" o "masculina"; ahora, una voz por su nombre.
-if (!VOCES.some(v => v[0] === cfg.voz)) cfg.voz = cfg.voz === 'masculina' ? 'Juan' : 'Isabela';
+// Antes se elegía "femenina" o "masculina"; ahora, una voz por su nombre. Fran se reemplazó por Edoardo.
+if (!VOCES.some(v => v[0] === cfg.voz)) cfg.voz = { masculina: 'Juan', Fran: 'Edoardo' }[cfg.voz] || 'Isabela';
 // El género de la voz elegida, para la voz del celular cuando falta un audio.
 const generoVoz = () => (VOCES.find(v => v[0] === cfg.voz) || VOCES[0])[2];
 // Opciones de Ajustes: [valor, etiqueta, descripción]
