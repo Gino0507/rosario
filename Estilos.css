@@ -4,6 +4,7 @@
 .dia{--bg:#f6f6f4;--rgb:246,246,244;--ink:#1b1d26;--soft:#34363f;--muted:#5a5c66;--accent:#e8b86b;--on:#1a1408;--mark:#a8741f;--bead:rgba(27,29,38,.16);--line:rgba(27,29,38,.22);--glow:rgba(246,246,244,.75);--hoja:#ffffff}
 
 *{box-sizing:border-box;margin:0;padding:0}
+:root{--seguro:env(safe-area-inset-top,0px)}
 html,body{background:var(--bg);color:var(--ink)}
 body{font-family:Manrope,system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;transition:background .4s}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:inherit}
@@ -16,13 +17,15 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 
 /* Pintura de fondo */
 .hero{position:absolute;inset:0 0 34% 0;overflow:hidden}
-.arte{position:absolute;inset:0;background-size:cover;background-repeat:no-repeat;transform:scale(var(--z,1));opacity:0;transition:opacity 1s ease}
+/* La imagen arranca debajo de la isla del iPhone y de los botones de arriba, con el borde
+   fundido en el fondo, y el acercamiento crece hacia abajo para no esconder las caras. */
+.arte{position:absolute;left:0;right:0;top:calc(var(--seguro) + 24px + var(--extra,0px));height:100%;background-size:cover;background-repeat:no-repeat;transform:scale(var(--z,1));transform-origin:50% 0;opacity:0;transition:opacity 1s ease;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 72px);mask-image:linear-gradient(180deg,transparent 0,#000 72px)}
 .arte.on{opacity:1}
 .fundido{position:absolute;inset:-1px 0;background:linear-gradient(180deg,rgba(var(--rgb),.15) 0%,rgba(var(--rgb),0) 26%,rgba(var(--rgb),.72) 64%,rgba(var(--rgb),.96) 86%,var(--bg) 100%)}
 @media (prefers-reduced-motion:no-preference){.arte{animation:acercar 45s ease-in-out infinite alternate}}
-@keyframes acercar{from{transform:scale(calc(var(--z,1)*1.02))}to{transform:scale(calc(var(--z,1)*1.13)) translateY(-2%)}}
+@keyframes acercar{from{transform:scale(calc(var(--z,1)*1.02))}to{transform:scale(calc(var(--z,1)*1.13))}}
 
-.barra{position:relative;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:calc(env(safe-area-inset-top) + 14px) 18px 0}
+.barra{position:relative;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:calc(var(--seguro) + 14px) 18px 0}
 .ic{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:var(--ink);background:rgba(var(--rgb),.38);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-size:20px}
 .ic svg{width:22px;height:22px}
 .ic.chico{width:34px;height:34px;font-size:17px;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;color:var(--muted)}
@@ -88,7 +91,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .enlace{font-size:13px;color:var(--muted);padding:6px}
 
 /* Mapa */
-.mapa{position:absolute;inset:0;z-index:4;background:var(--bg);display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top) + 76px) 26px calc(env(safe-area-inset-bottom) + 24px);opacity:0;pointer-events:none;transition:opacity .35s}
+.mapa{position:absolute;inset:0;z-index:4;background:var(--bg);display:flex;flex-direction:column;padding:calc(var(--seguro) + 76px) 26px calc(env(safe-area-inset-bottom) + 24px);opacity:0;pointer-events:none;transition:opacity .35s}
 .con-mapa .mapa{opacity:1;pointer-events:auto}
 .mapa .mapa-t{font-size:26px;line-height:1.1;margin:2px 0 6px}
 .mapa svg{flex:1;width:100%;min-height:0}

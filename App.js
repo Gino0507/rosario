@@ -156,8 +156,8 @@ function luz(gid) {
   return `background-image:radial-gradient(ellipse 70% 60% at 50% -4%,rgba(255,244,222,.42),transparent 72%),radial-gradient(ellipse 160% 120% at 50% -14%,rgba(${c},.75),rgba(${c},.32) 45%,rgba(${c},.08) 72%,transparent 90%)`;
 }
 function estiloArte(mis) {
-  if (cfg.imagenes === 'ninguna') return luz(grupoDe(mis)) + ';--z:1';
-  if (cfg.imagenes === 'ilustraciones' && mis.ilustracion) return `background-image:url('${mis.ilustracion}');background-position:50% 30%;--z:1`;
+  if (cfg.imagenes === 'ninguna') return luz(grupoDe(mis)) + ';--z:1;top:0;-webkit-mask-image:none;mask-image:none';
+  if (cfg.imagenes === 'ilustraciones' && mis.ilustracion) return `background-image:url('${mis.ilustracion}');background-position:50% 30%;--z:1;--extra:${mis.bajarIlustracion || 0}px`;
   return `background-image:url('${mis.imagen}');background-position:${mis.foco};--z:${mis.zoom}`;
 }
 const conCredito = mis => cfg.imagenes === 'pinturas' || (cfg.imagenes === 'ilustraciones' && !mis.ilustracion);

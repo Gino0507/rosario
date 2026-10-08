@@ -190,7 +190,8 @@ window.DATOS = {
      "obra": "La Anunciación",
      "imagen": "Arte/Gozosos-1.jpg",
      "ilustracion": "Ilustraciones/Gozosos-1.jpg",
-     "foco": "40% 40%",
+     "bajarIlustracion": 0,
+     "foco": "36% 40%",
      "zoom": 1.0
     },
     {
@@ -207,6 +208,7 @@ window.DATOS = {
      "obra": "La Visitación",
      "imagen": "Arte/Gozosos-2.jpg",
      "ilustracion": "Ilustraciones/Gozosos-2.jpg",
+     "bajarIlustracion": 0,
      "foco": "50% 22%",
      "zoom": 1.0
     },
@@ -223,6 +225,7 @@ window.DATOS = {
      "obra": "La adoración de los pastores",
      "imagen": "Arte/Gozosos-3.jpg",
      "ilustracion": "Ilustraciones/Gozosos-3.jpg",
+     "bajarIlustracion": 0,
      "foco": "46% 50%",
      "zoom": 1.0
     },
@@ -239,6 +242,7 @@ window.DATOS = {
      "obra": "El cántico de Simeón",
      "imagen": "Arte/Gozosos-4.jpg",
      "ilustracion": "Ilustraciones/Gozosos-4.jpg",
+     "bajarIlustracion": 0,
      "foco": "45% 40%",
      "zoom": 1.0
     },
@@ -255,6 +259,7 @@ window.DATOS = {
      "obra": "El hallazgo del Salvador en el Templo",
      "imagen": "Arte/Gozosos-5.jpg",
      "ilustracion": "Ilustraciones/Gozosos-5.jpg",
+     "bajarIlustracion": 0,
      "foco": "64% 45%",
      "zoom": 1.0
     }
@@ -279,6 +284,7 @@ window.DATOS = {
      "obra": "El bautismo de Cristo",
      "imagen": "Arte/Luminosos-1.jpg",
      "ilustracion": "Ilustraciones/Luminosos-1.jpg",
+     "bajarIlustracion": 0,
      "foco": "50% 22%",
      "zoom": 1.0
     },
@@ -295,6 +301,7 @@ window.DATOS = {
      "obra": "Las bodas de Caná",
      "imagen": "Arte/Luminosos-2.jpg",
      "ilustracion": "Ilustraciones/Luminosos-2.jpg",
+     "bajarIlustracion": 0,
      "foco": "50% 40%",
      "zoom": 1.0
     },
@@ -312,6 +319,7 @@ window.DATOS = {
      "obra": "El sermón de la montaña",
      "imagen": "Arte/Luminosos-3.jpg",
      "ilustracion": "Ilustraciones/Luminosos-3.jpg",
+     "bajarIlustracion": 0,
      "foco": "62% 30%",
      "zoom": 1.0
     },
@@ -329,6 +337,7 @@ window.DATOS = {
      "obra": "La Transfiguración",
      "imagen": "Arte/Luminosos-4.jpg",
      "ilustracion": "Ilustraciones/Luminosos-4.jpg",
+     "bajarIlustracion": 0,
      "foco": "50% 18%",
      "zoom": 1.0
     },
@@ -345,6 +354,7 @@ window.DATOS = {
      "obra": "La Última Cena",
      "imagen": "Arte/Luminosos-5.jpg",
      "ilustracion": "Ilustraciones/Luminosos-5.jpg",
+     "bajarIlustracion": 0,
      "foco": "50% 40%",
      "zoom": 1.0
     }
@@ -370,6 +380,7 @@ window.DATOS = {
      "obra": "Cristo en Getsemaní",
      "imagen": "Arte/Dolorosos-1.jpg",
      "ilustracion": "Ilustraciones/Dolorosos-1.jpg",
+     "bajarIlustracion": 0,
      "foco": "36% 50%",
      "zoom": 1.0
     },
@@ -386,6 +397,7 @@ window.DATOS = {
      "obra": "La flagelación de Cristo",
      "imagen": "Arte/Dolorosos-2.jpg",
      "ilustracion": "Ilustraciones/Dolorosos-2.jpg",
+     "bajarIlustracion": 36,
      "foco": "50% 38%",
      "zoom": 1.0
     },
@@ -403,6 +415,7 @@ window.DATOS = {
      "obra": "La coronación de espinas",
      "imagen": "Arte/Dolorosos-3.jpg",
      "ilustracion": "Ilustraciones/Dolorosos-3.jpg",
+     "bajarIlustracion": 0,
      "foco": "46% 42%",
      "zoom": 1.0
     },
@@ -420,6 +433,7 @@ window.DATOS = {
      "obra": "Cristo camino del Calvario",
      "imagen": "Arte/Dolorosos-4.jpg",
      "ilustracion": "Ilustraciones/Dolorosos-4.jpg",
+     "bajarIlustracion": 0,
      "foco": "32% 50%",
      "zoom": 1.0
     },
@@ -437,6 +451,7 @@ window.DATOS = {
      "obra": "Cristo crucificado",
      "imagen": "Arte/Dolorosos-5.jpg",
      "ilustracion": "Ilustraciones/Dolorosos-5.jpg",
+     "bajarIlustracion": 0,
      "foco": "50% 22%",
      "zoom": 1.0
     }
@@ -461,6 +476,7 @@ window.DATOS = {
      "obra": "La Resurrección",
      "imagen": "Arte/Gloriosos-1.jpg",
      "ilustracion": "Ilustraciones/Gloriosos-1.jpg",
+     "bajarIlustracion": 0,
      "foco": "50% 22%",
      "zoom": 1.0
     },
@@ -477,6 +493,7 @@ window.DATOS = {
      "obra": "La Ascensión",
      "imagen": "Arte/Gloriosos-2.jpg",
      "ilustracion": "Ilustraciones/Gloriosos-2.jpg",
+     "bajarIlustracion": 0,
      "foco": "50% 26%",
      "zoom": 1.0
     },
@@ -494,6 +511,7 @@ window.DATOS = {
      "obra": "Pentecostés",
      "imagen": "Arte/Gloriosos-3.jpg",
      "ilustracion": "Ilustraciones/Gloriosos-3.jpg",
+     "bajarIlustracion": 0,
      "foco": "50% 45%",
      "zoom": 1.0
     },
@@ -510,6 +528,7 @@ window.DATOS = {
      "obra": "La Asunción de la Virgen",
      "imagen": "Arte/Gloriosos-4.jpg",
      "ilustracion": "Ilustraciones/Gloriosos-4.jpg",
+     "bajarIlustracion": 0,
      "foco": "50% 25%",
      "zoom": 1.0
     },
@@ -526,6 +545,7 @@ window.DATOS = {
      "obra": "La coronación de la Virgen",
      "imagen": "Arte/Gloriosos-5.jpg",
      "ilustracion": "Ilustraciones/Gloriosos-5.jpg",
+     "bajarIlustracion": 0,
      "foco": "50% 35%",
      "zoom": 1.0
     }
