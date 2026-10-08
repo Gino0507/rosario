@@ -48,7 +48,7 @@ const pad = n => String(n).padStart(2, '0');
 function hoyISO() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
 
 // mudo: la voz callada con el parlante del rezo (A dos voces). Se recuerda para la próxima vez.
-const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia', voz: 'femenina', lengua: 'es', imagenes: 'ilustraciones', mudo: false, textos: 'auto', letra: 'normal' }, leer('ajustes', {}));
+const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia', voz: 'Isabela', lengua: 'es', imagenes: 'ilustraciones', mudo: false, textos: 'auto', letra: 'normal' }, leer('ajustes', {}));
 
 // Formas de rezar (ver Decisiones.md, 6 de octubre)
 const FORMAS = [
@@ -56,10 +56,24 @@ const FORMAS = [
   ['guia', 'A dos voces', 'Una voz guía y vos respondés, como cuando se reza en grupo. Tu parte va en letra grande.'],
   ['todo', 'Escuchar', 'Una voz reza todo y la app avanza sola. La acompañás en voz alta o en silencio.'],
 ];
+// Las voces grabadas que eligió José (ver Decisiones.md, 8 de octubre): [nombre, descripción, género].
+const VOCES = [
+  ['Isabela', 'Cálida y serena.', 'femenina'],
+  ['Nieve', 'Con la calma de una abuela.', 'femenina'],
+  ['Amanda', 'Joven y cercana.', 'femenina'],
+  ['Juan', 'Grave y envolvente.', 'masculina'],
+  ['Fran', 'Profunda y cálida.', 'masculina'],
+  ['Pablo', 'Cordobés, de voz grave.', 'masculina'],
+  ['Octavio', 'Natural y serena.', 'masculina'],
+];
+// Antes se elegía "femenina" o "masculina"; ahora, una voz por su nombre.
+if (!VOCES.some(v => v[0] === cfg.voz)) cfg.voz = cfg.voz === 'masculina' ? 'Juan' : 'Isabela';
+// El género de la voz elegida, para la voz del celular cuando falta un audio.
+const generoVoz = () => (VOCES.find(v => v[0] === cfg.voz) || VOCES[0])[2];
 // Opciones de Ajustes: [valor, etiqueta, descripción]
 const OPCIONES = {
   forma: { titulo: 'Forma de rezar', items: FORMAS },
-  voz: { titulo: 'Voz', items: [['femenina', 'Femenina'], ['masculina', 'Masculina']] },
+  voz: { titulo: 'Voz', items: VOCES.map(([n, d]) => [n, n, d]) },
   lengua: { titulo: 'Oraciones en', items: [
     ['es', 'Castellano', 'Las oraciones como se rezan en la Argentina.'],
     ['la', 'Latín', 'Las oraciones en latín, como se rezaron durante siglos. Anuncios, escenas y preguntas siguen en castellano.']] },
@@ -152,10 +166,19 @@ function transicion(fn) {
 }
 
 /* ---------- Voz ---------- */
-// Provisoria: la voz del celular. Cuando estén los audios grabados se cambia esta
-// pieza y el resto de la app queda igual.
+// La voz grabada con ElevenLabs (ver App/Voz.md): un audio por parte de oración, anuncio o
+// pregunta, con el momento en que empieza cada frase para resaltar la que se dice. Los audios
+// los arma Generar audios.py y se buscan por el texto exacto: si a un texto le falta su audio
+// (el latín, por ahora, o una oración corregida que todavía no se volvió a grabar), habla la
+// voz del celular, como antes.
+// partes: los textos a decir, en orden. al: { trozo(i), fin(), falla(), luego, silencio(s) },
+// donde luego son los segundos de silencio antes de fin() y silencio(s) avisa que empezaron.
 const voz = (() => {
+  const A = window.AUDIOS || { textos: {}, tiempos: {} };
   const sintesis = window.speechSynthesis;
+  let turno = 0, reloj = null, cuadro = 0, grabada = false;
+
+  /* La voz del celular, de respaldo */
   const RARAS = /eddy|flo|grand|reed|rocko|sandy|shelley|bahh|bells|boing|bubbles|cellos|wobble|news|jester|organ|superstar|trinoids|whisper|zarvox|albert|fred|junior|kathy|ralph/i;
   // Acento: rioplatense primero. Para el latín, una voz italiana, que es la
   // pronunciación más cercana al latín de la Iglesia.
@@ -163,33 +186,28 @@ const voz = (() => {
   // La API no dice si una voz es de varón o de mujer: se deduce por el nombre.
   const VARONES = /\b(jorge|juan|diego|carlos|pablo|ra[uú]l|[aá]lvaro|tom[aá]s|gonzalo|enrique|andr[eé]s|luca|cosimo|giuseppe|benigno|rinaldo)\b/i;
   const MUJERES = /\b(m[oó]nica|paulina|ang[eé]lica|isabela|isabella|marisol|soledad|francisca|helena|laura|sabina|elvira|dalia|elena|alice|federica|paola|elsa|emma|google)\b/i;
-  let turno = 0, vivas = [], reloj = null;
   const genero = v => VARONES.test(v.name) ? 'masculina' : MUJERES.test(v.name) ? 'femenina' : '';
   const candidatas = idioma => sintesis ? sintesis.getVoices().filter(v => v.lang.toLowerCase().startsWith(idioma) && !RARAS.test(v.name)) : [];
   const latinItaliano = () => candidatas('it').length > 0;
   function elegir(lengua) {
-    const idioma = lengua === 'la' && latinItaliano() ? 'it' : 'es', orden = ORDEN[idioma];
+    const idioma = lengua === 'la' && latinItaliano() ? 'it' : 'es', orden = ORDEN[idioma], quiero = generoVoz();
     const nota = v => {
       const g = genero(v), i = orden.indexOf(v.lang.replace('_', '-').toLowerCase());
-      return (g === cfg.voz ? 0 : g ? 20 : 10) + (i < 0 ? orden.length : i);
+      return (g === quiero ? 0 : g ? 20 : 10) + (i < 0 ? orden.length : i);
     };
     return candidatas(idioma).sort((a, b) => nota(a) - nota(b))[0] || null;
   }
-  const tiene = lengua => { const v = elegir(lengua); return !!v && genero(v) === cfg.voz; };
-  function callar() { turno++; vivas = []; clearTimeout(reloj); if (sintesis) sintesis.cancel(); }
-  // trozos: frases a decir en orden. al: { trozo(i), fin(), falla() }. lengua: 'es' o 'la'.
-  function decir(trozos, al = {}, lengua = 'es') {
-    callar();
+  function celular(trozos, al, lengua, yo) {
     if (!sintesis || !trozos.length) return;
-    const yo = turno, elegida = elegir(lengua);
-    vivas = trozos.map((t, i) => {
+    const elegida = elegir(lengua);
+    const vivas = trozos.map((t, i) => {
       const u = new SpeechSynthesisUtterance(t);
       u.lang = elegida ? elegida.lang : 'es-AR';
       if (elegida) u.voice = elegida;
       u.rate = .92;
       u.onstart = () => { if (yo === turno && al.trozo) al.trozo(i); };
       u.onerror = () => { if (yo === turno && al.falla) al.falla(); };
-      if (i === trozos.length - 1) u.onend = () => { if (yo === turno) { clearTimeout(reloj); if (al.fin) al.fin(); } };
+      if (i === trozos.length - 1) u.onend = () => { if (yo === turno) { clearTimeout(reloj); despues(al, yo); } };
       return u;
     });
     vivas.forEach(u => sintesis.speak(u));
@@ -199,11 +217,124 @@ const voz = (() => {
     const vigilar = () => {
       if (yo !== turno) return;
       if (document.visibilityState !== 'visible') { reloj = setTimeout(vigilar, 2000); return; }
-      callar(); if (al.fin) al.fin();
+      sintesis.cancel(); despues(al, yo);
     };
     reloj = setTimeout(vigilar, limite);
   }
-  return { decir, callar, tiene, latinItaliano, hablando: () => !!sintesis && sintesis.speaking };
+
+  /* La voz grabada */
+  const audio = new Audio();
+  audio.preload = 'auto';
+  // Que suene aunque el iPhone esté en silencio.
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+  // Silencio de los segundos que se pidan, como audio: con la pantalla bloqueada, Safari frena
+  // los temporizadores, pero deja seguir un audio que suena.
+  const silencios = {};
+  function silencioDe(seg) {
+    if (silencios[seg]) return silencios[seg];
+    const hz = 8000, n = Math.round(hz * seg), b = new DataView(new ArrayBuffer(44 + n));
+    const txt = (o, s) => [...s].forEach((c, i) => b.setUint8(o + i, c.charCodeAt(0)));
+    txt(0, 'RIFF'); b.setUint32(4, 36 + n, true); txt(8, 'WAVEfmt '); b.setUint32(16, 16, true);
+    b.setUint16(20, 1, true); b.setUint16(22, 1, true); b.setUint32(24, hz, true); b.setUint32(28, hz, true);
+    b.setUint16(32, 1, true); b.setUint16(34, 8, true); txt(36, 'data'); b.setUint32(40, n, true);
+    for (let i = 0; i < n; i++) b.setUint8(44 + i, 128);
+    return (silencios[seg] = URL.createObjectURL(new Blob([b], { type: 'audio/wav' })));
+  }
+  // En el iPhone, un audio solo puede empezar solo si antes sonó con un toque. El primer toque
+  // en la app lo despierta con un instante de silencio, y desde ahí puede seguir solo, también
+  // con la pantalla bloqueada.
+  let despierto = false;
+  document.addEventListener('click', () => {
+    if (despierto) return;
+    despierto = true;
+    audio.src = silencioDe(.1);
+    audio.play().catch(e => { if (e.name === 'NotAllowedError') despierto = false; });
+  }, true);
+  // Si algo de afuera corta el audio (una llamada, otra app), se sabe que ya no suena. Si ya
+  // empezó otro audio (paused vuelve a ser false), la pausa era del anterior y no cuenta.
+  audio.addEventListener('pause', () => { if (!audio.ended && audio.paused) grabada = false; });
+
+  // Las tomas de un mismo texto se van turnando, para que no suene a disco rayado.
+  const tomas = {};
+  function pista(texto, avanzar) {
+    const archivos = A.textos[texto], tiempos = A.tiempos[cfg.voz];
+    if (!archivos || !tiempos) return null;
+    const n = tomas[texto] || 0, archivo = archivos[n % archivos.length], t = tiempos[archivo];
+    if (!t) return null;
+    if (avanzar) tomas[texto] = n + 1;
+    return { url: `Audio/${cfg.voz}/${archivo}.mp3?${t.h}`, f: t.f };
+  }
+  const bajados = new Set();
+  // Baja de antemano lo que se va a decir después, para que no haya un hueco entre oraciones.
+  function preparar(partes) {
+    partes.forEach(texto => {
+      const p = pista(texto, false);
+      if (p && !bajados.has(p.url)) { bajados.add(p.url); fetch(p.url).catch(() => bajados.delete(p.url)); }
+    });
+  }
+  function grabadas(partes, al, yo) {
+    const pistas = partes.map(t => pista(t, false));
+    if (pistas.some(p => !p)) return false;
+    partes.forEach(t => pista(t, true));
+    let i = 0, base = 0, actual = -1;
+    grabada = true;
+    // Resalta la frase que se está diciendo (solo se nota con la pantalla a la vista).
+    const marcar = () => {
+      if (yo !== turno) return;
+      const f = pistas[i].f, t = audio.currentTime;
+      let j = 0;
+      while (j + 1 < f.length && t >= f[j + 1]) j++;
+      if (base + j !== actual) { actual = base + j; if (al.trozo) al.trozo(actual); }
+      cuadro = requestAnimationFrame(marcar);
+    };
+    const tocar = () => {
+      if (yo !== turno) return;
+      if (i >= pistas.length) { grabada = false; return despues(al, yo); }
+      audio.onended = () => { cancelAnimationFrame(cuadro); base += pistas[i].f.length; i++; tocar(); };
+      // Si un audio no carga (sin conexión, por ejemplo), sigue la voz del celular desde ahí.
+      audio.onerror = () => {
+        if (yo !== turno) return;
+        cancelAnimationFrame(cuadro); grabada = false;
+        const desde = base;
+        celular(partes.slice(i).flatMap(partir), { ...al, trozo: k => al.trozo && al.trozo(desde + k) }, 'es', yo);
+      };
+      audio.src = pistas[i].url;
+      audio.play().then(() => { if (yo === turno) marcar(); }).catch(e => {
+        if (yo !== turno || e.name === 'AbortError') return;
+        grabada = false;
+        if (al.falla) al.falla();
+      });
+    };
+    tocar();
+    return true;
+  }
+  // Lo que viene después de decir todo: el silencio pedido (como audio, si se puede) y fin().
+  function despues(al, yo) {
+    const s = al.luego || 0, fin = () => { if (yo === turno) { grabada = false; if (al.fin) al.fin(); } };
+    if (!s) return fin();
+    if (al.silencio) al.silencio(s);
+    if (!despierto) { reloj = setTimeout(fin, s * 1000); return; }
+    grabada = true;
+    audio.onended = fin;
+    audio.onerror = () => { reloj = setTimeout(fin, s * 1000); };
+    audio.src = silencioDe(s);
+    audio.play().catch(e => { if (e.name !== 'AbortError') reloj = setTimeout(fin, s * 1000); });
+  }
+
+  function callar() {
+    turno++; clearTimeout(reloj); cancelAnimationFrame(cuadro); grabada = false;
+    audio.onended = audio.onerror = null;
+    if (!audio.paused) audio.pause();
+    if (sintesis) sintesis.cancel();
+  }
+  function decir(partes, al = {}, lengua = 'es') {
+    callar();
+    if (!partes.length) return;
+    const yo = turno;
+    if (!grabadas(partes, al, yo)) celular(partes.flatMap(partir), al, lengua, yo);
+  }
+  const hablando = () => grabada || (!!sintesis && sintesis.speaking);
+  return { decir, callar, preparar, latinItaliano, hablando };
 })();
 
 // Frases cortas: algunos navegadores cortan la voz a mitad de una frase muy larga.
@@ -354,14 +485,16 @@ function textos(p) {
   return { guia: de('guia'), todos: de('todos') };
 }
 
-// Lo que dice la voz en cada paso. A dos voces, solo la parte de quien guía
-// (las oraciones que se rezan todos juntos, como el Credo, las reza con vos).
+// Lo que dice la voz en cada paso: los textos, tal como están grabados (un audio por texto).
+// A dos voces, solo la parte de quien guía (las oraciones que se rezan todos juntos, como el
+// Credo, las reza con vos), y la pregunta para tu vida no se lee: es para pensarla en silencio.
 // Anuncios y preguntas van siempre en castellano; las oraciones, en la lengua elegida.
+// El anuncio tiene que coincidir con el que graba Generar audios.py.
 function locucion(p, g) {
-  if (p.t === 'anuncio') { const mis = g.misterios[p.m]; return { lengua: 'es', trozos: [`${cap(ORDINAL[p.m])} misterio ${SINGULAR[g.id]}. ${mis.titulo}.`, `En este misterio pedimos ${mis.pedir}.`] }; }
-  if (p.t === 'vida') return { lengua: 'es', trozos: [g.misterios[p.m].vida] };
+  if (p.t === 'anuncio') { const mis = g.misterios[p.m]; return { lengua: 'es', partes: [`${cap(ORDINAL[p.m])} misterio ${SINGULAR[g.id]}. ${mis.titulo}. En este misterio pedimos ${mis.pedir}.`] }; }
+  if (p.t === 'vida') return { lengua: 'es', partes: cfg.forma === 'todo' ? [g.misterios[p.m].vida] : [] };
   const partes = partesDe(p), guia = partes.filter(x => x.quien === 'guia');
-  return { lengua: cfg.lengua, trozos: (cfg.forma === 'guia' && guia.length ? guia : partes).flatMap(x => partir(x.texto)) };
+  return { lengua: cfg.lengua, partes: (cfg.forma === 'guia' && guia.length ? guia : partes).map(x => x.texto) };
 }
 
 function fraseMirar(mis, p) {
@@ -371,32 +504,66 @@ function fraseMirar(mis, p) {
 
 /* ---------- Rezo ---------- */
 let S = null; // { ses, pasos }
-let pausa = false, espera = null, sonando = false;
+let pausa = false, sonando = false;
 
-function silencio() { voz.callar(); clearTimeout(espera); sonando = false; }
+function silencio() {
+  voz.callar(); sonando = false;
+  const b = $('.esperando');
+  if (b) b.classList.remove('esperando');
+}
 
 function hablar() {
   silencio();
   if (cfg.forma === 'solo' || pausa || (cfg.forma === 'guia' && cfg.mudo)) return;
-  const p = S.pasos[S.ses.paso], todos = $('.todos');
+  const { ses, pasos } = S, p = pasos[ses.paso], todos = $('.todos'), g = grupo(ses.grupo);
+  const { partes, lengua } = locucion(p, g);
+  if (!partes.length) return;
   const marcas = cfg.forma === 'todo' && p.t === 'oracion' ? todos.querySelectorAll('span') : [];
   sonando = true;
-  const { trozos, lengua } = locucion(p, grupo(S.ses.grupo));
-  voz.decir(trozos, {
+  ponerMedios(p, g);
+  const escuchar = cfg.forma === 'todo';
+  voz.decir(partes, {
+    // Escuchando, la app sigue sola: un respiro después de cada oración, uno más largo después
+    // del anuncio, y ocho segundos de silencio después de la pregunta para tu vida.
+    luego: !escuchar ? 0 : p.t === 'vida' ? 8 : p.t === 'anuncio' ? 1.5 : .7,
     trozo: i => { todos.classList.toggle('sonando', marcas.length > 0); marcas.forEach((s, j) => s.classList.toggle('ahora', j === i)); },
+    // Para que se vea que el rezo sigue y no que se cortó: el botón se va llenando mientras dura
+    // el silencio, y una línea lo dice.
+    silencio: s => {
+      if (p.t !== 'vida') return;
+      const b = $('.es-vida .acciones .principal');
+      if (b) { b.style.setProperty('--espera', s + 's'); b.classList.add('esperando'); }
+      $('.pista-rezo').textContent = 'Un momento en silencio, y el rezo sigue solo.';
+    },
     fin: () => {
       sonando = false; todos.classList.remove('sonando');
-      if (cfg.forma === 'todo' && p.t !== 'vida') espera = setTimeout(() => avanzar(true), p.t === 'anuncio' ? 1500 : 700);
+      if (escuchar) avanzar(true);
     },
     falla: () => {
       sonando = false; todos.classList.remove('sonando');
-      if (cfg.forma !== 'todo') return;
+      if (!escuchar) return;
       // Escuchando, la app queda en pausa y dice por qué (antes se detenía sin avisar).
       ponerPausa(true);
-      const aviso = 'Se cortó la voz del celular. Para que siga, tocá el botón de abajo a la derecha, o tocá la pantalla para seguir sin voz.';
+      const aviso = 'Se cortó la voz. Para que siga, tocá el botón de abajo a la derecha, o tocá la pantalla para seguir sin voz.';
       $('.pista-rezo').textContent = aviso; $('.lector').textContent = aviso;
     },
   }, lengua);
+  // Lo que se dice en el paso siguiente se baja de antemano.
+  if (pasos[ses.paso + 1]) voz.preparar(locucion(pasos[ses.paso + 1], g).partes);
+}
+
+// En la pantalla bloqueada se ve qué se está rezando, con la imagen del misterio. Escuchando,
+// desde ahí se pausa y se sigue.
+function ponerMedios(p, g) {
+  if (!('mediaSession' in navigator) || !window.MediaMetadata) return;
+  const { ses } = S, mis = g.misterios[p.m != null ? p.m : ses.modo === 'entero' ? (p.o === 'salve' ? 4 : 0) : ses.misterio];
+  const titulo = p.t === 'anuncio' ? mis.titulo : p.t === 'vida' ? 'Pregunta para tu vida' : p.etq;
+  const escuchar = cfg.forma === 'todo', arte = urlArte(mis);
+  try {
+    navigator.mediaSession.metadata = new MediaMetadata({ title: titulo, artist: g.nombre, album: 'Rosario', artwork: arte ? [{ src: new URL(arte, location.href).href }] : [] });
+    navigator.mediaSession.setActionHandler('pause', escuchar ? () => ponerPausa(true) : null);
+    navigator.mediaSession.setActionHandler('play', escuchar ? () => ponerPausa(false) : null);
+  } catch (e) {}
 }
 
 function ponerPausa(v) {
@@ -877,9 +1044,10 @@ function descripcion(k) {
   if (k === 'voz') {
     if (cfg.forma === 'solo') return 'Rezando solo no hay voz. Se usa en "A dos voces" y en "Escuchar".';
     if (cfg.forma === 'guia' && cfg.mudo) return 'Ahora la voz está callada. Se vuelve a activar con el parlante, abajo a la derecha, mientras rezás.';
-    if (cfg.lengua === 'la' && !voz.latinItaliano()) return 'Tu celular no trae una voz para el latín, así que por ahora lo reza con acento castellano.';
-    if (!voz.tiene(cfg.lengua)) return `Tu celular no trae una voz ${cfg.voz} ${cfg.lengua === 'la' ? 'para el latín' : 'en castellano'}, así que por ahora suena la que haya.`;
-    return 'Por ahora es la voz del celular. Más adelante va a ser una voz grabada.';
+    // El latín todavía no está grabado: lo reza la voz del celular.
+    if (cfg.lengua === 'la') return item[2] + (voz.latinItaliano() ? ' En latín, por ahora, reza la voz del celular.'
+      : ' En latín, por ahora, reza la voz del celular, y la tuya no trae una para el latín: suena con acento castellano.');
+    return item[2] + ' Tocá un nombre para escucharla.';
   }
   if (k === 'imagenes' && !hayIlustraciones) return item[2] + ' Las ilustraciones están en preparación.';
   return item[2];
@@ -895,8 +1063,10 @@ function selector(k) {
     return `<div class="muestras" role="radiogroup" aria-label="${OPCIONES.imagenes.titulo}">${OPCIONES.imagenes.items.map(([v, t]) =>
       `<button class="muestra${cfg.imagenes === v ? ' sel' : ''}" role="radio" aria-checked="${cfg.imagenes === v}" data-accion="opcion" data-k="imagenes" data-v="${v}"${disponible(v) ? '' : ' disabled'}><span style="${fondo[v]}"></span>${t}</button>`).join('')}</div>${desc}`;
   }
-  return `<div class="segmentos" role="radiogroup" aria-label="${OPCIONES[k].titulo}">${OPCIONES[k].items.map(([v, t]) =>
-    `<button class="${valor(k) === v ? 'sel' : ''}" role="radio" aria-checked="${valor(k) === v}" data-accion="opcion" data-k="${k}" data-v="${v}"${disponible(v) ? '' : ' disabled'}>${t}</button>`).join('')}</div>${desc}`;
+  // Las voces van en dos renglones: primero las de mujer y abajo las de varón.
+  const corte = v => k === 'voz' && v === VOCES.find(x => x[2] === 'masculina')[0] ? '<span class="corte"></span>' : '';
+  return `<div class="segmentos${k === 'voz' ? ' voces' : ''}" role="radiogroup" aria-label="${OPCIONES[k].titulo}">${OPCIONES[k].items.map(([v, t]) =>
+    `${corte(v)}<button class="${valor(k) === v ? 'sel' : ''}" role="radio" aria-checked="${valor(k) === v}" data-accion="opcion" data-k="${k}" data-v="${v}"${disponible(v) ? '' : ' disabled'}>${t}</button>`).join('')}</div>${desc}`;
 }
 function hojaAjustes() {
   const bloque = k => `<div class="ajuste"><b>${OPCIONES[k].titulo}</b>${selector(k)}</div>`;
@@ -907,9 +1077,11 @@ function hojaAjustes() {
     ${sw('vida', 'Pregunta para tu vida', 'Al terminar cada misterio')}`);
 }
 // Una muestra corta para escuchar la voz (y, en el iPhone, habilitarla con este toque).
-function muestra() {
-  if (cfg.forma === 'solo') return voz.callar();
-  voz.decir([cfg.lengua === 'la' ? 'Ave Maria, gratia plena, Dominus tecum.' : 'Dios te salve, María, llena eres de gracia.'], {}, cfg.lengua);
+// Al elegir una voz suena siempre, en castellano, también rezando solo: es para conocerla.
+function muestra(k) {
+  if (cfg.forma === 'solo' && k !== 'voz') return voz.callar();
+  const latin = cfg.lengua === 'la' && k !== 'voz';
+  voz.decir([latin ? 'Ave Maria, gratia plena, Dominus tecum.' : 'Dios te salve, María, llena eres de gracia.'], {}, latin ? 'la' : 'es');
 }
 
 /* ---------- Acciones ---------- */
@@ -958,7 +1130,7 @@ const acciones = {
     if (k === 'modo') aplicarTema();
     if (k === 'letra') aplicarLetra();
     if (k === 'imagenes' && $('.inicio')) vistaInicio();
-    if (k === 'forma' || k === 'voz' || k === 'lengua') muestra();
+    if (k === 'forma' || k === 'voz' || k === 'lengua') muestra(k);
   },
   pausa: () => ponerPausa(!pausa),
   voz: b => { cfg.mudo = !cfg.mudo; guardar('ajustes', cfg); pintarVoz(b); if (cfg.mudo) silencio(); else hablar(); },
