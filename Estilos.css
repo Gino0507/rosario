@@ -77,9 +77,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .es-anuncio .titulo{font-size:40px;line-height:1;margin-bottom:8px}
 .es-anuncio .cita{font-size:14px;margin-bottom:22px}
 .es-anuncio .pide{display:block;margin-bottom:22px}
-.pide .k{display:block;margin-bottom:6px}
-.fruto{display:inline-block;font-size:15px;font-weight:600;color:var(--on);background:var(--accent);padding:6px 14px;border-radius:999px}
-.es-anuncio .credito{display:block;font-size:12px;color:var(--muted);margin-bottom:18px}
+.pide .k{display:block;margin-bottom:4px}
+.fruto{display:block;font-family:"Cormorant Garamond",serif;font-style:italic;font-weight:700;font-size:27px;line-height:1.1;color:var(--mark)}
+.es-anuncio .credito{display:block;font-size:11px;line-height:1.35;color:var(--muted);text-align:right;margin:0 0 18px 30%}
 .es-anuncio .mira,.es-anuncio .tira,.es-anuncio .guia,.es-anuncio .todos{display:none}
 .es-anuncio .acciones,.es-vida .acciones{display:flex;flex-direction:column;gap:10px;align-items:center}
 .es-vida .fundido{background:linear-gradient(180deg,rgba(var(--rgb),.55) 0%,rgba(var(--rgb),.8) 50%,var(--bg) 100%)}
@@ -123,7 +123,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 
 /* Hojas (ajustes y elegir misterios) */
 .velo{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;animation:aparecer .25s}
-.hoja{width:100%;max-width:520px;background:var(--hoja);border-radius:24px 24px 0 0;padding:22px 22px calc(env(safe-area-inset-bottom) + 24px);animation:subir .3s cubic-bezier(.16,1,.3,1)}
+.hoja{width:100%;max-width:520px;max-height:90dvh;overflow-y:auto;overscroll-behavior:contain;background:var(--hoja);border-radius:24px 24px 0 0;padding:22px 22px calc(env(safe-area-inset-bottom) + 24px);animation:subir .3s cubic-bezier(.16,1,.3,1)}
 .hoja h3{font-size:17px;font-weight:600;margin-bottom:14px}
 .fila{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--line);width:100%}
 .fila small{display:block;font-size:12px;color:var(--muted)}
@@ -132,9 +132,19 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .segmentos{display:flex;background:rgba(127,127,127,.12);border-radius:12px;padding:3px;margin-top:8px}
 .segmentos button{flex:1;text-align:center;padding:8px 4px;border-radius:9px;font-size:13px}
 .segmentos button.sel{background:var(--bg);font-weight:600}
-.forma-desc{display:block;font-size:12px;line-height:1.45;color:var(--muted);margin-top:8px;min-height:2.9em}
-.pv .formas{margin:-8px 0 0}
-.pv .forma-desc{margin-bottom:20px}
+.opcion-desc{display:block;font-size:12px;line-height:1.45;color:var(--muted);margin-top:8px;min-height:2.9em}
+.pv .segmentos{margin:-8px 0 0}
+.pv .opcion-desc{margin-bottom:20px}
+.segmentos button:disabled{opacity:.35;cursor:default}
+.muestras{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.muestra{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--muted);text-align:center}
+.muestra span{display:block;width:100%;aspect-ratio:3/4;border-radius:12px;background-color:var(--bg);background-size:cover;background-position:50% 30%;background-repeat:no-repeat;border:2px solid transparent;transition:border-color .2s}
+.muestra.sel{color:var(--ink);font-weight:600}
+.muestra.sel span{border-color:var(--mark)}
+.muestra:disabled{opacity:.35;cursor:default}
+.ajuste{padding:14px 0;border-top:1px solid var(--line)}
+.hoja h3 + .ajuste{border-top:0;padding-top:0}
+.ajuste > b{font-size:14px}
 .interruptor{width:46px;height:28px;border-radius:14px;background:var(--line);position:relative;flex-shrink:0;transition:background .2s}
 .interruptor::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s}
 .interruptor.on{background:var(--mark)}

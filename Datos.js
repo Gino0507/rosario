@@ -85,6 +85,91 @@ window.DATOS = {
    ]
   }
  },
+ "latin": {
+  "senal": {
+   "nombre": "Señal de la cruz",
+   "partes": [
+    {
+     "quien": "todos",
+     "texto": "In nomine Patris, et Filii, et Spiritus Sancti. Amen."
+    }
+   ]
+  },
+  "credo": {
+   "nombre": "Credo",
+   "partes": [
+    {
+     "quien": "todos",
+     "texto": "Credo in Deum, Patrem omnipotentem, Creatorem caeli et terrae. Et in Iesum Christum, Filium eius unicum, Dominum nostrum, qui conceptus est de Spiritu Sancto, natus ex Maria Virgine, passus sub Pontio Pilato, crucifixus, mortuus, et sepultus, descendit ad inferos, tertia die resurrexit a mortuis, ascendit ad caelos, sedet ad dexteram Dei Patris omnipotentis, inde venturus est iudicare vivos et mortuos. Credo in Spiritum Sanctum, sanctam Ecclesiam catholicam, sanctorum communionem, remissionem peccatorum, carnis resurrectionem, vitam aeternam. Amen."
+    }
+   ]
+  },
+  "padre": {
+   "nombre": "Padrenuestro",
+   "partes": [
+    {
+     "quien": "guia",
+     "texto": "Pater noster, qui es in caelis, sanctificetur nomen tuum. Adveniat regnum tuum. Fiat voluntas tua, sicut in caelo et in terra."
+    },
+    {
+     "quien": "todos",
+     "texto": "Panem nostrum quotidianum da nobis hodie, et dimitte nobis debita nostra, sicut et nos dimittimus debitoribus nostris. Et ne nos inducas in tentationem, sed libera nos a malo. Amen."
+    }
+   ]
+  },
+  "ave": {
+   "nombre": "Avemaría",
+   "partes": [
+    {
+     "quien": "guia",
+     "texto": "Ave Maria, gratia plena, Dominus tecum. Benedicta tu in mulieribus, et benedictus fructus ventris tui, Iesus."
+    },
+    {
+     "quien": "todos",
+     "texto": "Sancta Maria, Mater Dei, ora pro nobis peccatoribus, nunc et in hora mortis nostrae. Amen."
+    }
+   ]
+  },
+  "gloria": {
+   "nombre": "Gloria",
+   "partes": [
+    {
+     "quien": "guia",
+     "texto": "Gloria Patri, et Filio, et Spiritui Sancto."
+    },
+    {
+     "quien": "todos",
+     "texto": "Sicut erat in principio, et nunc et semper, et in saecula saeculorum. Amen."
+    }
+   ]
+  },
+  "ohjesus": {
+   "nombre": "Oh Jesús mío",
+   "partes": [
+    {
+     "quien": "todos",
+     "texto": "O mi Iesu, dimitte nobis debita nostra, libera nos ab igne inferni, conduc in caelum omnes animas, praesertim illas quae maxime indigent misericordia tua."
+    }
+   ]
+  },
+  "salve": {
+   "nombre": "Salve",
+   "partes": [
+    {
+     "quien": "todos",
+     "texto": "Salve, Regina, Mater misericordiae, vita, dulcedo, et spes nostra, salve. Ad te clamamus, exsules filii Hevae. Ad te suspiramus, gementes et flentes in hac lacrimarum valle. Eia, ergo, advocata nostra, illos tuos misericordes oculos ad nos converte. Et Iesum, benedictum fructum ventris tui, nobis post hoc exsilium ostende. O clemens, O pia, O dulcis Virgo Maria."
+    },
+    {
+     "quien": "guia",
+     "texto": "Ora pro nobis, sancta Dei Genetrix."
+    },
+    {
+     "quien": "todos",
+     "texto": "Ut digni efficiamur promissionibus Christi. Amen."
+    }
+   ]
+  }
+ },
  "grupos": [
   {
    "id": "gozosos",
@@ -101,10 +186,11 @@ window.DATOS = {
      ],
      "pedir": "la humildad",
      "vida": "María preguntó antes de decir que sí. ¿Qué le preguntarías vos a Dios?",
-     "autor": "Fra Angelico",
+     "autor": "Carl Bloch",
      "obra": "La Anunciación",
      "imagen": "Arte/Gozosos-1.jpg",
-     "foco": "74% 50%",
+     "ilustracion": "Ilustraciones/Gozosos-1.jpg",
+     "foco": "40% 40%",
      "zoom": 1.0
     },
     {
@@ -117,10 +203,11 @@ window.DATOS = {
      ],
      "pedir": "la caridad con el prójimo",
      "vida": "¿A quién podrías ir a ver esta semana, aunque te quede lejos o te dé fiaca?",
-     "autor": "Mariotto Albertinelli",
+     "autor": "Philippe de Champaigne",
      "obra": "La Visitación",
      "imagen": "Arte/Gozosos-2.jpg",
-     "foco": "50% 38%",
+     "ilustracion": "Ilustraciones/Gozosos-2.jpg",
+     "foco": "50% 22%",
      "zoom": 1.0
     },
     {
@@ -135,6 +222,7 @@ window.DATOS = {
      "autor": "Gerard van Honthorst",
      "obra": "La adoración de los pastores",
      "imagen": "Arte/Gozosos-3.jpg",
+     "ilustracion": "Ilustraciones/Gozosos-3.jpg",
      "foco": "46% 50%",
      "zoom": 1.0
     },
@@ -148,10 +236,11 @@ window.DATOS = {
      "pedir": "la obediencia",
      "vida": "Simeón esperó años sin cansarse. ¿Qué estás esperando vos, y cómo lo esperás?",
      "autor": "Rembrandt",
-     "obra": "Simeón y Ana en el Templo",
+     "obra": "El cántico de Simeón",
      "imagen": "Arte/Gozosos-4.jpg",
-     "foco": "38% 62%",
-     "zoom": 1.15
+     "ilustracion": "Ilustraciones/Gozosos-4.jpg",
+     "foco": "45% 40%",
+     "zoom": 1.0
     },
     {
      "titulo": "Jesús perdido y hallado en el Templo",
@@ -165,6 +254,7 @@ window.DATOS = {
      "autor": "William Holman Hunt",
      "obra": "El hallazgo del Salvador en el Templo",
      "imagen": "Arte/Gozosos-5.jpg",
+     "ilustracion": "Ilustraciones/Gozosos-5.jpg",
      "foco": "64% 45%",
      "zoom": 1.0
     }
@@ -185,11 +275,12 @@ window.DATOS = {
      ],
      "pedir": "vivir como hijos de Dios",
      "vida": "Jesús escuchó que era querido antes de hacer un solo milagro. ¿Te animás a creer que Dios te quiere antes de que hagas nada?",
-     "autor": "Piero della Francesca",
+     "autor": "Guido Reni",
      "obra": "El bautismo de Cristo",
      "imagen": "Arte/Luminosos-1.jpg",
-     "foco": "50% 62%",
-     "zoom": 1.22
+     "ilustracion": "Ilustraciones/Luminosos-1.jpg",
+     "foco": "50% 22%",
+     "zoom": 1.0
     },
     {
      "titulo": "Las bodas de Caná",
@@ -200,10 +291,11 @@ window.DATOS = {
      ],
      "pedir": "hacer lo que Jesús nos diga",
      "vida": "María vio lo que faltaba antes de que alguien se lo pidiera. ¿Qué le pedirías que le diga a Jesús de tu parte?",
-     "autor": "Giotto",
+     "autor": "Carl Bloch",
      "obra": "Las bodas de Caná",
      "imagen": "Arte/Luminosos-2.jpg",
-     "foco": "38% 55%",
+     "ilustracion": "Ilustraciones/Luminosos-2.jpg",
+     "foco": "50% 40%",
      "zoom": 1.0
     },
     {
@@ -219,6 +311,7 @@ window.DATOS = {
      "autor": "Carl Bloch",
      "obra": "El sermón de la montaña",
      "imagen": "Arte/Luminosos-3.jpg",
+     "ilustracion": "Ilustraciones/Luminosos-3.jpg",
      "foco": "62% 30%",
      "zoom": 1.0
     },
@@ -235,6 +328,7 @@ window.DATOS = {
      "autor": "Rafael",
      "obra": "La Transfiguración",
      "imagen": "Arte/Luminosos-4.jpg",
+     "ilustracion": "Ilustraciones/Luminosos-4.jpg",
      "foco": "50% 18%",
      "zoom": 1.0
     },
@@ -247,9 +341,10 @@ window.DATOS = {
      ],
      "pedir": "el amor a la Eucaristía",
      "vida": "¿Qué te acerca a la misa del domingo, y qué te aleja?",
-     "autor": "Juan de Juanes",
+     "autor": "Carl Bloch",
      "obra": "La Última Cena",
      "imagen": "Arte/Luminosos-5.jpg",
+     "ilustracion": "Ilustraciones/Luminosos-5.jpg",
      "foco": "50% 40%",
      "zoom": 1.0
     }
@@ -271,10 +366,11 @@ window.DATOS = {
      ],
      "pedir": "aceptar la voluntad de Dios",
      "vida": "Jesús le dijo al Padre lo que sentía, sin hacerse el fuerte. ¿Qué le dirías hoy vos, sin maquillarlo?",
-     "autor": "El Greco",
-     "obra": "La oración en el huerto",
+     "autor": "Carl Bloch",
+     "obra": "Cristo en Getsemaní",
      "imagen": "Arte/Dolorosos-1.jpg",
-     "foco": "50% 22%",
+     "ilustracion": "Ilustraciones/Dolorosos-1.jpg",
+     "foco": "36% 50%",
      "zoom": 1.0
     },
     {
@@ -289,6 +385,7 @@ window.DATOS = {
      "autor": "Caravaggio",
      "obra": "La flagelación de Cristo",
      "imagen": "Arte/Dolorosos-2.jpg",
+     "ilustracion": "Ilustraciones/Dolorosos-2.jpg",
      "foco": "50% 38%",
      "zoom": 1.0
     },
@@ -305,6 +402,7 @@ window.DATOS = {
      "autor": "Anton van Dyck",
      "obra": "La coronación de espinas",
      "imagen": "Arte/Dolorosos-3.jpg",
+     "ilustracion": "Ilustraciones/Dolorosos-3.jpg",
      "foco": "46% 42%",
      "zoom": 1.0
     },
@@ -321,6 +419,7 @@ window.DATOS = {
      "autor": "Tiziano",
      "obra": "Cristo camino del Calvario",
      "imagen": "Arte/Dolorosos-4.jpg",
+     "ilustracion": "Ilustraciones/Dolorosos-4.jpg",
      "foco": "32% 50%",
      "zoom": 1.0
     },
@@ -337,6 +436,7 @@ window.DATOS = {
      "autor": "Diego Velázquez",
      "obra": "Cristo crucificado",
      "imagen": "Arte/Dolorosos-5.jpg",
+     "ilustracion": "Ilustraciones/Dolorosos-5.jpg",
      "foco": "50% 22%",
      "zoom": 1.0
     }
@@ -357,9 +457,10 @@ window.DATOS = {
      ],
      "pedir": "la fe",
      "vida": "Las mujeres salieron corriendo a contarlo. ¿A quién le contarías algo bueno que Dios hizo en tu vida?",
-     "autor": "Matthias Grünewald",
+     "autor": "Carl Bloch",
      "obra": "La Resurrección",
      "imagen": "Arte/Gloriosos-1.jpg",
+     "ilustracion": "Ilustraciones/Gloriosos-1.jpg",
      "foco": "50% 22%",
      "zoom": 1.0
     },
@@ -372,10 +473,11 @@ window.DATOS = {
      ],
      "pedir": "la esperanza",
      "vida": "Jesús se fue y dejó la tarea en manos de sus amigos. ¿Qué parte de esa tarea te toca a vos?",
-     "autor": "Andrea Mantegna",
+     "autor": "Rembrandt",
      "obra": "La Ascensión",
      "imagen": "Arte/Gloriosos-2.jpg",
-     "foco": "50% 12%",
+     "ilustracion": "Ilustraciones/Gloriosos-2.jpg",
+     "foco": "50% 26%",
      "zoom": 1.0
     },
     {
@@ -391,6 +493,7 @@ window.DATOS = {
      "autor": "Juan Bautista Maíno",
      "obra": "Pentecostés",
      "imagen": "Arte/Gloriosos-3.jpg",
+     "ilustracion": "Ilustraciones/Gloriosos-3.jpg",
      "foco": "50% 45%",
      "zoom": 1.0
     },
@@ -406,6 +509,7 @@ window.DATOS = {
      "autor": "Guido Reni",
      "obra": "La Asunción de la Virgen",
      "imagen": "Arte/Gloriosos-4.jpg",
+     "ilustracion": "Ilustraciones/Gloriosos-4.jpg",
      "foco": "50% 25%",
      "zoom": 1.0
     },
@@ -421,6 +525,7 @@ window.DATOS = {
      "autor": "Diego Velázquez",
      "obra": "La coronación de la Virgen",
      "imagen": "Arte/Gloriosos-5.jpg",
+     "ilustracion": "Ilustraciones/Gloriosos-5.jpg",
      "foco": "50% 35%",
      "zoom": 1.0
     }

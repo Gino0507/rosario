@@ -29,7 +29,7 @@ function borrar(k) { delete memoria[k]; try { localStorage.removeItem('rosario.'
 const pad = n => String(n).padStart(2, '0');
 function hoyISO() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
 
-const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia' }, leer('ajustes', {}));
+const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia', voz: 'femenina', lengua: 'es', imagenes: 'pinturas' }, leer('ajustes', {}));
 
 // Formas de rezar (ver Decisiones.md, 6 de octubre)
 const FORMAS = [
@@ -37,6 +37,24 @@ const FORMAS = [
   ['guia', 'A dos voces', 'Una voz guía y vos respondés, como cuando se reza en grupo. Tu parte va en letra grande.'],
   ['todo', 'Escuchar', 'Una voz reza todo y la app avanza sola. La acompañás en voz alta o en silencio.'],
 ];
+// Opciones de Ajustes: [valor, etiqueta, descripción]
+const OPCIONES = {
+  forma: { titulo: 'Forma de rezar', items: FORMAS },
+  voz: { titulo: 'Voz', items: [['femenina', 'Femenina'], ['masculina', 'Masculina']] },
+  lengua: { titulo: 'Oraciones en', items: [
+    ['es', 'Castellano', 'Las oraciones como se rezan en la Argentina.'],
+    ['la', 'Latín', 'Las oraciones en latín, como se rezaron durante siglos. Anuncios, escenas y preguntas siguen en castellano.']] },
+  imagenes: { titulo: 'Imágenes', items: [
+    ['pinturas', 'Pinturas', 'Obras de grandes maestros que muestran cada escena.'],
+    ['ilustraciones', 'Ilustraciones', 'Ilustraciones de hoy, más simples y serenas.'],
+    ['ninguna', 'Sin imágenes', 'Solo luz y color, para rezar sin nada que mirar.']] },
+  modo: { titulo: 'Modo', items: [
+    ['auto', 'Automático', 'De 19 a 7 se usa el modo noche, y el resto del día, el modo día.'],
+    ['dia', 'Día', 'Fondo claro, para rezar de día o con mucha luz.'],
+    ['noche', 'Noche', 'Fondo oscuro, para rezar de noche o con poca luz.']] },
+};
+const hayIlustraciones = D.grupos.some(g => g.misterios.some(m => m.ilustracion));
+const oraciones = () => cfg.lengua === 'la' ? D.latin : D.oraciones;
 let grupoInicio = DEL_DIA[new Date().getDay()];
 
 const grupo = id => D.grupos.find(g => g.id === id);
@@ -65,19 +83,31 @@ const vibrar = () => { try { navigator.vibrate && navigator.vibrate(10); } catch
 const voz = (() => {
   const sintesis = window.speechSynthesis;
   const RARAS = /eddy|flo|grand|reed|rocko|sandy|shelley|bahh|bells|boing|bubbles|cellos|wobble|news|jester|organ|superstar|trinoids|whisper|zarvox|albert|fred|junior|kathy|ralph/i;
-  const ORDEN = ['es-ar', 'es-419', 'es-us', 'es-mx', 'es-co', 'es-cl', 'es-es'];
-  let elegida = null, turno = 0, vivas = [], reloj = null;
-  function elegir() {
-    const nota = v => { const i = ORDEN.indexOf(v.lang.replace('_', '-').toLowerCase()); return i < 0 ? ORDEN.length : i; };
-    elegida = sintesis.getVoices().filter(v => /^es/i.test(v.lang) && !RARAS.test(v.name)).sort((a, b) => nota(a) - nota(b))[0] || null;
+  // Acento: rioplatense primero. Para el latín, una voz italiana, que es la
+  // pronunciación más cercana al latín de la Iglesia.
+  const ORDEN = { es: ['es-ar', 'es-419', 'es-us', 'es-mx', 'es-co', 'es-cl', 'es-es'], it: ['it-it'] };
+  // La API no dice si una voz es de varón o de mujer: se deduce por el nombre.
+  const VARONES = /\b(jorge|juan|diego|carlos|pablo|ra[uú]l|[aá]lvaro|tom[aá]s|gonzalo|enrique|andr[eé]s|luca|cosimo|giuseppe|benigno|rinaldo)\b/i;
+  const MUJERES = /\b(m[oó]nica|paulina|ang[eé]lica|isabela|isabella|marisol|soledad|francisca|helena|laura|sabina|elvira|dalia|elena|alice|federica|paola|elsa|emma|google)\b/i;
+  let turno = 0, vivas = [], reloj = null;
+  const genero = v => VARONES.test(v.name) ? 'masculina' : MUJERES.test(v.name) ? 'femenina' : '';
+  const candidatas = idioma => sintesis ? sintesis.getVoices().filter(v => v.lang.toLowerCase().startsWith(idioma) && !RARAS.test(v.name)) : [];
+  const latinItaliano = () => candidatas('it').length > 0;
+  function elegir(lengua) {
+    const idioma = lengua === 'la' && latinItaliano() ? 'it' : 'es', orden = ORDEN[idioma];
+    const nota = v => {
+      const g = genero(v), i = orden.indexOf(v.lang.replace('_', '-').toLowerCase());
+      return (g === cfg.voz ? 0 : g ? 20 : 10) + (i < 0 ? orden.length : i);
+    };
+    return candidatas(idioma).sort((a, b) => nota(a) - nota(b))[0] || null;
   }
-  if (sintesis) { elegir(); sintesis.onvoiceschanged = elegir; }
+  const tiene = lengua => { const v = elegir(lengua); return !!v && genero(v) === cfg.voz; };
   function callar() { turno++; vivas = []; clearTimeout(reloj); if (sintesis) sintesis.cancel(); }
-  // trozos: frases a decir en orden. al: { trozo(i), fin(), falla() }
-  function decir(trozos, al = {}) {
+  // trozos: frases a decir en orden. al: { trozo(i), fin(), falla() }. lengua: 'es' o 'la'.
+  function decir(trozos, al = {}, lengua = 'es') {
     callar();
     if (!sintesis || !trozos.length) return;
-    const yo = turno;
+    const yo = turno, elegida = elegir(lengua);
     vivas = trozos.map((t, i) => {
       const u = new SpeechSynthesisUtterance(t);
       u.lang = elegida ? elegida.lang : 'es-AR';
@@ -99,7 +129,7 @@ const voz = (() => {
     };
     reloj = setTimeout(vigilar, limite);
   }
-  return { decir, callar, hablando: () => !!sintesis && sintesis.speaking };
+  return { decir, callar, tiene, latinItaliano, hablando: () => !!sintesis && sintesis.speaking };
 })();
 
 // Frases cortas: algunos navegadores cortan la voz a mitad de una frase muy larga.
@@ -118,7 +148,19 @@ function partir(texto) {
 function heroHTML(mis) {
   return `<div class="hero"><div class="arte on" style="${estiloArte(mis)}"></div><div class="fundido"></div></div>`;
 }
-function estiloArte(mis) { return `background-image:url('${mis.imagen}');background-position:${mis.foco};--z:${mis.zoom}`; }
+// Sin imágenes: una luz que baja desde arriba, con el color de cada grupo de misterios.
+const LUZ = { gozosos: '232,184,107', luminosos: '170,200,235', dolorosos: '150,60,85', gloriosos: '255,210,130' };
+const grupoDe = mis => D.grupos.find(g => g.misterios.includes(mis)).id;
+function luz(gid) {
+  const c = LUZ[gid];
+  return `background-image:radial-gradient(ellipse 70% 60% at 50% -4%,rgba(255,244,222,.42),transparent 72%),radial-gradient(ellipse 160% 120% at 50% -14%,rgba(${c},.75),rgba(${c},.32) 45%,rgba(${c},.08) 72%,transparent 90%)`;
+}
+function estiloArte(mis) {
+  if (cfg.imagenes === 'ninguna') return luz(grupoDe(mis)) + ';--z:1';
+  if (cfg.imagenes === 'ilustraciones' && mis.ilustracion) return `background-image:url('${mis.ilustracion}');background-position:50% 30%;--z:1`;
+  return `background-image:url('${mis.imagen}');background-position:${mis.foco};--z:${mis.zoom}`;
+}
+const conCredito = mis => cfg.imagenes === 'pinturas' || (cfg.imagenes === 'ilustraciones' && !mis.ilustracion);
 
 /* ---------- Inicio ---------- */
 function vistaInicio() {
@@ -193,7 +235,7 @@ function construirPasos(ses) {
 }
 
 function partesDe(p) {
-  const partes = D.oraciones[p.o].partes;
+  const partes = oraciones()[p.o].partes;
   if (p.o === 'salve') return p.parte === 0 ? partes.slice(0, 1) : partes.slice(1);
   return partes;
 }
@@ -204,11 +246,12 @@ function textos(p) {
 
 // Lo que dice la voz en cada paso. A dos voces, solo la parte de quien guía
 // (las oraciones que se rezan todos juntos, como el Credo, las reza con vos).
+// Anuncios y preguntas van siempre en castellano; las oraciones, en la lengua elegida.
 function locucion(p, g) {
-  if (p.t === 'anuncio') { const mis = g.misterios[p.m]; return [`${cap(ORDINAL[p.m])} misterio ${SINGULAR[g.id]}. ${mis.titulo}.`, `En este misterio pedimos ${mis.pedir}.`]; }
-  if (p.t === 'vida') return [g.misterios[p.m].vida];
+  if (p.t === 'anuncio') { const mis = g.misterios[p.m]; return { lengua: 'es', trozos: [`${cap(ORDINAL[p.m])} misterio ${SINGULAR[g.id]}. ${mis.titulo}.`, `En este misterio pedimos ${mis.pedir}.`] }; }
+  if (p.t === 'vida') return { lengua: 'es', trozos: [g.misterios[p.m].vida] };
   const partes = partesDe(p), guia = partes.filter(x => x.quien === 'guia');
-  return (cfg.forma === 'guia' && guia.length ? guia : partes).flatMap(x => partir(x.texto));
+  return { lengua: cfg.lengua, trozos: (cfg.forma === 'guia' && guia.length ? guia : partes).flatMap(x => partir(x.texto)) };
 }
 
 function fraseMirar(mis, p) {
@@ -228,14 +271,15 @@ function hablar() {
   const p = S.pasos[S.ses.paso], todos = $('.todos');
   const marcas = cfg.forma === 'todo' && p.t === 'oracion' ? todos.querySelectorAll('span') : [];
   sonando = true;
-  voz.decir(locucion(p, grupo(S.ses.grupo)), {
+  const { trozos, lengua } = locucion(p, grupo(S.ses.grupo));
+  voz.decir(trozos, {
     trozo: i => { todos.classList.toggle('sonando', marcas.length > 0); marcas.forEach((s, j) => s.classList.toggle('ahora', j === i)); },
     fin: () => {
       sonando = false; todos.classList.remove('sonando');
       if (cfg.forma === 'todo' && p.t !== 'vida') espera = setTimeout(() => avanzar(true), p.t === 'anuncio' ? 1500 : 700);
     },
     falla: () => { sonando = false; todos.classList.remove('sonando'); if (cfg.forma === 'todo') ponerPausa(true); },
-  });
+  }, lengua);
 }
 
 function ponerPausa(v) {
@@ -284,12 +328,12 @@ function montarRezo() {
       <div class="pista">Tocá para seguir rezando desde acá</div>
     </div>
     <div class="cuerpo" aria-live="polite">
+      <div class="credito lift"></div>
       <div class="k kicker lift"></div>
       <h2 class="t1 titulo"></h2>
       <div class="cita lift"></div>
       <p class="mira lift"></p>
       <div class="pide"><span class="k">En este misterio pedimos</span><span class="fruto"></span></div>
-      <div class="credito"></div>
       <svg class="tira" viewBox="0 0 264 26" aria-hidden="true"></svg>
       <p class="guia"></p>
       <p class="todos"></p>
@@ -307,11 +351,11 @@ function montarRezo() {
 
 function ponerArte(mis) {
   const capas = app.querySelectorAll('.capa');
-  const visible = [...capas].find(c => c.classList.contains('on'));
-  if (visible && visible.dataset.img === mis.imagen) return;
+  const visible = [...capas].find(c => c.classList.contains('on')), estilo = estiloArte(mis);
+  if (visible && visible.dataset.estilo === estilo) return;
   const otra = visible === capas[0] ? capas[1] : capas[0];
-  otra.setAttribute('style', estiloArte(mis));
-  otra.dataset.img = mis.imagen;
+  otra.setAttribute('style', estilo);
+  otra.dataset.estilo = estilo;
   otra.classList.add('on');
   if (visible) visible.classList.remove('on');
 }
@@ -331,7 +375,7 @@ function actualizar() {
   $('.cita').textContent = enMisterio ? mis.cita : '';
   $('.mira').textContent = p.t === 'oracion' ? (enMisterio ? fraseMirar(mis, p) : (p.nota || '')) : '';
   $('.fruto').textContent = enMisterio ? mis.pedir : '';
-  $('.credito').innerHTML = enMisterio ? `${esc(mis.autor)}, <em>${esc(mis.obra)}</em>` : '';
+  $('.credito').innerHTML = enMisterio && conCredito(mis) ? `${esc(mis.autor)}, <em>${esc(mis.obra)}</em>` : '';
 
   const tira = $('.tira');
   tira.style.display = p.tira ? '' : 'none';
@@ -494,7 +538,7 @@ function vistaPrimera(i) {
       <h1 class="t1">${esc(c.t)}</h1>
       ${c.tira ? '<svg class="tira" viewBox="0 0 264 26" aria-hidden="true"></svg>' : ''}
       <p>${esc(c.b)}</p>
-      ${c.formas ? selectorForma() : ''}
+      ${c.formas ? selector('forma') : ''}
       <button class="btn principal" data-accion="${ultimo ? 'uno' : 'pv'}" data-v="${i + 1}" style="justify-content:center">${ultimo ? 'Rezar un misterio' : 'Siguiente'}</button>
     </div>
   </section>`;
@@ -539,19 +583,43 @@ function hojaGrupos() {
   hoja('<h3>Elegí qué misterios rezar</h3>' + D.grupos.map(g =>
     `<button class="fila${g.id === grupoInicio ? ' sel' : ''}" data-accion="grupo" data-v="${g.id}"><span><b>${g.nombre}</b><small>${g.dias}</small></span>${g.id === hoy ? '<span class="etiqueta">Hoy</span>' : ''}</button>`).join(''));
 }
-function selectorForma() {
-  return `<div class="segmentos formas">${FORMAS.map(([v, t]) => `<button class="${cfg.forma === v ? 'sel' : ''}" data-accion="forma" data-v="${v}">${t}</button>`).join('')}</div>
-    <small class="forma-desc">${FORMAS.find(f => f[0] === cfg.forma)[2]}</small>`;
+function descripcion(k) {
+  const item = OPCIONES[k].items.find(x => x[0] === cfg[k]) || OPCIONES[k].items[0];
+  if (k === 'voz') {
+    if (cfg.forma === 'solo') return 'Rezando solo no hay voz. Se usa en "A dos voces" y en "Escuchar".';
+    if (cfg.lengua === 'la' && !voz.latinItaliano()) return 'Tu celular no trae una voz para el latín, así que por ahora lo reza con acento castellano.';
+    if (!voz.tiene(cfg.lengua)) return `Tu celular no trae una voz ${cfg.voz} ${cfg.lengua === 'la' ? 'para el latín' : 'en castellano'}, así que por ahora suena la que haya.`;
+    return 'Por ahora es la voz del celular. Más adelante va a ser una voz grabada.';
+  }
+  if (k === 'imagenes' && !hayIlustraciones) return item[2] + ' Las ilustraciones están en preparación.';
+  return item[2];
+}
+function selector(k) {
+  const disponible = v => !(k === 'imagenes' && v === 'ilustraciones' && !hayIlustraciones);
+  const desc = `<small class="opcion-desc" data-k="${k}">${descripcion(k)}</small>`;
+  if (k === 'imagenes') {
+    // Vista previa: la misma escena (el nacimiento de Jesús) en cada estilo.
+    const nat = grupo('gozosos').misterios[2];
+    const fondo = { pinturas: `background-image:url('${nat.imagen}');background-position:${nat.foco}`,
+      ilustraciones: nat.ilustracion ? `background-image:url('${nat.ilustracion}')` : '', ninguna: luz('gozosos') };
+    return `<div class="muestras">${OPCIONES.imagenes.items.map(([v, t]) =>
+      `<button class="muestra${cfg.imagenes === v ? ' sel' : ''}" data-accion="opcion" data-k="imagenes" data-v="${v}"${disponible(v) ? '' : ' disabled'}><span style="${fondo[v]}"></span>${t}</button>`).join('')}</div>${desc}`;
+  }
+  return `<div class="segmentos">${OPCIONES[k].items.map(([v, t]) =>
+    `<button class="${cfg[k] === v ? 'sel' : ''}" data-accion="opcion" data-k="${k}" data-v="${v}"${disponible(v) ? '' : ' disabled'}>${t}</button>`).join('')}</div>${desc}`;
 }
 function hojaAjustes() {
-  const seg = (v, t) => `<button class="${cfg.modo === v ? 'sel' : ''}" data-accion="modo" data-v="${v}">${t}</button>`;
+  const bloque = k => `<div class="ajuste"><b>${OPCIONES[k].titulo}</b>${selector(k)}</div>`;
   const sw = (k, t, d) => `<button class="fila" data-accion="alternar" data-v="${k}" role="switch" aria-checked="${cfg[k]}"><span><b>${t}</b><small>${d}</small></span><span class="interruptor${cfg[k] ? ' on' : ''}"></span></button>`;
   hoja(`<h3>Ajustes</h3>
-    <div style="padding-bottom:14px"><b style="font-size:14px">Forma de rezar</b>${selectorForma()}</div>
-    <div style="padding:14px 0;border-top:1px solid var(--line)"><b style="font-size:14px">Modo</b><small style="display:block;font-size:12px;color:var(--muted)">En automático, de 19 a 7 se usa el modo noche.</small>
-      <div class="segmentos">${seg('auto', 'Automático')}${seg('dia', 'Día')}${seg('noche', 'Noche')}</div></div>
+    ${['forma', 'voz', 'lengua', 'imagenes', 'modo'].map(bloque).join('')}
     ${sw('ohJesus', 'Oh Jesús mío', 'Después de cada Gloria')}
     ${sw('vida', 'Pregunta para tu vida', 'Al terminar cada misterio')}`);
+}
+// Una muestra corta para escuchar la voz (y, en el iPhone, habilitarla con este toque).
+function muestra() {
+  if (cfg.forma === 'solo') return voz.callar();
+  voz.decir([cfg.lengua === 'la' ? 'Ave Maria, gratia plena, Dominus tecum.' : 'Dios te salve, María, llena eres de gracia.'], {}, cfg.lengua);
 }
 
 /* ---------- Acciones ---------- */
@@ -572,13 +640,13 @@ const acciones = {
   grupos: () => hojaGrupos(),
   grupo: b => { grupoInicio = b.dataset.v; cerrarHoja(); vistaInicio(); },
   ajustes: () => hojaAjustes(),
-  modo: b => { cfg.modo = b.dataset.v; guardar('ajustes', cfg); aplicarTema(); hojaAjustes(); },
-  forma: b => {
-    cfg.forma = b.dataset.v; guardar('ajustes', cfg);
-    document.querySelectorAll('.formas button').forEach(x => x.classList.toggle('sel', x.dataset.v === cfg.forma));
-    document.querySelectorAll('.forma-desc').forEach(x => { x.textContent = FORMAS.find(f => f[0] === cfg.forma)[2]; });
-    // Una muestra corta para escuchar la voz (y, en el iPhone, habilitarla con este toque).
-    if (cfg.forma === 'solo') voz.callar(); else voz.decir(['Dios te salve, María, llena eres de gracia.']);
+  opcion: b => {
+    const k = b.dataset.k; cfg[k] = b.dataset.v; guardar('ajustes', cfg);
+    document.querySelectorAll(`[data-accion="opcion"][data-k="${k}"]`).forEach(x => x.classList.toggle('sel', x.dataset.v === cfg[k]));
+    document.querySelectorAll('.opcion-desc').forEach(x => { x.textContent = descripcion(x.dataset.k); });
+    if (k === 'modo') aplicarTema();
+    if (k === 'imagenes' && $('.inicio')) vistaInicio();
+    if (k === 'forma' || k === 'voz' || k === 'lengua') muestra();
   },
   pausa: () => ponerPausa(!pausa),
   alternar: b => { cfg[b.dataset.v] = !cfg[b.dataset.v]; guardar('ajustes', cfg); hojaAjustes(); },
