@@ -8,7 +8,6 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 const ORDINAL = ['primer', 'segundo', 'tercer', 'cuarto', 'quinto'];
-const NUMERO = ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco'];
 const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 // Rosarium Virginis Mariae (2002), indexado por Date.getDay()
@@ -29,7 +28,8 @@ function borrar(k) { delete memoria[k]; try { localStorage.removeItem('rosario.'
 const pad = n => String(n).padStart(2, '0');
 function hoyISO() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
 
-const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia', voz: 'femenina', lengua: 'es', imagenes: 'pinturas' }, leer('ajustes', {}));
+// mudo: la voz callada con el parlante del rezo (A dos voces). Se recuerda para la próxima vez.
+const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia', voz: 'femenina', lengua: 'es', imagenes: 'pinturas', mudo: false, textos: 'auto' }, leer('ajustes', {}));
 
 // Formas de rezar (ver Decisiones.md, 6 de octubre)
 const FORMAS = [
@@ -44,6 +44,9 @@ const OPCIONES = {
   lengua: { titulo: 'Oraciones en', items: [
     ['es', 'Castellano', 'Las oraciones como se rezan en la Argentina.'],
     ['la', 'Latín', 'Las oraciones en latín, como se rezaron durante siglos. Anuncios, escenas y preguntas siguen en castellano.']] },
+  textos: { titulo: 'Texto de las oraciones', items: [
+    ['nombre', 'Solo el nombre', 'Solo el nombre de cada oración, para dejarle lugar a la pintura. El Credo y la Salve se ven siempre enteros.'],
+    ['completas', 'Completas', 'Cada oración entera en pantalla, para leerla mientras rezás.']] },
   imagenes: { titulo: 'Imágenes', items: [
     ['pinturas', 'Pinturas', 'Obras de grandes maestros que muestran cada escena.'],
     ['ilustraciones', 'Ilustraciones', 'Ilustraciones de hoy, más simples y serenas.'],
@@ -55,6 +58,11 @@ const OPCIONES = {
 };
 const hayIlustraciones = D.grupos.some(g => g.misterios.some(m => m.ilustracion));
 const oraciones = () => cfg.lengua === 'la' ? D.latin : D.oraciones;
+// Texto de las oraciones (ver Decisiones.md, 7 de octubre): mientras no se elija, en castellano
+// se ve solo el nombre (casi todos las saben) y en latín, enteras.
+const textosEnteros = () => (cfg.textos === 'auto' ? (cfg.lengua === 'la' ? 'completas' : 'nombre') : cfg.textos) === 'completas';
+const valor = k => k === 'textos' ? (textosEnteros() ? 'completas' : 'nombre') : cfg[k];
+const SIEMPRE_ENTERAS = ['credo', 'salve'];
 let grupoInicio = DEL_DIA[new Date().getDay()];
 
 const grupo = id => D.grupos.find(g => g.id === id);
@@ -198,12 +206,13 @@ function vistaInicio() {
 // c0 (hilo antes de la medalla), p2 (cuenta junto a la medalla), L0-L53 (vuelta),
 // h0-h4 (hilo después de cada decena), med (medalla).
 function cuentaGrande(m) { return m === 0 ? 'p2' : 'L' + ((m - 1) * 11 + 10); }
+const NOTA_SALVE = 'Saludamos a María, nuestra Madre.';
 
 function construirPasos(ses) {
   const P = [];
   if (ses.modo === 'salve') {
-    P.push({ t: 'oracion', o: 'salve', parte: 0, pos: 'med', etq: 'Salve' });
-    P.push({ t: 'oracion', o: 'salve', parte: 1, pos: 'med', etq: 'Salve' });
+    P.push({ t: 'oracion', o: 'salve', parte: 0, pos: 'med', etq: 'Salve', nota: NOTA_SALVE });
+    P.push({ t: 'oracion', o: 'salve', parte: 1, pos: 'med', etq: 'Salve', nota: NOTA_SALVE });
     return P;
   }
   const entero = ses.modo === 'entero';
@@ -229,8 +238,8 @@ function construirPasos(ses) {
     if (cfg.vida) P.push({ t: 'vida', m, pos: hilo, ultimo: n === lista.length - 1, etq: '' });
   });
   if (entero) {
-    P.push({ t: 'oracion', o: 'salve', parte: 0, pos: 'med', etq: 'Salve' });
-    P.push({ t: 'oracion', o: 'salve', parte: 1, pos: 'med', etq: 'Salve' });
+    P.push({ t: 'oracion', o: 'salve', parte: 0, pos: 'med', etq: 'Salve', nota: NOTA_SALVE });
+    P.push({ t: 'oracion', o: 'salve', parte: 1, pos: 'med', etq: 'Salve', nota: NOTA_SALVE });
   }
   return P;
 }
@@ -268,7 +277,7 @@ function silencio() { voz.callar(); clearTimeout(espera); sonando = false; }
 
 function hablar() {
   silencio();
-  if (cfg.forma === 'solo' || pausa) return;
+  if (cfg.forma === 'solo' || pausa || (cfg.forma === 'guia' && cfg.mudo)) return;
   const p = S.pasos[S.ses.paso], todos = $('.todos');
   const marcas = cfg.forma === 'todo' && p.t === 'oracion' ? todos.querySelectorAll('span') : [];
   sonando = true;
@@ -287,13 +296,29 @@ function ponerPausa(v) {
   pausa = v;
   const b = $('[data-accion="pausa"]');
   if (b) { b.innerHTML = `<i class="ti ti-player-${v ? 'play' : 'pause'}"></i>`; b.setAttribute('aria-label', v ? 'Seguir con la voz' : 'Pausar la voz'); }
-  $('.etq').textContent = etiqueta(S.pasos[S.ses.paso]);
+  ponerEtiqueta(S.pasos[S.ses.paso]);
   if (v) silencio(); else hablar();
 }
 
+// El parlante del rezo (A dos voces): calla la voz o la vuelve a activar, y se recuerda.
+function pintarVoz(b) {
+  b.innerHTML = `<i class="ti ti-volume${cfg.mudo ? '-off' : ''}"></i>`;
+  b.setAttribute('aria-label', cfg.mudo ? 'Activar la voz' : 'Callar la voz');
+}
+
+// El anuncio ya tiene su botón "Empezar" y la pregunta para tu vida el suyo: ahí no va etiqueta.
 function etiqueta(p) {
-  if (cfg.forma === 'todo') return pausa ? 'En pausa' : (p.t === 'anuncio' ? '' : p.etq);
-  return p.etq + (p.t === 'oracion' ? ' · tocá para seguir' : '');
+  if (p.t !== 'oracion') return '';
+  if (cfg.forma === 'todo') return pausa ? 'En pausa' : p.etq;
+  return p.etq + ' · tocá para seguir';
+}
+// La etiqueta de abajo es también el botón "siguiente", para quien no puede tocar
+// cualquier parte de la pantalla (VoiceOver, teclado).
+function ponerEtiqueta(p) {
+  const e = $('.etq'), t = etiqueta(p);
+  e.textContent = t;
+  if (t) e.setAttribute('aria-label', t + '. Pasar a la siguiente');
+  else e.removeAttribute('aria-label');
 }
 
 // Si el celular cortó la voz al bloquearse o al cambiar de app, retoma el paso.
@@ -328,7 +353,8 @@ function montarRezo() {
       <div class="aqui"></div>
       <div class="pista">Tocá para seguir rezando desde acá</div>
     </div>
-    <div class="cuerpo" aria-live="polite">
+    <div class="cuerpo">
+      <p class="lector" role="status"></p>
       <div class="credito lift"></div>
       <div class="k kicker lift"></div>
       <h2 class="t1 titulo"></h2>
@@ -342,12 +368,15 @@ function montarRezo() {
       <div class="acciones"></div>
       <div class="pie">
         <button class="ic chico" data-accion="atras" aria-label="Volver a la oración anterior"><i class="ti ti-arrow-back-up"></i></button>
-        <span class="etq"></span>
-        ${cfg.forma === 'todo' ? '<button class="ic chico" data-accion="pausa" aria-label="Pausar la voz"><i class="ti ti-player-pause"></i></button>' : '<span class="ic chico fantasma"></span>'}
+        <button class="etq" data-accion="seguir"></button>
+        ${cfg.forma === 'todo' ? '<button class="ic chico" data-accion="pausa" aria-label="Pausar la voz"><i class="ti ti-player-pause"></i></button>'
+          : cfg.forma === 'guia' ? '<button class="ic chico" data-accion="voz"></button>' : '<span class="ic chico fantasma"></span>'}
       </div>
     </div>
   </section>`;
   dibujarMapa($('.ros'));
+  const bv = $('[data-accion="voz"]');
+  if (bv) pintarVoz(bv);
 }
 
 function ponerArte(mis) {
@@ -364,15 +393,18 @@ function ponerArte(mis) {
 function actualizar() {
   const { ses, pasos } = S, p = pasos[ses.paso], g = grupo(ses.grupo);
   const enMisterio = p.m != null;
-  const mis = g.misterios[enMisterio ? p.m : (ses.modo === 'salve' ? ses.misterio : (ses.modo === 'entero' ? 0 : ses.misterio))];
+  // La Salve cierra el Rosario: lleva la última pintura rezada, no la del comienzo.
+  const alFinal = p.o === 'salve';
+  const mis = g.misterios[enMisterio ? p.m : (ses.modo === 'entero' ? (alFinal ? 4 : 0) : ses.misterio)];
   const r = $('.rezo');
   r.classList.toggle('es-anuncio', p.t === 'anuncio');
   r.classList.toggle('es-vida', p.t === 'vida');
   r.classList.toggle('es-oracion', p.t === 'oracion');
   ponerArte(mis);
 
-  $('.kicker').textContent = enMisterio ? `${cap(ORDINAL[p.m])} misterio ${SINGULAR[g.id]}` : (ses.modo === 'salve' ? 'Para terminar' : 'Para empezar');
-  $('.titulo').textContent = enMisterio ? mis.titulo : (ses.modo === 'salve' ? 'Salve' : g.nombre);
+  const kicker = p.t === 'vida' ? 'Antes de seguir' : enMisterio ? `${cap(ORDINAL[p.m])} misterio ${SINGULAR[g.id]}` : (alFinal ? 'Para terminar' : 'Para empezar');
+  $('.kicker').textContent = kicker;
+  $('.titulo').textContent = enMisterio ? mis.titulo : (alFinal ? 'Salve' : g.nombre);
   $('.cita').textContent = enMisterio ? mis.cita : '';
   $('.mira').textContent = p.t === 'oracion' ? (enMisterio ? fraseMirar(mis, p) : (p.nota || '')) : '';
   $('.fruto').textContent = enMisterio ? mis.pedir : '';
@@ -382,6 +414,7 @@ function actualizar() {
   tira.style.display = p.tira ? '' : 'none';
   if (p.tira) dibujarTira(tira, p.tira.n, p.tira.i);
 
+  r.classList.toggle('sin-texto', p.t === 'oracion' && !textosEnteros() && !SIEMPRE_ENTERAS.includes(p.o));
   if (p.t === 'oracion') {
     // A dos voces se separa lo que reza cada uno. Solo o escuchando, la oración va entera.
     const t = textos(p), separar = cfg.forma === 'guia';
@@ -401,14 +434,17 @@ function actualizar() {
     acc.innerHTML = `<button class="btn principal" data-accion="seguir" style="justify-content:center">${siguiente}</button>` +
       (!p.ultimo ? '<button class="enlace" data-accion="terminar">Terminar acá</button>' : '');
   } else acc.innerHTML = '';
-  $('.kicker').textContent = p.t === 'vida' ? 'Antes de seguir' : $('.kicker').textContent;
-  $('.etq').textContent = etiqueta(p);
+  ponerEtiqueta(p);
+  // Para el lector de pantalla, un aviso corto por paso (no todo el texto de nuevo).
+  $('.lector').textContent = p.t === 'oracion' ? p.etq : `${kicker}. ${p.t === 'vida' ? mis.vida : mis.titulo}`;
 
   // Cinco círculos: uno por misterio del grupo
   const propios = pasos.filter(x => x.m === p.m);
   const avance = enMisterio ? (propios.indexOf(p) + 1) / propios.length : 0;
   app.querySelectorAll('.cinco i').forEach((c, i) => {
-    const hecho = ses.modo === 'entero' ? enMisterio && i < p.m : (ses.modo === 'uno' && rezados(g.id).includes(i) && i !== ses.misterio);
+    const hecho = ses.modo === 'entero' ? (enMisterio ? i < p.m : alFinal)
+      : ses.modo === 'salve' ? rezados(g.id).includes(i)
+      : (rezados(g.id).includes(i) && i !== ses.misterio);
     c.className = hecho ? 'hecho' : (enMisterio && i === p.m ? 'ahora' : '');
     if (enMisterio && i === p.m) c.style.setProperty('--p', avance);
   });
@@ -427,10 +463,8 @@ function avanzar(solo) {
 function atras() { if (S.ses.paso > 0) { S.ses.paso--; actualizar(); } }
 
 function terminar() {
-  const ses = S.ses;
   borrar('sesion');
-  if (ses.modo === 'salve') return vistaInicio();
-  vistaFin(ses);
+  vistaFin(S.ses);
 }
 
 /* ---------- Tira de cuentas (un tramo del Rosario) ---------- */
@@ -481,7 +515,7 @@ function actualizarMapa(p, mis, g) {
     e.classList.toggle('ahora', e.dataset.pos === p.pos);
   });
   $('.mapa-k').textContent = p.m != null ? `${cap(ORDINAL[p.m])} misterio ${SINGULAR[g.id]}` : g.nombre;
-  $('.mapa-t').textContent = p.m != null ? mis.titulo : (ses.modo === 'salve' ? 'Salve' : 'Las oraciones del comienzo');
+  $('.mapa-t').textContent = p.m != null ? mis.titulo : (p.o === 'salve' ? 'Salve' : 'Las oraciones del comienzo');
   // En la pausa final, la pregunta va abajo del mapa y un toque sigue de largo.
   const vida = p.t === 'vida', aqui = $('.aqui');
   aqui.classList.toggle('es-pregunta', vida);
@@ -492,33 +526,46 @@ function actualizarMapa(p, mis, g) {
 }
 
 /* ---------- Fin ---------- */
+// El cierre: primero el Amén y lo que se pidió, en quietud. Las opciones para seguir
+// aparecen unos segundos después (y mientras tanto no se pueden tocar sin querer).
 function vistaFin(ses) {
   silencio(); soltarPantalla();
-  const g = grupo(ses.grupo), uno = ses.modo === 'uno', mis = g.misterios[uno ? ses.misterio : 4];
+  const g = grupo(ses.grupo), uno = ses.modo === 'uno', salve = ses.modo === 'salve';
+  const mis = g.misterios[ses.modo === 'entero' ? 4 : ses.misterio];
   const quedan = 5 - rezados(g.id).length;
   const manana = new Date(Date.now() + 864e5).getDay();
   const hoy = g.id === DEL_DIA[new Date().getDay()], siguiente = g.misterios[proximo(g.id)];
-  let detalle, botones;
-  if (uno && quedan > 0) {
-    detalle = (quedan === 1 ? `Te queda un misterio ${hoy ? 'de hoy' : SINGULAR[g.id]}.` : `Te quedan ${NUMERO[quedan]} misterios ${hoy ? 'de hoy' : g.id}.`)
-      + ` Podés seguir ahora o ${quedan === 1 ? 'rezarlo' : 'rezarlos'} en otro momento del día.`;
-    botones = `<button class="btn principal" data-accion="mas"><span>Un misterio más<small>${esc(siguiente.titulo)}</small></span><span class="min">4 min</span></button>
-      <button class="btn alt" data-accion="salve" style="justify-content:center">Rezar la Salve</button>
-      <div style="text-align:center;margin-top:8px"><button class="enlace" data-accion="inicio">Volver al inicio</button></div>`;
+  const fruto = uno ? `<div class="pide"><span class="k">En este misterio pediste</span><span class="fruto">${esc(mis.pedir)}</span></div>` : '';
+  let rezaste, detalle = '', botones;
+  if (salve) {
+    rezaste = 'Terminaste con la Salve, como termina el Rosario.';
+    if (quedan === 0) detalle = `Hoy rezaste los cinco misterios ${g.id}: un Rosario entero.`;
+    botones = '<button class="btn principal centro" data-accion="inicio">Volver al inicio</button>';
+  } else if (uno) {
+    rezaste = `Rezaste el ${ORDINAL[ses.misterio]} misterio ${SINGULAR[g.id]}.`;
+    if (quedan > 0) {
+      botones = `<button class="btn alt" data-accion="mas"><span>Un misterio más<small>${esc(siguiente.titulo)}</small></span><span class="min">4 min</span></button>
+        <button class="btn alt centro" data-accion="salve">Rezar la Salve</button>
+        <button class="enlace" data-accion="inicio">Volver al inicio</button>`;
+    } else {
+      detalle = `Con este completaste los cinco misterios ${g.id}${hoy ? ' de hoy' : ''}: un Rosario entero.`;
+      botones = '<button class="btn principal centro" data-accion="salve">Rezar la Salve</button><button class="btn alt centro" data-accion="inicio">Volver al inicio</button>';
+    }
   } else {
-    detalle = uno ? `Con este completaste los cinco misterios ${g.id}${hoy ? ' de hoy' : ''}: un Rosario entero.` : `Mañana, ${DIAS[manana]}, tocan los misterios ${DEL_DIA[manana]}.`;
-    botones = uno ? '<button class="btn principal" data-accion="salve" style="justify-content:center">Rezar la Salve</button><button class="btn alt" data-accion="inicio" style="justify-content:center">Volver al inicio</button>'
-      : '<button class="btn principal" data-accion="inicio" style="justify-content:center">Volver al inicio</button>';
+    rezaste = `Rezaste el Rosario entero: los cinco misterios ${g.id}.`;
+    detalle = `Mañana, ${DIAS[manana]}, tocan los misterios ${DEL_DIA[manana]}.`;
+    botones = '<button class="btn principal centro" data-accion="inicio">Volver al inicio</button>';
   }
   app.innerHTML = `
   <section class="vista fija fin">
     ${heroHTML(mis)}
     <header class="barra"><button class="ic" data-accion="inicio" aria-label="Volver al inicio"><i class="ti ti-x"></i></button><span></span></header>
     <div class="cuerpo">
-      <div class="k lift">Amén</div>
-      <h1 class="t1">${uno ? `Rezaste el ${ORDINAL[ses.misterio]} misterio ${SINGULAR[g.id]}` : `Rezaste los ${g.nombre.toLowerCase()}`}</h1>
-      <p class="sub" style="margin-bottom:26px">${detalle}</p>
-      ${botones}
+      <h1 class="t1 amen">Amén</h1>
+      <p class="sub">${rezaste}</p>
+      ${fruto}
+      ${detalle ? `<p class="sub detalle">${detalle}</p>` : ''}
+      <div class="salidas">${botones}</div>
     </div>
   </section>`;
   S = { ses, pasos: [] };
@@ -533,7 +580,7 @@ const PRIMERA = [
   { t: '¿Por qué se repite tanto?',
     b: 'Las Avemarías marcan un ritmo, como la respiración. Cuando ya no tenés que pensar las palabras, la atención queda libre para la escena.' },
   { t: 'No hace falta saberse nada', formas: true,
-    b: 'La app reza con vos. Tocás la pantalla para pasar a la cuenta siguiente, y con el ícono del Rosario ves en qué parte estás. Elegí cómo querés rezar (lo podés cambiar cuando quieras en Ajustes).' },
+    b: 'La app reza con vos y te muestra cada oración entera. Tocás la pantalla para pasar a la cuenta siguiente, y con el ícono del Rosario ves en qué parte estás. Elegí cómo querés rezar (lo podés cambiar cuando quieras en Ajustes).' },
 ];
 function vistaPrimera(i) {
   const c = PRIMERA[i], ultimo = i === PRIMERA.length - 1;
@@ -547,7 +594,7 @@ function vistaPrimera(i) {
       ${c.tira ? '<svg class="tira" viewBox="0 0 264 26" aria-hidden="true"></svg>' : ''}
       <p>${esc(c.b)}</p>
       ${c.formas ? selector('forma') : ''}
-      <button class="btn principal" data-accion="${ultimo ? 'uno' : 'pv'}" data-v="${i + 1}" style="justify-content:center">${ultimo ? 'Rezar un misterio' : 'Siguiente'}</button>
+      <button class="btn principal" data-accion="${ultimo ? 'primerRezo' : 'pv'}" data-v="${i + 1}" style="justify-content:center">${ultimo ? 'Rezar un misterio' : 'Siguiente'}</button>
     </div>
   </section>`;
   if (c.tira) dibujarTira($('.pv .tira'), 10, 4);
@@ -577,24 +624,40 @@ function vistaAcerca() {
 }
 
 /* ---------- Hojas ---------- */
-function hoja(html) {
+// Las hojas son diálogos: llevan el foco adentro, se cierran con "Listo", con Esc o tocando
+// afuera, y mientras están abiertas lo de atrás queda inactivo.
+let abridor = null;
+function hoja(titulo, html) {
   cerrarHoja();
+  abridor = document.activeElement;
   const v = document.createElement('div');
   v.className = 'velo'; v.dataset.accion = 'cerrar';
-  v.innerHTML = `<div class="hoja" data-accion="nada">${html}</div>`;
+  v.innerHTML = `<div class="hoja" data-accion="nada" role="dialog" aria-modal="true" aria-labelledby="hoja-t" tabindex="-1">
+    <div class="hoja-cab"><h2 id="hoja-t">${titulo}</h2><button class="listo" data-accion="cerrar">Listo</button></div>${html}</div>`;
   document.body.appendChild(v);
+  app.inert = true;
+  v.querySelector('.hoja').focus({ preventScroll: true });
 }
-function cerrarHoja() { const v = $('.velo'); if (v) v.remove(); }
+function cerrarHoja() {
+  const v = $('.velo');
+  if (!v) return;
+  v.remove();
+  app.inert = false;
+  const volver = abridor && abridor.isConnected ? abridor : $('[data-accion="ajustes"]');
+  if (volver) volver.focus({ preventScroll: true });
+  abridor = null;
+}
 
 function hojaGrupos() {
   const hoy = DEL_DIA[new Date().getDay()];
-  hoja('<h3>Elegí qué misterios rezar</h3>' + D.grupos.map(g =>
+  hoja('Elegí qué misterios rezar', D.grupos.map(g =>
     `<button class="fila${g.id === grupoInicio ? ' sel' : ''}" data-accion="grupo" data-v="${g.id}"><span><b>${g.nombre}</b><small>${g.dias}</small></span>${g.id === hoy ? '<span class="etiqueta">Hoy</span>' : ''}</button>`).join(''));
 }
 function descripcion(k) {
-  const item = OPCIONES[k].items.find(x => x[0] === cfg[k]) || OPCIONES[k].items[0];
+  const item = OPCIONES[k].items.find(x => x[0] === valor(k)) || OPCIONES[k].items[0];
   if (k === 'voz') {
     if (cfg.forma === 'solo') return 'Rezando solo no hay voz. Se usa en "A dos voces" y en "Escuchar".';
+    if (cfg.forma === 'guia' && cfg.mudo) return 'Ahora la voz está callada. Se vuelve a activar con el parlante, abajo a la derecha, mientras rezás.';
     if (cfg.lengua === 'la' && !voz.latinItaliano()) return 'Tu celular no trae una voz para el latín, así que por ahora lo reza con acento castellano.';
     if (!voz.tiene(cfg.lengua)) return `Tu celular no trae una voz ${cfg.voz} ${cfg.lengua === 'la' ? 'para el latín' : 'en castellano'}, así que por ahora suena la que haya.`;
     return 'Por ahora es la voz del celular. Más adelante va a ser una voz grabada.';
@@ -610,17 +673,17 @@ function selector(k) {
     const nat = grupo('gozosos').misterios[2];
     const fondo = { pinturas: `background-image:url('${nat.imagen}');background-position:${nat.foco}`,
       ilustraciones: nat.ilustracion ? `background-image:url('${nat.ilustracion}')` : '', ninguna: luz('gozosos') };
-    return `<div class="muestras">${OPCIONES.imagenes.items.map(([v, t]) =>
-      `<button class="muestra${cfg.imagenes === v ? ' sel' : ''}" data-accion="opcion" data-k="imagenes" data-v="${v}"${disponible(v) ? '' : ' disabled'}><span style="${fondo[v]}"></span>${t}</button>`).join('')}</div>${desc}`;
+    return `<div class="muestras" role="radiogroup" aria-label="${OPCIONES.imagenes.titulo}">${OPCIONES.imagenes.items.map(([v, t]) =>
+      `<button class="muestra${cfg.imagenes === v ? ' sel' : ''}" role="radio" aria-checked="${cfg.imagenes === v}" data-accion="opcion" data-k="imagenes" data-v="${v}"${disponible(v) ? '' : ' disabled'}><span style="${fondo[v]}"></span>${t}</button>`).join('')}</div>${desc}`;
   }
-  return `<div class="segmentos">${OPCIONES[k].items.map(([v, t]) =>
-    `<button class="${cfg[k] === v ? 'sel' : ''}" data-accion="opcion" data-k="${k}" data-v="${v}"${disponible(v) ? '' : ' disabled'}>${t}</button>`).join('')}</div>${desc}`;
+  return `<div class="segmentos" role="radiogroup" aria-label="${OPCIONES[k].titulo}">${OPCIONES[k].items.map(([v, t]) =>
+    `<button class="${valor(k) === v ? 'sel' : ''}" role="radio" aria-checked="${valor(k) === v}" data-accion="opcion" data-k="${k}" data-v="${v}"${disponible(v) ? '' : ' disabled'}>${t}</button>`).join('')}</div>${desc}`;
 }
 function hojaAjustes() {
   const bloque = k => `<div class="ajuste"><b>${OPCIONES[k].titulo}</b>${selector(k)}</div>`;
   const sw = (k, t, d) => `<button class="fila" data-accion="alternar" data-v="${k}" role="switch" aria-checked="${cfg[k]}"><span><b>${t}</b><small>${d}</small></span><span class="interruptor${cfg[k] ? ' on' : ''}"></span></button>`;
-  hoja(`<h3>Ajustes</h3>
-    ${['forma', 'voz', 'lengua', 'imagenes', 'modo'].map(bloque).join('')}
+  hoja('Ajustes', `
+    ${['forma', 'voz', 'lengua', 'textos', 'imagenes', 'modo'].map(bloque).join('')}
     ${sw('ohJesus', 'Oh Jesús mío', 'Después de cada Gloria')}
     ${sw('vida', 'Pregunta para tu vida', 'Al terminar cada misterio')}`);
 }
@@ -642,23 +705,36 @@ const acciones = {
   atras: () => atras(),
   salir: () => vistaInicio(),
   inicio: () => vistaInicio(),
-  mapa: () => { const r = $('.rezo'); const m = r.classList.toggle('con-mapa'); $('.mapa').setAttribute('aria-hidden', !m); },
+  mapa: () => { const r = $('.rezo'); const m = r.classList.toggle('con-mapa'); $('.mapa').setAttribute('aria-hidden', !m); $('.cuerpo').inert = m; },
   primera: () => vistaPrimera(0),
   pv: b => vistaPrimera(+b.dataset.v),
+  // Quien entra por "Es mi primera vez" reza con las oraciones enteras a la vista.
+  primerRezo: () => { cfg.textos = 'completas'; guardar('ajustes', cfg); acciones.uno(); },
   acerca: () => vistaAcerca(),
   grupos: () => hojaGrupos(),
   grupo: b => { grupoInicio = b.dataset.v; cerrarHoja(); vistaInicio(); },
   ajustes: () => hojaAjustes(),
   opcion: b => {
-    const k = b.dataset.k; cfg[k] = b.dataset.v; guardar('ajustes', cfg);
-    document.querySelectorAll(`[data-accion="opcion"][data-k="${k}"]`).forEach(x => x.classList.toggle('sel', x.dataset.v === cfg[k]));
+    const k = b.dataset.k; cfg[k] = b.dataset.v;
+    // Elegir una forma con voz es querer escucharla: se destraba el parlante.
+    if (k === 'forma' && cfg.forma !== 'solo') cfg.mudo = false;
+    guardar('ajustes', cfg);
+    // Cambiar la lengua puede cambiar el texto que se ve (en latín, enteras): se repintan los dos.
+    document.querySelectorAll(`[data-accion="opcion"][data-k="${k}"], [data-accion="opcion"][data-k="textos"]`).forEach(x => {
+      const sel = x.dataset.v === valor(x.dataset.k);
+      x.classList.toggle('sel', sel); x.setAttribute('aria-checked', sel);
+    });
     document.querySelectorAll('.opcion-desc').forEach(x => { x.textContent = descripcion(x.dataset.k); });
     if (k === 'modo') aplicarTema();
     if (k === 'imagenes' && $('.inicio')) vistaInicio();
     if (k === 'forma' || k === 'voz' || k === 'lengua') muestra();
   },
   pausa: () => ponerPausa(!pausa),
-  alternar: b => { cfg[b.dataset.v] = !cfg[b.dataset.v]; guardar('ajustes', cfg); hojaAjustes(); },
+  voz: b => { cfg.mudo = !cfg.mudo; guardar('ajustes', cfg); pintarVoz(b); if (cfg.mudo) silencio(); else hablar(); },
+  alternar: b => {
+    const k = b.dataset.v; cfg[k] = !cfg[k]; guardar('ajustes', cfg);
+    b.setAttribute('aria-checked', cfg[k]); b.querySelector('.interruptor').classList.toggle('on', cfg[k]);
+  },
   cerrar: () => cerrarHoja(),
   nada: () => {},
 };
@@ -673,7 +749,10 @@ document.addEventListener('click', e => {
   }
 });
 document.addEventListener('keydown', e => {
-  if (!S || !S.pasos.length || !$('.rezo')) return;
+  if (e.key === 'Escape' && $('.velo')) return cerrarHoja();
+  if (!S || !S.pasos.length || !$('.rezo') || $('.velo')) return;
+  // Con un botón enfocado, la barra espaciadora lo aprieta a él (no pasa la cuenta dos veces).
+  if (e.key === ' ' && e.target.closest('button')) return;
   if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); if (S.pasos[S.ses.paso].t !== 'vida' || $('.con-mapa')) avanzar(); }
   if (e.key === 'ArrowLeft') atras();
 });

@@ -1,36 +1,43 @@
 /* Dirección visual Vigilia: modo noche y modo día (ver Decisiones.md, 6 de octubre) */
 
-.noche{--bg:#0d1120;--rgb:13,17,32;--ink:#ece4d4;--soft:#d8cfbd;--muted:#a9a294;--accent:#e8b86b;--on:#1a1408;--mark:#e8b86b;--bead:rgba(236,228,212,.22);--line:rgba(236,228,212,.28);--glow:rgba(13,17,32,.6);--hoja:#161b2f}
-.dia{--bg:#f6f6f4;--rgb:246,246,244;--ink:#1b1d26;--soft:#34363f;--muted:#5a5c66;--accent:#e8b86b;--on:#1a1408;--mark:#a8741f;--bead:rgba(27,29,38,.16);--line:rgba(27,29,38,.22);--glow:rgba(246,246,244,.75);--hoja:#ffffff}
+.noche{--bg:#0d1120;--rgb:13,17,32;--ink:#ece4d4;--soft:#d8cfbd;--muted:#a9a294;--accent:#e8b86b;--on:#1a1408;--mark:#e8b86b;--oro-texto:#e8b86b;--bead:rgba(236,228,212,.22);--line:rgba(236,228,212,.28);--glow:rgba(13,17,32,.6);--hoja:#161b2f}
+.dia{--bg:#f6f6f4;--rgb:246,246,244;--ink:#1b1d26;--soft:#34363f;--muted:#5a5c66;--accent:#e8b86b;--on:#1a1408;--mark:#a8741f;--oro-texto:#8f6218;--bead:rgba(27,29,38,.16);--line:rgba(27,29,38,.22);--glow:rgba(246,246,244,.75);--hoja:#ffffff}
 
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--seguro:env(safe-area-inset-top,0px)}
 html,body{background:var(--bg);color:var(--ink)}
 body{font-family:Manrope,system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;transition:background .4s}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:inherit}
+:focus-visible{outline:2px solid var(--mark);outline-offset:3px}
+.lector{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 #app{position:relative;max-width:520px;margin:0 auto;min-height:100dvh}
 
 .vista{position:relative;min-height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 .vista.fija{height:100dvh}
+.vista.fija .cuerpo{min-height:0;overflow-y:auto;overscroll-behavior:contain}
 .t1{font-family:"Cormorant Garamond",serif;font-weight:500;letter-spacing:-.005em}
 .k{font-size:12px;color:var(--muted)}
 
 /* Pintura de fondo */
 .hero{position:absolute;inset:0 0 34% 0;overflow:hidden}
+/* En el rezo la pintura baja más: el texto la tapa desde arriba según lo que haya que leer,
+   y con "solo el nombre" queda casi toda a la vista. El borde de abajo queda siempre debajo
+   del texto (150 px es menos que el pie más corto), para que no se vea la costura. */
+.rezo .hero{bottom:150px}
 /* La imagen arranca debajo de la isla del iPhone y de los botones de arriba, con el borde
    fundido en el fondo, y el acercamiento crece hacia abajo para no esconder las caras. */
 .arte{position:absolute;left:0;right:0;top:calc(var(--seguro) + 24px + var(--extra,0px));height:100%;background-size:cover;background-repeat:no-repeat;transform:scale(var(--z,1));transform-origin:50% 0;opacity:0;transition:opacity 1s ease;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 72px);mask-image:linear-gradient(180deg,transparent 0,#000 72px)}
 .arte.on{opacity:1}
-.fundido{position:absolute;inset:-1px 0;background:linear-gradient(180deg,rgba(var(--rgb),.15) 0%,rgba(var(--rgb),0) 26%,rgba(var(--rgb),.72) 64%,rgba(var(--rgb),.96) 86%,var(--bg) 100%)}
+.fundido{position:absolute;inset:-1px 0;background:linear-gradient(180deg,rgba(var(--rgb),.15) 0%,rgba(var(--rgb),0) 26%,rgba(var(--rgb),.72) 64%,rgba(var(--rgb),.96) 84%,var(--bg) 97%)}
 /* De día, fundir hacia el blanco desde tan arriba lava la imagen: se funde recién al final. */
-.dia .fundido{background:linear-gradient(180deg,rgba(var(--rgb),0) 0%,rgba(var(--rgb),0) 52%,rgba(var(--rgb),.5) 76%,rgba(var(--rgb),.88) 91%,var(--bg) 100%)}
+.dia .fundido{background:linear-gradient(180deg,rgba(var(--rgb),0) 0%,rgba(var(--rgb),0) 52%,rgba(var(--rgb),.5) 76%,rgba(var(--rgb),.88) 89%,var(--bg) 97%)}
 @media (prefers-reduced-motion:no-preference){.arte{animation:acercar 45s ease-in-out infinite alternate}}
 @keyframes acercar{from{transform:scale(calc(var(--z,1)*1.02))}to{transform:scale(calc(var(--z,1)*1.13))}}
 
 .barra{position:relative;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:calc(var(--seguro) + 14px) 18px 0}
 .ic{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:var(--ink);background:rgba(var(--rgb),.38);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-size:20px}
 .ic svg{width:22px;height:22px}
-.ic.chico{width:34px;height:34px;font-size:17px;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;color:var(--muted)}
+.ic.chico{width:44px;height:44px;font-size:17px;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;color:var(--muted)}
 .fantasma{visibility:hidden}
 
 .cuerpo{position:relative;z-index:2;margin-top:auto;padding:28px 26px calc(env(safe-area-inset-bottom) + 22px);background:linear-gradient(180deg,rgba(var(--rgb),0) 0,var(--bg) 28px)}
@@ -45,7 +52,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;border-radius:999px;padding:15px 22px;font-size:15px;transition:transform .2s cubic-bezier(.16,1,.3,1)}
 .btn:active{transform:scale(.98)}
 .btn.principal{background:var(--accent);color:var(--on);font-weight:600}
-.btn.principal small{display:block;font-weight:500;font-size:12px;opacity:.75;margin-top:1px}
+.btn small{display:block;font-weight:500;font-size:12px;opacity:.75;margin-top:1px}
+.btn.centro{justify-content:center}
 .btn.alt{border:1px solid var(--line);margin-top:10px}
 .btn .min{font-size:13px;font-weight:500;flex-shrink:0}
 .btn.alt .min{color:var(--muted)}
@@ -53,7 +61,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .mini{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:500;background:rgba(var(--rgb),.5);border:1px solid var(--line);border-radius:18px;padding:10px 4px 9px;white-space:nowrap}
 .mini i{font-size:18px;color:var(--mark)}
 .retomar{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px;padding:11px 16px;border-radius:16px;border:1px dashed var(--line);font-size:13px;color:var(--soft)}
-.retomar b{color:var(--mark);font-weight:600;flex-shrink:0}
+.retomar b{color:var(--oro-texto);font-weight:600;flex-shrink:0}
 
 /* Rezo */
 .cinco{display:flex;gap:7px;padding:10px 13px;border-radius:999px;background:rgba(var(--rgb),.38);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
@@ -73,10 +81,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .todos{font-size:18px;line-height:1.4;font-weight:500}
 .todos.largo{font-size:15px;line-height:1.45}
 .todos span{transition:opacity .4s}
+/* Texto de las oraciones: solo el nombre (abajo, en la etiqueta). Ver Decisiones.md, 7 de octubre. */
+.sin-texto .guia,.sin-texto .todos{display:none}
 .todos.sonando span{opacity:.38}
 .todos.sonando span.ahora{opacity:1}
 .pie{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
-.etq{font-size:12px;color:var(--muted);text-align:center}
+.etq{flex:1;min-height:44px;font-size:12px;color:var(--muted);text-align:center}
+.etq:empty{visibility:hidden}
 
 .pide,.credito,.vida-q,.acciones{display:none}
 .es-anuncio .titulo{font-size:40px;line-height:1;margin-bottom:8px}
@@ -91,7 +102,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .dia .es-vida .fundido{background:linear-gradient(180deg,rgba(var(--rgb),.3) 0%,rgba(var(--rgb),.5) 50%,var(--bg) 100%)}
 .es-vida .titulo,.es-vida .cita,.es-vida .mira,.es-vida .tira,.es-vida .guia,.es-vida .todos{display:none}
 .es-vida .vida-q{display:block;font-family:"Cormorant Garamond",serif;font-size:29px;line-height:1.15;margin:10px 0 30px}
-.enlace{font-size:13px;color:var(--muted);padding:6px}
+.enlace{font-size:13px;color:var(--muted);min-height:44px;padding:6px 12px}
 
 /* Mapa */
 .mapa{position:absolute;inset:0;z-index:4;background:var(--bg);display:flex;flex-direction:column;padding:calc(var(--seguro) + 76px) 26px calc(env(safe-area-inset-bottom) + 24px);opacity:0;pointer-events:none;transition:opacity .35s}
@@ -112,7 +123,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .ros .cadena.ahora{stroke:var(--mark);stroke-width:5.5;transform:none}
 
 /* Fin, Primera vez y Acerca */
-.fin h1{font-size:38px;line-height:1.05;margin:6px 0 10px}
+.fin .amen{font-size:58px;line-height:1;margin:0 0 12px}
+.fin .pide{display:block;margin:18px 0 0}
+.fin .detalle{margin-top:14px}
+/* Las opciones para seguir aparecen después del Amén, para no cortar la quietud del final. */
+.salidas{display:flex;flex-direction:column;gap:10px;margin-top:28px;animation:demorar .9s cubic-bezier(.16,1,.3,1) 2.2s both}
+.salidas .btn{margin-top:0}
+.salidas .enlace{align-self:center}
+@keyframes demorar{from{opacity:0;visibility:hidden;transform:translateY(6px)}to{opacity:1;visibility:visible;transform:none}}
 .puntos{display:flex;gap:6px;margin-bottom:16px}
 .puntos i{width:22px;height:4px;border-radius:2px;background:var(--line)}
 .puntos i.on{background:var(--mark)}
@@ -130,10 +148,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 /* Hojas (ajustes y elegir misterios) */
 .velo{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;animation:aparecer .25s}
 .hoja{width:100%;max-width:520px;max-height:90dvh;overflow-y:auto;overscroll-behavior:contain;background:var(--hoja);border-radius:24px 24px 0 0;padding:22px 22px calc(env(safe-area-inset-bottom) + 24px);animation:subir .3s cubic-bezier(.16,1,.3,1)}
-.hoja h3{font-size:17px;font-weight:600;margin-bottom:14px}
+.hoja:focus{outline:none}
+.hoja-cab{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:-8px 0 6px}
+.hoja-cab h2{font-size:17px;font-weight:600}
+.listo{min-height:44px;padding:0 4px 0 12px;font-size:15px;font-weight:600;color:var(--oro-texto)}
 .fila{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--line);width:100%}
 .fila small{display:block;font-size:12px;color:var(--muted)}
-.fila.sel b{color:var(--mark)}
+.fila.sel b{color:var(--oro-texto)}
 .etiqueta{font-size:11px;font-weight:600;color:var(--on);background:var(--accent);border-radius:999px;padding:3px 9px}
 .segmentos{display:flex;background:rgba(127,127,127,.12);border-radius:12px;padding:3px;margin-top:8px}
 .segmentos button{flex:1;text-align:center;padding:8px 4px;border-radius:9px;font-size:13px}
@@ -149,7 +170,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .muestra.sel span{border-color:var(--mark)}
 .muestra:disabled{opacity:.35;cursor:default}
 .ajuste{padding:14px 0;border-top:1px solid var(--line)}
-.hoja h3 + .ajuste{border-top:0;padding-top:0}
+.hoja-cab + .ajuste{border-top:0;padding-top:0}
 .ajuste > b{font-size:14px}
 .interruptor{width:46px;height:28px;border-radius:14px;background:var(--line);position:relative;flex-shrink:0;transition:background .2s}
 .interruptor::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s}
