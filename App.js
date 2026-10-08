@@ -219,6 +219,19 @@ function luz(gid) {
   const c = LUZ[gid];
   return `background-image:radial-gradient(ellipse 70% 60% at 50% -4%,rgba(255,244,222,.42),transparent 72%),radial-gradient(ellipse 160% 120% at 50% -14%,rgba(${c},.75),rgba(${c},.32) 45%,rgba(${c},.08) 72%,transparent 90%)`;
 }
+// La imagen que corresponde a cada misterio según el estilo elegido (sin imágenes: ninguna).
+function urlArte(mis) {
+  if (cfg.imagenes === 'ninguna') return null;
+  return cfg.imagenes === 'ilustraciones' && mis.ilustracion ? mis.ilustracion : mis.imagen;
+}
+// La imagen del misterio siguiente se baja de antemano, para que el fundido no empiece antes de que llegue.
+const precargadas = new Set();
+function precargar(mis) {
+  const u = mis && urlArte(mis);
+  if (!u || precargadas.has(u)) return;
+  precargadas.add(u);
+  new Image().src = u;
+}
 function estiloArte(mis) {
   if (cfg.imagenes === 'ninguna') return luz(grupoDe(mis)) + ';--z:1;top:0;-webkit-mask-image:none;mask-image:none';
   if (cfg.imagenes === 'ilustraciones' && mis.ilustracion) return `background-image:url('${mis.ilustracion}');background-position:50% 30%;--z:1;--extra:${mis.bajarIlustracion || 0}px`;
@@ -264,7 +277,7 @@ function vistaInicio() {
     <header class="barra"><span></span><button class="ic" data-accion="ajustes" aria-label="Ajustes">${icono('adjustments-horizontal')}</button></header>
     <div class="cuerpo">
       <div class="k lift">${cap(DIAS[hoy.getDay()])} ${hoy.getDate()} de ${MESES[hoy.getMonth()]}</div>
-      <button class="grupo-sel" data-accion="grupos" aria-label="Elegir otros misterios"><h1 class="t1">${g.nombre}${icono('chevron-down')}</h1></button>
+      <h1 class="t1 grupo-t"><button class="grupo-sel" data-accion="grupos">${g.nombre}${icono('chevron-down')}<span class="lector">. Elegir otros misterios</span></button></h1>
       <p class="sub lift">${esc(g.subtitulo)}</p>
       ${opciones}
     </div>
@@ -358,7 +371,14 @@ function hablar() {
       sonando = false; todos.classList.remove('sonando');
       if (cfg.forma === 'todo' && p.t !== 'vida') espera = setTimeout(() => avanzar(true), p.t === 'anuncio' ? 1500 : 700);
     },
-    falla: () => { sonando = false; todos.classList.remove('sonando'); if (cfg.forma === 'todo') ponerPausa(true); },
+    falla: () => {
+      sonando = false; todos.classList.remove('sonando');
+      if (cfg.forma !== 'todo') return;
+      // Escuchando, la app queda en pausa y dice por qué (antes se detenía sin avisar).
+      ponerPausa(true);
+      const aviso = 'Se cortó la voz del celular. Para que siga, tocá el botón de abajo a la derecha, o tocá la pantalla para seguir sin voz.';
+      $('.pista-rezo').textContent = aviso; $('.lector').textContent = aviso;
+    },
   }, lengua);
 }
 
@@ -474,6 +494,8 @@ function ponerArte(mis) {
   const otra = visible === capas[0] ? capas[1] : capas[0];
   otra.setAttribute('style', estilo);
   otra.dataset.estilo = estilo;
+  // El acercamiento hace una sola pasada: arranca de nuevo con cada imagen que entra.
+  otra.style.animation = 'none'; void otra.offsetWidth; otra.style.animation = '';
   otra.classList.add('on');
   if (visible) visible.classList.remove('on');
 }
@@ -489,6 +511,7 @@ function actualizar() {
   r.classList.toggle('es-vida', p.t === 'vida');
   r.classList.toggle('es-oracion', p.t === 'oracion');
   ponerArte(mis);
+  precargar(g.misterios[(enMisterio ? p.m : ses.modo === 'entero' ? 0 : ses.misterio) + 1]);
 
   const kicker = p.t === 'vida' ? 'Antes de seguir' : enMisterio ? `${cap(ORDINAL[p.m])} misterio ${SINGULAR[g.id]}` : (alFinal ? 'Para terminar' : 'Para empezar');
   $('.kicker').textContent = kicker;
@@ -516,11 +539,11 @@ function actualizar() {
     todos.classList.toggle('largo', entera.length > 230);
   }
   const acc = $('.acciones');
-  if (p.t === 'anuncio') acc.innerHTML = '<button class="btn principal" data-accion="seguir" style="justify-content:center">Empezar</button>';
+  if (p.t === 'anuncio') acc.innerHTML = '<button class="btn principal centro" data-accion="seguir">Empezar</button>';
   else if (p.t === 'vida') {
     $('.vida-q').textContent = mis.vida;
     const siguiente = !p.ultimo ? 'Siguiente misterio' : (ses.modo === 'entero' ? 'Rezar la Salve' : 'Terminar');
-    acc.innerHTML = `<button class="btn principal" data-accion="seguir" style="justify-content:center">${siguiente}</button>` +
+    acc.innerHTML = `<button class="btn principal centro" data-accion="seguir">${siguiente}</button>` +
       (!p.ultimo ? '<button class="enlace" data-accion="terminar">Terminar acá</button>' : '');
   } else acc.innerHTML = '';
   ponerEtiqueta(p);
@@ -587,11 +610,16 @@ function dibujarMapa(svg) {
   let h = `<circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="var(--line)" stroke-width=".8"/>`;
   h += `<line x1="100" y1="${CY + R}" x2="100" y2="252" stroke="var(--line)" stroke-width=".8"/>`;
   // hilos (Gloria y Oh Jesús mío)
+  // El tramo de cadena es corto y las cuentas lo tapan: al rezar ahí se enciende una marca
+  // del lado de afuera, para que se vea dónde estás.
   for (let m = 0; m < 5; m++) {
     const [x1, y1] = puntoVuelta(m * 11 + 9), [x2, y2] = m < 4 ? puntoVuelta(m * 11 + 10) : [100, 162];
+    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, d = Math.hypot(mx - CX, my - CY);
     h += `<line class="cadena" data-pos="h${m}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+    h += `<circle class="gloria" data-pos="h${m}" cx="${mx + (mx - CX) / d * 9}" cy="${my + (my - CY) / d * 9}" r="2.4"/>`;
   }
   h += `<line class="cadena" data-pos="c0" x1="100" y1="194" x2="100" y2="202"/>`;
+  h += `<circle class="gloria" data-pos="c0" cx="109" cy="198" r="2.4"/>`;
   for (let i = 0; i < 54; i++) {
     const [x, y] = puntoVuelta(i), grande = i % 11 === 10;
     h += `<circle class="cuenta" data-pos="L${i}" cx="${x}" cy="${y}" r="${grande ? 4.6 : 2.8}"/>`;
@@ -692,7 +720,7 @@ function vistaPrimera(i) {
       ${c.tira ? '<svg class="tira" viewBox="0 0 264 26" aria-hidden="true"></svg>' : ''}
       <p>${esc(c.b)}</p>
       ${c.formas ? selector('forma') : ''}
-      <button class="btn principal" data-accion="${ultimo ? 'primerRezo' : 'pv'}" data-v="${i + 1}" style="justify-content:center">${ultimo ? 'Rezar un misterio' : 'Siguiente'}</button>
+      <button class="btn principal centro" data-accion="${ultimo ? 'primerRezo' : 'pv'}" data-v="${i + 1}">${ultimo ? 'Rezar un misterio' : 'Siguiente'}</button>
     </div>
   </section>`;
   if (c.tira) dibujarTira($('.pv .tira'), 10, 4);
@@ -714,7 +742,7 @@ function vistaAcerca() {
     <header class="barra"><button class="ic" data-accion="inicio" aria-label="Volver al inicio">${icono('arrow-left')}</button><span></span></header>
     <div class="cuerpo">
       <h1 class="t1">Acerca del Rosario</h1>
-      <p class="sub" style="margin-bottom:14px">Para conocerlo a fondo, de a un capítulo.</p>
+      <p class="sub">Para conocerlo a fondo, de a un capítulo.</p>
       ${CAPITULOS.map(([t, d]) => `<div class="capitulo"><div><b>${t}</b><span>${d}</span></div><em>En preparación</em></div>`).join('')}
     </div>
   </section>`;
