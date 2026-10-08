@@ -48,7 +48,7 @@ const pad = n => String(n).padStart(2, '0');
 function hoyISO() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
 
 // mudo: la voz callada con el parlante del rezo (A dos voces). Se recuerda para la próxima vez.
-const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia', voz: 'Isabela', lengua: 'es', imagenes: 'ilustraciones', mudo: false, textos: 'auto', letra: 'normal' }, leer('ajustes', {}));
+const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia', voz: 'Amanda', lengua: 'es', imagenes: 'ilustraciones', mudo: false, textos: 'auto', letra: 'normal' }, leer('ajustes', {}));
 
 // Formas de rezar (ver Decisiones.md, 6 de octubre)
 const FORMAS = [
@@ -58,16 +58,17 @@ const FORMAS = [
 ];
 // Las voces grabadas que eligió José (ver Decisiones.md, 8 de octubre): [nombre, descripción, género].
 const VOCES = [
+  ['Amanda', 'Joven y cercana.', 'femenina'],
+  ['Agustina', 'Porteña, calma y segura, de ritmo ágil.', 'femenina'],
   ['Isabela', 'Cálida y serena.', 'femenina'],
   ['Nieve', 'Con la calma de una abuela.', 'femenina'],
-  ['Amanda', 'Joven y cercana.', 'femenina'],
   ['Juan', 'Grave y envolvente.', 'masculina'],
   ['Edoardo', 'Grave y firme, de ritmo más ágil.', 'masculina'],
   ['Pablo', 'Cordobés, de voz grave.', 'masculina'],
   ['Octavio', 'Natural y serena.', 'masculina'],
 ];
 // Antes se elegía "femenina" o "masculina"; ahora, una voz por su nombre. Fran se reemplazó por Edoardo.
-if (!VOCES.some(v => v[0] === cfg.voz)) cfg.voz = { masculina: 'Juan', Fran: 'Edoardo' }[cfg.voz] || 'Isabela';
+if (!VOCES.some(v => v[0] === cfg.voz)) cfg.voz = { masculina: 'Juan', femenina: 'Isabela', Fran: 'Edoardo' }[cfg.voz] || 'Amanda';
 // El género de la voz elegida, para la voz del celular cuando falta un audio.
 const generoVoz = () => (VOCES.find(v => v[0] === cfg.voz) || VOCES[0])[2];
 // Opciones de Ajustes: [valor, etiqueta, descripción]
