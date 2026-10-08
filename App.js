@@ -48,7 +48,7 @@ const pad = n => String(n).padStart(2, '0');
 function hoyISO() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
 
 // mudo: la voz callada con el parlante del rezo (A dos voces). Se recuerda para la próxima vez.
-const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia', voz: 'Amanda', vozLatin: 'Marco', lengua: 'es', imagenes: 'ilustraciones', mudo: false, textos: 'auto', letra: 'normal' }, leer('ajustes', {}));
+const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia', voz: 'Amanda', vozLatin: 'Marco', lengua: 'es', musica: 'ninguna', imagenes: 'ilustraciones', mudo: false, textos: 'auto', letra: 'normal' }, leer('ajustes', {}));
 
 // Formas de rezar (ver Decisiones.md, 6 de octubre)
 const FORMAS = [
@@ -88,6 +88,12 @@ const OPCIONES = {
   lengua: { titulo: 'Oraciones en', items: [
     ['es', 'Castellano', 'Las oraciones como se rezan en la Argentina.'],
     ['la', 'Latín', 'Las oraciones en latín, como rezaron los Santos durante siglos. Anuncios, escenas y preguntas siguen en castellano.']] },
+  // Ver Decisiones.md, 8 de octubre. Las genera Generar música.py (el archivo, sin tildes, en Audio/Fondo/).
+  musica: { titulo: 'Música de fondo', items: [
+    ['ninguna', 'Sin música', 'Solo la voz, o el silencio si rezás solo.'],
+    ['Organo', 'Órgano', 'Un órgano suave y grave, como en una iglesia de piedra al atardecer.'],
+    ['Cuerdas', 'Cuerdas', 'Cuerdas cálidas y algún piano lejano, como en una capilla de noche.'],
+    ['Luz', 'Luz', 'Un fondo claro y aireado, con campanas lejanas.']] },
   textos: { titulo: 'Texto de las oraciones', items: [
     ['nombre', 'Solo el nombre', 'Solo el nombre de cada oración, para dejarle lugar a la pintura. El Credo y la Salve se ven siempre enteros.'],
     ['completas', 'Completas', 'Cada oración entera en pantalla, para leerla mientras rezás.']] },
@@ -368,7 +374,43 @@ const voz = (() => {
     if (!grabadas(partes, al, yo)) celular(partes.flatMap(partir), al, lengua, yo);
   }
   const hablando = () => grabada || (!!sintesis && sintesis.speaking);
-  return { decir, callar, preparar, precargar, hablando };
+  return { decir, callar, preparar, precargar, hablando, silencioDe };
+})();
+
+/* ---------- Música de fondo ---------- */
+// Una capa aparte de la voz, en bucle, en su propio reproductor (ver Decisiones.md, 6 y 8 de
+// octubre). En el iPhone una página no puede cambiar el volumen de un audio: Generar música.py
+// la deja en el archivo mismo bien por debajo de la voz. Suena mientras se reza, en cualquier
+// forma (también rezando solo), y se detiene con la pausa de "Escuchar" y al terminar.
+const musica = (() => {
+  const a = new Audio();
+  a.loop = true;
+  let quiere = false, despierta = false, reloj = null;
+  // Como la voz, en el iPhone tiene que sonar una vez con un toque para poder empezar sola después.
+  document.addEventListener('click', () => {
+    if (despierta) return;
+    despierta = true;
+    if (quiere) return;
+    a.src = voz.silencioDe(.1);
+    a.play().catch(e => { if (e.name === 'NotAllowedError') despierta = false; });
+  }, true);
+  const url = () => cfg.musica && cfg.musica !== 'ninguna' ? `Audio/Fondo/${cfg.musica}.m4a` : '';
+  function sonar() {
+    clearTimeout(reloj);
+    const u = url();
+    if (!u) return parar();
+    quiere = true;
+    if (!a.src.endsWith(u)) a.src = u;
+    if (a.paused) a.play().catch(() => {});
+  }
+  function parar() { clearTimeout(reloj); quiere = false; if (!a.paused) a.pause(); }
+  // En Ajustes, al elegir una, suena unos segundos para conocerla.
+  function muestra() { sonar(); if (quiere) reloj = setTimeout(parar, 12000); }
+  // Si una llamada u otra app la cortó, sigue al volver.
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && quiere && a.paused) a.play().catch(() => {});
+  });
+  return { sonar, parar, muestra };
 })();
 
 // Frases cortas: algunos navegadores cortan la voz a mitad de una frase muy larga.
@@ -612,7 +654,7 @@ function ponerPausa(v) {
   const b = $('[data-accion="pausa"]');
   if (b) { b.innerHTML = icono(v ? 'player-play' : 'player-pause'); b.setAttribute('aria-label', v ? 'Seguir con la voz' : 'Pausar la voz'); }
   ponerEtiqueta(S.pasos[S.ses.paso]);
-  if (v) silencio(); else hablar();
+  if (v) { silencio(); musica.parar(); } else { hablar(); musica.sonar(); }
 }
 
 // El parlante del rezo (A dos voces): calla la voz o la vuelve a activar, y se recuerda.
@@ -667,6 +709,7 @@ function abrirSesion(ses) {
   montarRezo();
   actualizar();
   mantenerEncendida();
+  musica.sonar();
 }
 
 function montarRezo() {
@@ -947,7 +990,7 @@ function actualizarMapa(p, mis, g) {
 // El cierre: primero el Amén y lo que se pidió, en quietud. Las opciones para seguir
 // aparecen unos segundos después (y mientras tanto no se pueden tocar sin querer).
 function vistaFin(ses) {
-  silencio(); soltarPantalla();
+  silencio(); soltarPantalla(); musica.parar();
   const g = grupo(ses.grupo), uno = ses.modo === 'uno', salve = ses.modo === 'salve';
   const mis = g.misterios[ses.modo === 'entero' ? 4 : ses.misterio];
   const quedan = 5 - rezados(g.id).length;
@@ -1071,6 +1114,8 @@ function cerrarHoja() {
   if (!v) return;
   v.remove();
   app.inert = false;
+  // La muestra de la música no sigue sonando fuera de Ajustes.
+  if (!$('.rezo')) musica.parar();
   const volver = abridor && abridor.isConnected ? abridor : $('[data-accion="ajustes"]');
   if (volver) volver.focus({ preventScroll: true });
   abridor = null;
@@ -1089,6 +1134,8 @@ function descripcion(k) {
     if (latin()) return item[2] + ' Pronuncia el latín como se reza en Roma. Tocá un nombre para escucharla.';
     return item[2] + ' Tocá un nombre para escucharla.';
   }
+  if (k === 'musica' && cfg.musica !== 'ninguna') return item[2] + ' Suena bajita, detrás de la voz. Tocá una para escucharla.';
+  if (k === 'musica') return item[2] + ' Tocá una para escucharla.';
   if (k === 'imagenes' && !hayIlustraciones) return item[2] + ' Las ilustraciones están en preparación.';
   return item[2];
 }
@@ -1112,7 +1159,7 @@ function hojaAjustes() {
   const bloque = k => `<div class="ajuste" data-k="${k}"><b>${OPCIONES[k].titulo}</b>${selector(k)}</div>`;
   const sw = (k, t, d) => `<button class="fila" data-accion="alternar" data-v="${k}" role="switch" aria-checked="${cfg[k]}"><span><b>${t}</b><small>${d}</small></span><span class="interruptor${cfg[k] ? ' on' : ''}"></span></button>`;
   hoja('Ajustes', `
-    ${['forma', 'voz', 'lengua', 'textos', 'letra', 'imagenes', 'modo'].map(bloque).join('')}
+    ${['forma', 'voz', 'lengua', 'musica', 'textos', 'letra', 'imagenes', 'modo'].map(bloque).join('')}
     ${sw('ohJesus', 'Oh Jesús mío', 'Después de cada Gloria')}
     ${sw('vida', 'Pregunta para tu vida', 'Al terminar cada misterio')}`);
 }
@@ -1143,7 +1190,7 @@ const acciones = {
   },
   terminar: () => transicion(terminar),
   atras: () => atras(),
-  salir: () => transicion(vistaInicio),
+  salir: () => { musica.parar(); transicion(vistaInicio); },
   inicio: () => transicion(vistaInicio),
   mapa: () => { const r = $('.rezo'); const m = r.classList.toggle('con-mapa'); $('.mapa').setAttribute('aria-hidden', !m); $('.cuerpo').inert = m; },
   primera: () => transicion(() => vistaPrimera(0)),
@@ -1174,6 +1221,7 @@ const acciones = {
     if (k === 'letra') aplicarLetra();
     if (k === 'imagenes' && $('.inicio')) vistaInicio();
     if (k === 'forma' || k === 'voz' || k === 'lengua') { muestra(k); precargarRezo(); }
+    if (k === 'musica') musica.muestra();
   },
   pausa: () => ponerPausa(!pausa),
   voz: b => { cfg.mudo = !cfg.mudo; guardar('ajustes', cfg); pintarVoz(b); if (cfg.mudo) silencio(); else hablar(); },
