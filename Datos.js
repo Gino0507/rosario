@@ -8,7 +8,9 @@ window.DATOS = {
      "quien": "todos",
      "texto": "En el nombre del Padre, y del Hijo, y del Espíritu Santo. Amén."
     }
-   ]
+   ],
+   "donde": "Al empezar, en la cruz",
+   "explica": "Nos ponemos en presencia de Dios, que es Padre, Hijo y Espíritu Santo."
   },
   "credo": {
    "nombre": "Credo",
@@ -17,7 +19,9 @@ window.DATOS = {
      "quien": "todos",
      "texto": "Creo en Dios, Padre todopoderoso, Creador del cielo y de la tierra. Creo en Jesucristo, su único Hijo, nuestro Señor, que fue concebido por obra y gracia del Espíritu Santo, nació de santa María Virgen, padeció bajo el poder de Poncio Pilato, fue crucificado, muerto y sepultado, descendió a los infiernos, al tercer día resucitó de entre los muertos, subió a los cielos y está sentado a la derecha de Dios, Padre todopoderoso. Desde allí ha de venir a juzgar a vivos y muertos. Creo en el Espíritu Santo, la santa Iglesia católica, la comunión de los santos, el perdón de los pecados, la resurrección de la carne y la vida eterna. Amén."
     }
-   ]
+   ],
+   "donde": "En la cruz, solo en el Rosario entero",
+   "explica": "Lo que creemos, en pocas palabras. Es el Credo de los Apóstoles, que la Iglesia reza desde los primeros siglos."
   },
   "padre": {
    "nombre": "Padrenuestro",
@@ -30,7 +34,9 @@ window.DATOS = {
      "quien": "todos",
      "texto": "Danos hoy nuestro pan de cada día; perdona nuestras ofensas, como también nosotros perdonamos a los que nos ofenden; no nos dejes caer en la tentación, y líbranos del mal. Amén."
     }
-   ]
+   ],
+   "donde": "En cada cuenta grande",
+   "explica": "La oración que Jesús les enseñó a sus discípulos (Mateo 6, 9-13). Abre cada misterio."
   },
   "ave": {
    "nombre": "Avemaría",
@@ -43,7 +49,9 @@ window.DATOS = {
      "quien": "todos",
      "texto": "Santa María, Madre de Dios, ruega por nosotros, pecadores, ahora y en la hora de nuestra muerte. Amén."
     }
-   ]
+   ],
+   "donde": "En cada cuenta chica",
+   "explica": "Empieza con el saludo del ángel Gabriel y de Isabel a María (Lucas 1, 28 y 1, 42), y sigue pidiéndole que rece por nosotros. Se reza diez veces en cada misterio."
   },
   "gloria": {
    "nombre": "Gloria",
@@ -56,7 +64,9 @@ window.DATOS = {
      "quien": "todos",
      "texto": "Como era en el principio, ahora y siempre, por los siglos de los siglos. Amén."
     }
-   ]
+   ],
+   "donde": "Al terminar cada misterio",
+   "explica": "Alabamos a Dios, que es Padre, Hijo y Espíritu Santo. Cierra cada misterio."
   },
   "ohjesus": {
    "nombre": "Oh Jesús mío",
@@ -65,7 +75,9 @@ window.DATOS = {
      "quien": "todos",
      "texto": "Oh Jesús mío, perdona nuestros pecados, líbranos del fuego del infierno, lleva al cielo a todas las almas, especialmente a las más necesitadas de tu misericordia."
     }
-   ]
+   ],
+   "donde": "Después de cada Gloria",
+   "explica": "La pidió la Virgen en Fátima, en 1917: pedimos perdón y el cielo para todos. No es parte del Rosario original, pero en la Argentina se reza casi siempre. Se puede apagar en Ajustes."
   },
   "salve": {
    "nombre": "Salve",
@@ -82,7 +94,9 @@ window.DATOS = {
      "quien": "todos",
      "texto": "Para que seamos dignos de alcanzar las promesas de nuestro Señor Jesucristo. Amén."
     }
-   ]
+   ],
+   "donde": "Al terminar, en la medalla",
+   "explica": "Saludamos a María, nuestra Madre, con una oración que se reza desde la Edad Media. Cierra el Rosario entero."
   }
  },
  "latin": {

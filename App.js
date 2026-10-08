@@ -22,6 +22,7 @@ const ICONOS = {
   'arrow-left': '<path d="M5 12l14 0"/><path d="M5 12l6 6"/><path d="M5 12l6 -6"/>',
   'book-2': '<path d="M19 4v16h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12z"/><path d="M19 16h-12a2 2 0 0 0 -2 2"/><path d="M9 8h6"/>',
   'chevron-down': '<path d="M6 9l6 6l6 -6"/>',
+  'chevron-right': '<path d="M9 6l6 6l-6 6"/>',
   'chevron-up': '<path d="M6 15l6 -6l6 6"/>',
   'photo': '<path d="M15 8h.01"/><path d="M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12z"/><path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5"/><path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3"/>',
   'player-pause': '<path d="M6 5m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z"/><path d="M14 5m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z"/>',
@@ -982,13 +983,13 @@ const COMIENZO = { abajo: 231.2, largo: 36.4, paso: 6 };
 const enComienzo = u => COMIENZO.abajo - u;
 
 function moverCuenta(e, x, y) { e.style.setProperty('--x', x); e.style.setProperty('--y', y); }
-function ponerCuentasMapa(svg, p) {
+// decena(m): cuántas Avemarías de la decena m ya se corrieron; comienzo: cuántas de las tres.
+function ponerCuentasMapa(svg, decena = () => 0, comienzo = 0) {
   for (let m = 0; m < 5; m++) {
-    const [a, b] = tramo(m), k = p ? corridas(m, p) : 0;
+    const [a, b] = tramo(m), k = decena(m);
     for (let j = 0; j < 10; j++) moverCuenta(svg.querySelector(`[data-pos="L${m * 11 + j}"]`), ...enVuelta(lugarCuenta(a, b, 10, V.paso, j, k)));
   }
-  const k = p ? corridasComienzo(p) : 0;
-  for (let j = 0; j < 3; j++) moverCuenta(svg.querySelector(`[data-pos="t${j}"]`), 100, enComienzo(lugarCuenta(0, COMIENZO.largo, 3, COMIENZO.paso, j, k)));
+  for (let j = 0; j < 3; j++) moverCuenta(svg.querySelector(`[data-pos="t${j}"]`), 100, enComienzo(lugarCuenta(0, COMIENZO.largo, 3, COMIENZO.paso, j, comienzo)));
 }
 
 function dibujarMapa(svg) {
@@ -1018,7 +1019,7 @@ function dibujarMapa(svg) {
   h += `<circle class="cuenta" data-pos="p1" cx="100" cy="238" r="4.6"/>`;
   h += `<path class="cuenta solida" data-pos="cruz" d="M98 248h4v6h6v4h-6v12h-4v-12h-6v-4h6z"/>`;
   svg.innerHTML = h;
-  ponerCuentasMapa(svg, null);
+  ponerCuentasMapa(svg);
 }
 
 function actualizarMapa(p, mis, g) {
@@ -1030,7 +1031,7 @@ function actualizarMapa(p, mis, g) {
     [cuentaGrande(m), 'h' + m, ...Array.from({ length: 10 }, (_, j) => 'L' + (m * 11 + j))].forEach(x => hechos.add(x));
   });
   hechos.delete(p.pos);
-  ponerCuentasMapa($('.ros'), p);
+  ponerCuentasMapa($('.ros'), m => corridas(m, p), corridasComienzo(p));
   app.querySelectorAll('.ros [data-pos]').forEach(e => {
     e.classList.toggle('hecho', hechos.has(e.dataset.pos));
     e.classList.toggle('ahora', e.dataset.pos === p.pos);
@@ -1092,43 +1093,346 @@ function vistaFin(ses) {
   S = { ses, pasos: [] };
 }
 
-/* ---------- Es mi primera vez ---------- */
-const PRIMERA = [
-  { t: 'El Rosario es mirar la vida de Jesús junto a María',
-    b: 'Se reza en grupos de diez Avemarías. Cada grupo es un misterio: una escena del Evangelio, como el nacimiento en Belén o la noche en el huerto de los Olivos. Mientras rezás, mirás esa escena.' },
-  { t: 'Las cuentas te van llevando', tira: true,
-    b: 'Cada cuenta es una oración. En las grandes se reza el Padrenuestro y en las chicas, el Avemaría. Con el Rosario en la mano, pasás una cuenta por oración y sabés siempre por dónde vas.' },
-  { t: '¿Por qué se repite tanto?',
-    b: 'Las Avemarías marcan un ritmo, como la respiración. Cuando ya no tenés que pensar las palabras, la atención queda libre para la escena.' },
-  { t: 'No hace falta saberse nada', voz: true,
-    b: 'La app te muestra cada oración entera. Tocás la pantalla para pasar a la cuenta siguiente, y con el ícono del Rosario, arriba, ves en qué parte estás.' },
+/* ---------- Es mi primera vez: el recorrido ---------- */
+// Un recorrido por el Rosario y por la app, en tres partes (ver Decisiones.md, 8 de octubre, a la
+// noche): qué es el Rosario y cómo se reza, cómo se reza con la app (con una práctica guiada) y los
+// ajustes, que se eligen ahí mismo sin obligar a nada. Se puede salir en cualquier momento, o saltar
+// a una parte desde la portada. Los textos son borrador para Pablo; lo que presenta cada oración
+// (dónde se reza y una línea para entenderla) está en Contenido/Oraciones.md.
+const PARTES = [
+  ['El Rosario', 'Qué es, las cuentas y las oraciones'],
+  ['Rezar con la app', 'Cómo se pasa cada cuenta, con una práctica'],
+  ['A tu manera', 'La voz, la música, las imágenes y más'],
 ];
-// La última tarjeta cuenta cómo suena la forma de rezar que está elegida, sin pedir que se elija
-// antes de haber rezado (se cambia después, en Ajustes).
-const VOZ_PRIMERA = {
-  guia: 'Una voz dice la primera parte de cada oración y vos respondés la segunda. Si preferís rezar en silencio, tocá el parlante, abajo a la derecha.',
-  todo: 'Una voz reza todo y la app avanza sola. Con el botón de abajo a la derecha la ponés en pausa.',
-  solo: 'Rezás a tu ritmo, sin voz.',
+// Las pantallas, en orden. parte: el índice en PARTES (la portada y el final no tienen).
+const RECORRIDO = [
+  { id: 'portada' },
+  { id: 'escenas', parte: 0 }, { id: 'grupos', parte: 0 }, { id: 'cuentas', parte: 0 }, { id: 'oraciones', parte: 0 }, { id: 'repetir', parte: 0 },
+  { id: 'tiempo', parte: 1 }, { id: 'misterio', parte: 1 }, { id: 'practica', parte: 1 },
+  { id: 'rezar', parte: 2 }, { id: 'ver', parte: 2 }, { id: 'acompana', parte: 2 },
+  { id: 'listo' },
+];
+// i: la pantalla; arte: su imagen; paso: el paso del mapa; oyendo: la oración que suena;
+// tiempos: las cuentas del mapa que se corren solas.
+const RV = { i: 0, arte: null, paso: 0, oyendo: null, tiempos: [] };
+const quieto = matchMedia('(prefers-reduced-motion: reduce)');
+const misterioDeHoy = () => grupo(grupoInicio).misterios[proximo(grupoInicio)];
+// Quien entra por "Es mi primera vez" reza con las oraciones enteras, salvo que elija otra cosa.
+function textosPrimeraVez() { if (cfg.textos === 'auto') { cfg.textos = 'completas'; guardar('ajustes', cfg); } }
+
+// El Rosario dibujado, cuenta por cuenta: cada paso marca dónde se está y dice qué se reza ahí.
+// Tocar una cuenta lleva a su paso. Ver la tabla "Cómo se reza, cuenta por cuenta" de Oraciones.md.
+const decena = m => Array.from({ length: 10 }, (_, j) => 'L' + (m * 11 + j));
+const MAPA = [
+  { pos: [], t: 'Así es un Rosario', b: 'Una cruz, una medalla y cinco grupos de diez cuentas. Se empieza por la cruz y se da toda la vuelta. Tocá cualquier cuenta para ver qué se reza ahí.' },
+  { pos: ['cruz'], t: 'La cruz', b: 'Se empieza con la señal de la cruz. En el Rosario entero, también se reza el Credo.' },
+  { pos: ['p1'], t: 'La primera cuenta grande', b: 'Un Padrenuestro.' },
+  { pos: ['t0', 't1', 't2'], t: 'Las tres cuentas chicas', b: 'Tres Avemarías, pidiendo fe, esperanza y caridad. Con cada una, corrés una cuenta.' },
+  { pos: ['c0'], t: 'El hilo que sigue', b: 'El Gloria, y después el Oh Jesús mío.' },
+  { pos: ['p2'], t: 'La cuenta grande junto a la medalla', b: 'Se anuncia el primer misterio y se reza un Padrenuestro.' },
+  { pos: decena(0), t: 'Diez cuentas chicas', b: 'Diez Avemarías, mientras mirás la escena del misterio. Las cuentas que corrés te dicen cuántas faltan.' },
+  { pos: ['h0'], t: 'El hilo, otra vez', b: 'El Gloria y el Oh Jesús mío cierran el misterio.' },
+  { pos: [1, 2, 3, 4].flatMap(m => [cuentaGrande(m), ...decena(m), 'h' + m]), t: 'Los otros cuatro misterios', b: 'Cada cuenta grande abre un misterio nuevo, y se repite lo mismo: Padrenuestro, diez Avemarías, Gloria y Oh Jesús mío.' },
+  { pos: ['med'], t: 'La medalla', b: 'Para terminar, la Salve.' },
+  { pos: ['cruz', 'p2', ...decena(0), 'h0'], t: 'Si rezás un solo misterio', b: 'Es más corto: la señal de la cruz, un Padrenuestro, diez Avemarías, el Gloria y el Oh Jesús mío. Unos cuatro minutos.' },
+];
+// Las cuentas se corren como en el Rosario físico: al llegar a las tres del comienzo o a la
+// primera decena, de a una; las que ya se rezaron quedan corridas.
+function pasoMapa(n) {
+  RV.tiempos.forEach(clearTimeout); RV.tiempos = [];
+  RV.paso = n;
+  const svg = $('.pv .ros'), P = MAPA[n];
+  if (!svg) return;
+  const k = { c: n > 3 && n < 10 ? 3 : 0, d: [n > 6 && n < 10 ? 10 : 0, ...[1, 2, 3, 4].map(() => n === 8 || n === 9 ? 10 : 0)] };
+  const poner = () => ponerCuentasMapa(svg, m => k.d[m], k.c);
+  const correr = (fijar, hasta, ms) => {
+    if (quieto.matches) return fijar(hasta);
+    fijar(0);
+    for (let j = 1; j <= hasta; j++) RV.tiempos.push(setTimeout(() => { fijar(j); poner(); }, 350 + j * ms));
+  };
+  if (n === 3) correr(j => { k.c = j; }, 3, 520);
+  if (n === 6 || n === 10) correr(j => { k.d[0] = j; }, 10, 280);
+  poner();
+  svg.querySelectorAll('[data-pos]').forEach(e => e.classList.toggle('marca', P.pos.includes(e.dataset.pos)));
+  ponerTexto($('.pv-aqui b'), P.t);
+  ponerTexto($('.pv-aqui span'), P.b);
+}
+// Las cuentas del dibujo son chicas para el dedo: vale la más cercana al toque.
+function tocarCuenta(svg, e) {
+  let cerca = null, dist = 30;
+  svg.querySelectorAll('[data-pos]').forEach(x => {
+    const r = x.getBoundingClientRect(), d = Math.hypot(r.left + r.width / 2 - e.clientX, r.top + r.height / 2 - e.clientY);
+    if (d < dist) { dist = d; cerca = x.dataset.pos; }
+  });
+  const n = cerca ? MAPA.findIndex((p, i) => i > 0 && i < MAPA.length - 1 && p.pos.includes(cerca)) : -1;
+  if (n > 0) pasoMapa(n);
+}
+
+// Las siete oraciones, para leerlas o escucharlas. Las de dos partes dicen quién reza cada una.
+const ORDEN_ORACIONES = ['senal', 'credo', 'padre', 'ave', 'gloria', 'ohjesus', 'salve'];
+function partesHTML(o) {
+  const dos = o.partes.some(x => x.quien === 'guia');
+  return o.partes.map(x => `<p class="parte-pv ${x.quien}">${dos ? `<span class="k">${x.quien === 'guia' ? 'Quien guía' : 'Todos'}</span>` : ''}${esc(x.texto)}</p>`).join('');
+}
+function botonOir(b, oyendo) { b.innerHTML = `${icono(oyendo ? 'player-pause' : 'volume')}<span>${oyendo ? 'Detener' : 'Escuchar'}</span>`; }
+function oir(b) {
+  const k = b.dataset.v, antes = RV.oyendo;
+  voz.callar(); RV.oyendo = null;
+  document.querySelectorAll('.oir').forEach(x => botonOir(x, false));
+  if (antes === k) return;
+  RV.oyendo = k; botonOir(b, true);
+  const listo = () => { if (RV.oyendo === k) { RV.oyendo = null; botonOir(b, false); } };
+  voz.decir(oraciones()[k].partes.map(x => x.texto), { fin: listo, falla: listo }, cfg.lengua);
+}
+// Los desplegables (grupos de misterios y oraciones): uno abierto por vez.
+function desplegar(b) {
+  const caja = b.parentElement, abrir = !caja.classList.contains('abierto');
+  caja.parentElement.querySelectorAll('.abierto').forEach(x => { x.classList.remove('abierto'); x.querySelector('.fila').setAttribute('aria-expanded', false); });
+  caja.classList.toggle('abierto', abrir);
+  b.setAttribute('aria-expanded', abrir);
+}
+
+// Un misterio, de punta a punta: cada momento con su marca (la cruz, una cuenta grande, las chicas, el hilo).
+const HITOS = {
+  punto: '<circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/>',
+  cruz: '<path d="M10.6 3.5h2.8v5h4.6v2.8h-4.6v9.2h-2.8v-9.2H6v-2.8h4.6z" fill="currentColor"/>',
+  grande: '<circle cx="12" cy="12" r="6.2" fill="currentColor"/>',
+  chicas: '<circle cx="5" cy="12" r="3.2" fill="currentColor"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/><circle cx="19" cy="12" r="3.2" fill="currentColor"/>',
+  hilo: '<path d="M3 12h18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>',
 };
-function vistaPrimera(i) {
-  const c = PRIMERA[i], ultimo = i === PRIMERA.length - 1;
-  app.innerHTML = `
-  <section class="vista fija pv">
-    ${heroHTML(grupo('gozosos').misterios[0])}
-    <header class="barra"><button class="ic" data-accion="inicio" aria-label="Cerrar">${icono('x')}</button><span></span></header>
-    <div class="cuerpo">
-      <div class="puntos">${PRIMERA.map((_, j) => `<i class="${j <= i ? 'on' : ''}"></i>`).join('')}</div>
-      <h1 class="t1">${esc(c.t)}</h1>
-      ${c.tira ? '<svg class="tira" viewBox="0 0 264 26" aria-hidden="true"></svg>' : ''}
-      <p>${esc(c.b)}</p>
-      ${c.voz ? `<p>${VOZ_PRIMERA[cfg.forma]}</p>` : ''}
-      <div class="pv-nav">
-        ${i > 0 ? `<button class="btn alt" data-accion="pv" data-v="${i - 1}">Anterior</button>` : ''}
-        <button class="btn principal centro" data-accion="${ultimo ? 'primerRezo' : 'pv'}" data-v="${i + 1}">${ultimo ? 'Rezar un misterio' : 'Siguiente'}</button>
+function unMisterio() {
+  return [
+    ['punto', 'Por quién rezás', 'Antes de empezar, la app te pregunta si rezás por tus intenciones o por las del Papa.'],
+    ['cruz', 'Señal de la cruz', 'Y un momento para ofrecer lo que vas a rezar.'],
+    ['punto', 'El anuncio', 'El nombre del misterio, dónde se cuenta en el Evangelio y lo que pedimos en él.'],
+    ['grande', 'Padrenuestro', ''],
+    ['chicas', 'Diez Avemarías', 'Mientras tanto, mirás la escena. Arriba de la oración, una frase te ayuda a imaginarla.'],
+    ['hilo', cfg.ohJesus ? 'Gloria y Oh Jesús mío' : 'Gloria', ''],
+    cfg.vida && ['punto', 'Una pregunta para tu vida', 'Para pensarla en silencio antes de seguir.'],
+    ['punto', 'Amén', 'Y si querés, un misterio más, o la Salve para terminar.'],
+  ].filter(Boolean);
+}
+
+// La práctica: la pantalla de rezo en chico, que no guarda nada. Pide una cosa por vez y sigue
+// cuando se hace; mientras tanto, todo funciona como en el rezo de verdad.
+let RP = null;
+function pasosPractica() {
+  const callar = cfg.forma === 'todo' ? 'el botón de pausa detiene la voz' : 'el parlante calla la voz';
+  return [
+    { en: 'pantalla', t: 'Tocá en cualquier parte de la pantalla para pasar a la cuenta siguiente.' },
+    { en: 'etq', t: 'Tocá el nombre de la oración, abajo, para ocultarla y dejarle más lugar a la imagen. Otro toque la vuelve a mostrar.' },
+    { en: 'atras', t: 'Si pasaste una de más, la flecha de la izquierda te devuelve a la anterior.' },
+    { en: 'mapa', si: () => RP.mapa, t: 'Arriba, los cinco círculos son los cinco misterios. A la derecha está el Rosario entero, con la cuenta en la que vas: tocalo.' },
+    { en: 'mapa', si: () => !RP.mapa, t: 'Desde el mapa también se sigue rezando. Para volver a la escena, tocá el mismo botón.' },
+    ...(cfg.forma === 'solo' ? [] : [{ en: 'vel', t: `Abajo a la derecha, ${callar}, y 1× cambia su velocidad. Probá la velocidad.` }]),
+  ];
+}
+const FIN_PRACTICA = 'Eso es todo. Para salir de un rezo, la × de arriba: lo que rezaste queda guardado y podés retomarlo.';
+function practicar(que) {
+  if (que === 'pantalla' && RP.cuenta < 11) { RP.cuenta++; vibrar(); }
+  else if (que === 'atras') RP.cuenta = Math.max(0, RP.cuenta - 1);
+  else if (que === 'etq') RP.texto = !RP.texto;
+  else if (que === 'mapa') RP.mapa = !RP.mapa;
+  else if (que === 'vel') RP.vel = VELOCIDADES[(VELOCIDADES.indexOf(RP.vel) + 1) % VELOCIDADES.length];
+  else if (que === 'voz') RP.mudo = !RP.mudo;
+  const P = pasosPractica()[RP.paso];
+  if (P && P.en === que && (!P.si || P.si())) RP.paso++;
+  pintarPractica();
+}
+function pintarPractica() {
+  const q = $('.maqueta');
+  if (!q) return;
+  const pasos = pasosPractica(), P = pasos[RP.paso], c = RP.cuenta, m = RP.m;
+  ponerTexto($('.pr-guia p'), P ? P.t : FIN_PRACTICA);
+  $('.pr-n').textContent = P ? `${RP.paso + 1} de ${pasos.length}` : 'Listo';
+  // Lo que hay que tocar, marcado.
+  [q, ...q.querySelectorAll('.foco')].forEach(x => x.classList.remove('foco'));
+  if (P) (P.en === 'pantalla' ? q : q.querySelector(`[data-v="${P.en}"]`)).classList.add('foco');
+  q.classList.toggle('sin-texto', !RP.texto);
+  q.classList.toggle('con-mapa', RP.mapa);
+  // La oración y su nombre, como en el rezo: a dos voces, separadas.
+  const t = textos({ o: c === 0 ? 'padre' : c > 10 ? 'gloria' : 'ave' }), separar = cfg.forma === 'guia';
+  q.querySelector('.mq-guia').textContent = separar ? t.guia : '';
+  q.querySelector('.mq-todos').textContent = separar ? t.todos : [t.guia, t.todos].filter(Boolean).join(' ');
+  const etq = c === 0 ? 'Padrenuestro' : c > 10 ? 'Gloria' : `Avemaría ${c} de 10`, e = q.querySelector('.mq-etq');
+  e.innerHTML = `${esc(etq)}${icono(RP.texto ? 'chevron-down' : 'chevron-up')}`;
+  e.setAttribute('aria-label', `${etq}. ${RP.texto ? 'Ocultar' : 'Mostrar'} la oración`);
+  dibujarTira(q.querySelector('.tira'), 10, c);
+  q.querySelector('.cinco .ahora').style.setProperty('--p', (c + 1) / 13);
+  // El mapa, con la cuenta en la que se va y las rezadas.
+  const orden = [cuentaGrande(m), ...decena(m), 'h' + m], mapa = q.querySelector('.ros'), hechas = orden.slice(0, c);
+  ponerCuentasMapa(mapa, x => x === m ? Math.min(c, 10) : 0);
+  mapa.querySelectorAll('[data-pos]').forEach(x => { x.classList.toggle('ahora', x.dataset.pos === orden[c]); x.classList.toggle('hecho', hechas.includes(x.dataset.pos)); });
+  const vel = q.querySelector('[data-v="vel"]'), bv = q.querySelector('[data-v="voz"]');
+  if (vel) vel.innerHTML = `<span>${textoVelocidad(RP.vel)}</span>`;
+  if (bv) bv.innerHTML = icono(cfg.forma === 'todo' ? (RP.mudo ? 'player-play' : 'player-pause') : (RP.mudo ? 'volume-off' : 'volume'));
+}
+
+// Los ajustes, con los mismos controles de la hoja de Ajustes.
+const bloqueAjuste = k => `<div class="ajuste" data-k="${k}"><b>${OPCIONES[k].titulo}</b>${selector(k)}</div>`;
+const interruptor = (k, t, d) => `<button class="fila" data-accion="alternar" data-v="${k}" role="switch" aria-checked="${cfg[k]}"><span><b>${t}</b><small>${d}</small></span><span class="interruptor${cfg[k] ? ' on' : ''}"></span></button>`;
+
+// Cada pantalla: forma (corta: la imagen arriba y el texto abajo; larga: el texto sube sobre la
+// imagen al desplazarse; plena: sin imagen), arte (el misterio de la imagen), html, montar (lo que
+// se hace después de mostrarla) y nav: false si trae sus propios botones.
+const PANTALLAS = {
+  portada: () => ({ forma: 'corta', arte: grupo('gozosos').misterios[0], nav: false, html: `
+    <div class="k">Es mi primera vez</div>
+    <h1 class="t1">El Rosario, paso a paso</h1>
+    <p>En unos cinco minutos vas a conocer el Rosario, cómo se reza y cómo te acompaña la app. No hace falta saber nada de antes.</p>
+    <div class="indice">${PARTES.map(([t, d], k) => `<button class="fila" data-accion="pv" data-v="${RECORRIDO.findIndex(x => x.parte === k)}"><span><b>${t}</b><small>${d}</small></span>${icono('chevron-right')}</button>`).join('')}</div>
+    <div class="pv-nav columna">
+      <button class="btn principal centro" data-accion="pv" data-v="1">Empezar</button>
+      <button class="enlace" data-accion="primerRezo">Ir directo a rezar</button>
+    </div>` }),
+  escenas: () => ({ forma: 'corta', arte: grupo('luminosos').misterios[1], html: `
+    <h1 class="t1">Mirar la vida de Jesús junto a María</h1>
+    <p>El Rosario recorre la vida de Jesús en escenas del Evangelio, que se llaman misterios: el nacimiento en Belén, las bodas de Caná, la noche en el huerto, la mañana de la Resurrección.</p>
+    <p>Mientras rezás, mirás cada escena con María, que la vivió de cerca. Nadie conoció a Jesús como ella: rezar el Rosario es caminar de su mano hacia su Hijo.</p>
+    <p class="cita-pv">«Contemplar con María el rostro de Cristo»<small>Juan Pablo II, <em>Rosarium Virginis Mariae</em>, 3</small></p>` }),
+  grupos: () => {
+    const hoy = DEL_DIA[new Date().getDay()];
+    const mini = mis => urlArte(mis) ? `background-image:url('${urlArte(mis)}')` : luz(grupoDe(mis));
+    return { forma: 'plena', html: `
+    <h1 class="t1">Cuatro grupos de misterios</h1>
+    <p>Los veinte misterios están en cuatro grupos de cinco, y cada día de la semana tiene el suyo. La app te propone el de hoy; para rezar otro, tocás el nombre de los misterios en el inicio.</p>
+    <div class="desplegables">${D.grupos.map(g => `
+      <div class="desplegable${g.id === hoy ? ' abierto' : ''}">
+        <button class="fila" data-accion="pvAbrir" aria-expanded="${g.id === hoy}">
+          <span class="miniatura" style="${mini(g.misterios[0])}"></span>
+          <span class="nombre"><b>${g.nombre}</b><small>${g.dias}</small></span>
+          ${g.id === hoy ? '<span class="etiqueta">Hoy</span>' : ''}${icono('chevron-down', 'flecha')}
+        </button>
+        <div class="contenido"><div>
+          <p class="sub">${esc(g.subtitulo)}</p>
+          <ol>${g.misterios.map(m => `<li>${esc(m.titulo)}</li>`).join('')}</ol>
+        </div></div>
+      </div>`).join('')}</div>` };
+  },
+  cuentas: () => ({ forma: 'plena', html: `
+    <h1 class="t1">Cuenta por cuenta</h1>
+    <svg class="ros" viewBox="0 0 200 272" data-accion="pvCuenta" role="img" aria-label="El Rosario dibujado, con la parte que se explica marcada"></svg>
+    <div class="pv-aqui" role="status"><b></b><span></span></div>`,
+    montar: () => { dibujarMapa($('.pv .ros')); pasoMapa(RV.paso); } }),
+  oraciones: () => ({ forma: 'larga', arte: grupo('gozosos').misterios[1], html: `
+    <h1 class="t1">Siete oraciones</h1>
+    <p>Son siempre las mismas, y mientras rezás la app te las muestra enteras. Tocá una para leerla o escucharla.</p>
+    <div class="desplegables">${ORDEN_ORACIONES.map(k => { const e = D.oraciones[k]; return `
+      <div class="desplegable">
+        <button class="fila" data-accion="pvAbrir" aria-expanded="false"><span class="nombre"><b>${esc(e.nombre)}</b><small>${esc(e.donde)}</small></span>${icono('chevron-down', 'flecha')}</button>
+        <div class="contenido"><div>
+          <p class="explica-pv">${esc(e.explica)}</p>
+          ${partesHTML(oraciones()[k])}
+          <button class="oir" data-accion="pvOir" data-v="${k}">${icono('volume')}<span>Escuchar</span></button>
+        </div></div>
+      </div>`; }).join('')}</div>
+    <p class="nota-pv">Las que tienen dos partes se rezan como en grupo: quien guía dice la primera y los demás responden la segunda. En «A dos voces», la voz de la app hace de guía.</p>` }),
+  repetir: () => ({ forma: 'corta', arte: grupo('gozosos').misterios[3], html: `
+    <h1 class="t1">¿Por qué se repite tanto?</h1>
+    <p>Las Avemarías marcan un ritmo, como la respiración. Cuando ya no tenés que pensar las palabras, la atención queda libre para mirar la escena.</p>
+    <p>Si te distraés, es normal. Volvé a la escena, sin culpa: volver también es rezar.</p>` }),
+  tiempo: () => { const mis = misterioDeHoy(); return { forma: 'corta', arte: mis, html: `
+    <h1 class="t1">¿Cuánto tiempo tenés?</h1>
+    <p>Cada día, el inicio te propone los misterios que tocan. Podés rezar uno solo o los cinco seguidos.</p>
+    <div class="captura" aria-hidden="true">
+      <div class="btn principal"><span>Un misterio<small>${esc(mis.titulo)}</small></span><span class="min">4 min</span></div>
+      <div class="btn alt"><span>El Rosario entero</span><span class="min">20 min</span></div>
+    </div>
+    <p>También podés rezarlos de a uno a lo largo del día. Si dejás uno por la mitad, la app te ofrece retomarlo donde quedaste.</p>` }; },
+  misterio: () => ({ forma: 'larga', arte: grupo('gloriosos').misterios[0], html: `
+    <h1 class="t1">Un misterio, de punta a punta</h1>
+    <p>Así es rezar un misterio con la app, en unos cuatro minutos.</p>
+    <ol class="linea">${unMisterio().map(([h, t, d]) => `<li><svg class="hito" viewBox="0 0 24 24" aria-hidden="true">${HITOS[h]}</svg><div><b>${t}</b>${d ? `<small>${d}</small>` : ''}</div></li>`).join('')}</ol>
+    <p class="nota-pv">En el Rosario entero, al comienzo se suman el Credo, un Padrenuestro y tres Avemarías; después vienen los cinco misterios seguidos y, al final, la Salve.</p>` }),
+  practica: () => {
+    const g = grupo(grupoInicio), m = proximo(g.id), mis = g.misterios[m], arte = urlArte(mis);
+    RP = { paso: 0, cuenta: 1, texto: true, mapa: false, vel: cfg.velocidad, mudo: false, m };
+    const fondo = arte ? `background-image:url('${arte}');background-position:${arte === mis.imagen ? mis.foco : '50% 30%'}` : luz(g.id);
+    const controles = cfg.forma === 'solo' ? '<span class="mq-chico fantasma"></span>'
+      : `<button class="mq-vel" data-accion="pr" data-v="vel" aria-label="Velocidad de la voz"></button><button class="mq-chico" data-accion="pr" data-v="voz" aria-label="${cfg.forma === 'todo' ? 'Pausar la voz' : 'Callar la voz'}"></button>`;
+    return { forma: 'plena', html: `
+    <h1 class="t1">Probalo</h1>
+    <div class="pr-guia"><span class="pr-n"></span><p role="status"></p></div>
+    <div class="maqueta" data-accion="pr" data-v="pantalla" role="group" aria-label="Pantalla de rezo, para practicar">
+      <div class="mq-arte" style="${fondo}"></div>
+      <div class="mq-barra">
+        <span class="mq-chico" data-accion="nada" aria-hidden="true">${icono('x')}</span>
+        <span class="cinco" aria-hidden="true">${[0, 1, 2, 3, 4].map(i => `<i class="${i === m ? 'ahora' : ''}"></i>`).join('')}</span>
+        <button class="mq-chico" data-accion="pr" data-v="mapa" aria-label="Ver el mapa del Rosario">${ICONO_ROSARIO}</button>
       </div>
+      <div class="mq-mapa"><svg class="ros" viewBox="0 0 200 272" aria-hidden="true"></svg></div>
+      <div class="mq-cuerpo">
+        <div class="k">${cap(ORDINAL[m])} misterio ${SINGULAR[g.id]}</div>
+        <div class="mq-titulo">${esc(mis.titulo)}</div>
+        <svg class="tira" viewBox="0 0 264 26" aria-hidden="true"></svg>
+        <p class="mq-guia"></p><p class="mq-todos"></p>
+        <div class="mq-pie">
+          <button class="mq-chico" data-accion="pr" data-v="atras" aria-label="Volver a la oración anterior">${icono('arrow-back-up')}</button>
+          <button class="mq-etq" data-accion="pr" data-v="etq"></button>
+          <span class="mq-controles">${controles}</span>
+        </div>
+        <button class="siguiente" data-accion="pr" data-v="pantalla">Pasar a la siguiente</button>
+      </div>
+    </div>`,
+      montar: () => { dibujarMapa($('.maqueta .ros')); pintarPractica(); } };
+  },
+  rezar: () => ({ forma: 'larga', arte: grupo('gloriosos').misterios[2], html: `
+    <h1 class="t1">Cómo querés rezar</h1>
+    <p>Ya está todo elegido para que empieces. Si querés, cambialo ahora; también podés hacerlo después, con el botón ${icono('adjustments-horizontal', 'en-linea')} del inicio.</p>
+    ${['forma', 'voz', 'lengua'].map(bloqueAjuste).join('')}
+    <p class="nota-pv">Mientras rezás, el botón 1× de abajo acelera la voz.</p>` }),
+  ver: () => { textosPrimeraVez(); return { forma: 'larga', arte: grupo('gozosos').misterios[2], html: `
+    <h1 class="t1">Lo que ves</h1>
+    <p>La imagen de cada misterio, el texto de las oraciones y los colores de la app.</p>
+    ${['imagenes', 'textos', 'letra', 'modo'].map(bloqueAjuste).join('')}` }; },
+  acompana: () => ({ forma: 'larga', arte: grupo('luminosos').misterios[3], html: `
+    <h1 class="t1">Lo que acompaña</h1>
+    <p>La música de fondo, y dos momentos del rezo que podés sacar.</p>
+    ${bloqueAjuste('musica')}
+    ${interruptor('ohJesus', 'Oh Jesús mío', 'Después de cada Gloria')}
+    ${interruptor('vida', 'Pregunta para tu vida', 'Al terminar cada misterio')}` }),
+  listo: () => { const mis = misterioDeHoy(); return { forma: 'corta', arte: mis, nav: false, html: `
+    <div class="k">Listo</div>
+    <h1 class="t1">Ya podés rezar</h1>
+    <p>Empezá por un misterio, el que toca hoy. Son unos cuatro minutos, y la app te acompaña cuenta por cuenta.</p>
+    <p class="nota-pv">La próxima vez, acercá la cruz de tu Rosario al celular, o escaneá el código de la medalla, y la app se abre sola.</p>
+    <div class="pv-nav columna">
+      <button class="btn principal" data-accion="primerRezo"><span>Rezar un misterio<small>${esc(mis.titulo)}</small></span><span class="min">4 min</span></button>
+      <button class="enlace" data-accion="inicio">Volver al inicio</button>
+    </div>` }; },
+};
+
+// Arriba, una barra por parte, que se va llenando.
+function avance(i) {
+  const s = RECORRIDO[i];
+  const lleno = k => {
+    if (s.id === 'listo') return 1;
+    const de = RECORRIDO.filter(x => x.parte === k), j = de.indexOf(s);
+    return j >= 0 ? (j + 1) / de.length : RECORRIDO.indexOf(de[0]) < i ? 1 : 0;
+  };
+  return `<span class="avance" aria-hidden="true">${PARTES.map((_, k) => `<i style="--p:${lleno(k)}"></i>`).join('')}</span>`;
+}
+// atras: se llega desde la pantalla siguiente (el mapa arranca en su último paso).
+function vistaPrimera(i, atras) {
+  voz.callar(); musica.parar();
+  RV.tiempos.forEach(clearTimeout); RV.tiempos = []; RV.oyendo = null;
+  const s = RECORRIDO[i];
+  if (s.id === 'cuentas') RV.paso = atras ? MAPA.length - 1 : 0;
+  const p = PANTALLAS[s.id](), de = RECORRIDO.filter(x => x.parte === s.parte);
+  RV.i = i; RV.arte = p.arte || null;
+  app.innerHTML = `
+  <section class="vista pv ${p.forma}">
+    ${p.arte ? heroHTML(p.arte) : ''}
+    <header class="barra"><button class="ic" data-accion="inicio" aria-label="Cerrar el recorrido">${icono('x')}</button>${avance(i)}</header>
+    <div class="aire"></div>
+    <div class="cuerpo">
+      ${s.parte != null ? `<div class="k">${PARTES[s.parte][0]} · ${de.indexOf(s) + 1} de ${de.length}</div>` : ''}
+      ${p.html}
+      ${p.nav === false ? '' : '<div class="pv-nav"><button class="btn alt" data-accion="pvAnt">Anterior</button><button class="btn principal centro" data-accion="pvSig">Siguiente</button></div>'}
     </div>
   </section>`;
-  if (c.tira) dibujarTira($('.pv .tira'), 10, 4);
+  window.scrollTo(0, 0);
+  if (p.montar) p.montar();
 }
 
 /* ---------- Acerca del Rosario ---------- */
@@ -1216,12 +1520,10 @@ function selector(k) {
     `${corte(v)}<button class="${valor(k) === v ? 'sel' : ''}" role="radio" aria-checked="${valor(k) === v}" data-accion="opcion" data-k="${k}" data-v="${v}"${disponible(v) ? '' : ' disabled'}>${t}</button>`).join('')}</div>${desc}`;
 }
 function hojaAjustes() {
-  const bloque = k => `<div class="ajuste" data-k="${k}"><b>${OPCIONES[k].titulo}</b>${selector(k)}</div>`;
-  const sw = (k, t, d) => `<button class="fila" data-accion="alternar" data-v="${k}" role="switch" aria-checked="${cfg[k]}"><span><b>${t}</b><small>${d}</small></span><span class="interruptor${cfg[k] ? ' on' : ''}"></span></button>`;
   hoja('Ajustes', `
-    ${['forma', 'voz', 'lengua', 'musica', 'textos', 'letra', 'imagenes', 'modo'].map(bloque).join('')}
-    ${sw('ohJesus', 'Oh Jesús mío', 'Después de cada Gloria')}
-    ${sw('vida', 'Pregunta para tu vida', 'Al terminar cada misterio')}`);
+    ${['forma', 'voz', 'lengua', 'musica', 'textos', 'letra', 'imagenes', 'modo'].map(bloqueAjuste).join('')}
+    ${interruptor('ohJesus', 'Oh Jesús mío', 'Después de cada Gloria')}
+    ${interruptor('vida', 'Pregunta para tu vida', 'Al terminar cada misterio')}`);
 }
 // Una muestra corta para escuchar la voz (y, en el iPhone, habilitarla con este toque), en la
 // lengua elegida. Al elegir una voz suena siempre, también rezando solo: es para conocerla.
@@ -1252,12 +1554,24 @@ const acciones = {
   terminar: () => transicion(terminar),
   atras: () => atras(),
   salir: () => { musica.parar(); transicion(vistaInicio); },
-  inicio: () => transicion(vistaInicio),
+  inicio: () => { musica.parar(); transicion(vistaInicio); },
   mapa: () => { const r = $('.rezo'); const m = r.classList.toggle('con-mapa'); $('.mapa').setAttribute('aria-hidden', !m); $('.cuerpo').inert = m; },
   primera: () => transicion(() => vistaPrimera(0)),
   pv: b => transicion(() => vistaPrimera(+b.dataset.v)),
-  // Quien entra por "Es mi primera vez" reza con las oraciones enteras a la vista.
-  primerRezo: () => { cfg.textos = 'completas'; guardar('ajustes', cfg); acciones.uno(); },
+  // En el mapa, "Siguiente" y "Anterior" recorren primero sus pasos.
+  pvSig: () => {
+    if (RECORRIDO[RV.i].id === 'cuentas' && RV.paso < MAPA.length - 1) return pasoMapa(RV.paso + 1);
+    if (RV.i < RECORRIDO.length - 1) transicion(() => vistaPrimera(RV.i + 1));
+  },
+  pvAnt: () => {
+    if (RECORRIDO[RV.i].id === 'cuentas' && RV.paso > 0) return pasoMapa(RV.paso - 1);
+    if (RV.i > 0) transicion(() => vistaPrimera(RV.i - 1, true));
+  },
+  pvAbrir: b => desplegar(b),
+  pvOir: b => oir(b),
+  pvCuenta: (b, e) => tocarCuenta(b, e),
+  pr: b => practicar(b.dataset.v),
+  primerRezo: () => { textosPrimeraVez(); acciones.uno(); },
   // La primera vez, "Ya sé rezarlo" lleva al inicio de siempre (y queda recordado).
   yaSe: () => { guardar('yaReza', true); transicion(vistaInicio); },
   acerca: () => transicion(vistaAcerca),
@@ -1281,6 +1595,8 @@ const acciones = {
     if (k === 'modo') aplicarTema();
     if (k === 'letra') aplicarLetra();
     if (k === 'imagenes' && $('.inicio')) vistaInicio();
+    // En el recorrido, la imagen de arriba muestra el estilo elegido.
+    if (k === 'imagenes' && RV.arte && $('.pv .hero .arte')) $('.pv .hero .arte').setAttribute('style', estiloArte(RV.arte));
     if (k === 'forma' || k === 'voz' || k === 'lengua') { muestra(k); precargarRezo(); }
     if (k === 'musica') musica.muestra();
   },
@@ -1300,7 +1616,7 @@ const acciones = {
 
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-accion]');
-  if (b) { acciones[b.dataset.accion](b); return; }
+  if (b) { acciones[b.dataset.accion](b, e); return; }
   // En la pantalla de rezo, un toque en cualquier parte pasa a la cuenta siguiente.
   if (S && S.pasos.length && e.target.closest('.rezo')) {
     if (PAUSAS.includes(S.pasos[S.ses.paso].t) && !e.target.closest('.con-mapa')) return;
@@ -1309,6 +1625,8 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && $('.velo')) return cerrarHoja();
+  // En el recorrido, las flechas pasan de pantalla.
+  if ($('.pv') && !$('.velo') && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) return acciones[e.key === 'ArrowRight' ? 'pvSig' : 'pvAnt']();
   if (!S || !S.pasos.length || !$('.rezo') || $('.velo')) return;
   // Con un botón enfocado, la barra espaciadora lo aprieta a él (no pasa la cuenta dos veces).
   if (e.key === ' ' && e.target.closest('button')) return;

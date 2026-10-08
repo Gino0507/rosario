@@ -194,15 +194,118 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .salidas .btn{margin-top:0}
 .salidas .enlace{align-self:center}
 @keyframes demorar{from{opacity:0;visibility:hidden;transform:translateY(6px)}to{opacity:1;visibility:visible;transform:none}}
-.puntos{display:flex;gap:6px;margin-bottom:16px}
-.puntos i{width:22px;height:4px;border-radius:999px;background:var(--line)}
-.puntos i.on{background:var(--mark)}
-.pv h1{font-size:calc(28px*var(--letra));line-height:1.14;margin-bottom:12px}
-.pv p{font-size:calc(15px*var(--letra));line-height:1.55;color:var(--soft);margin-bottom:22px}
-.pv .tira{margin:-6px 0 22px}
-.pv-nav{display:flex;gap:10px}
+/* Es mi primera vez: el recorrido (ver Decisiones.md, 8 de octubre, a la noche). Tres formas de
+   pantalla: corta (la imagen arriba y el texto abajo), larga (la imagen arriba y el texto que sube
+   sobre ella al desplazarse) y plena (sin imagen: los grupos, el mapa y la práctica). La página se
+   desplaza entera; la barra de arriba y los botones de abajo quedan siempre a mano. */
+.pv{--alto-arte:72dvh;overflow:clip}
+.pv.larga{--alto-arte:48dvh}
+.pv .hero{inset:0 0 auto 0;height:var(--alto-arte)}
+/* Arriba, un fondo que se funde, para que el texto no pase por detrás de la × al desplazarse. */
+.pv .barra{position:sticky;top:0;padding-bottom:14px;background:linear-gradient(180deg,var(--bg) calc(100% - 30px),rgba(var(--rgb),0))}
+.pv .barra + .aire{margin-top:-14px}
+.pv .aire{flex:1 0 22dvh}
+.pv.larga .aire{flex:1 0 20dvh}
+.pv.plena{height:100dvh}
+.pv.plena .aire{display:none}
+.pv .cuerpo{display:flex;flex-direction:column;padding-bottom:0}
+.pv.plena .cuerpo{flex:1;min-height:0;margin-top:0;padding-top:16px;overflow-y:auto;overscroll-behavior:contain}
+/* Una barra por parte del recorrido, que se va llenando. */
+.avance{flex:1;display:flex;gap:6px;align-items:center;height:42px;margin-left:12px;padding:0 16px;border-radius:999px;background:rgba(var(--rgb),.38);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.avance i{flex:1;height:3px;border-radius:999px;background:linear-gradient(90deg,var(--mark) calc(var(--p)*100%),var(--line) 0)}
+.pv h1{font-size:calc(28px*var(--letra));line-height:1.14;margin:4px 0 12px}
+.pv .cuerpo > p{font-size:calc(15px*var(--letra));line-height:1.55;color:var(--soft);margin-bottom:14px}
+.pv .cuerpo > p:last-of-type{margin-bottom:22px}
+.pv .nota-pv,.pv .cuerpo > .nota-pv{font-size:calc(13px*var(--letra));line-height:1.5;color:var(--muted)}
+.cita-pv small{display:block;margin-top:4px;font-family:Manrope,system-ui,sans-serif;font-style:normal;font-size:calc(12px*var(--letra));color:var(--muted)}
+.pv .cuerpo > .cita-pv{font-family:Spectral,serif;font-style:italic;font-weight:300;font-size:calc(18px*var(--letra));line-height:1.35;color:var(--ink)}
+.en-linea{display:inline-block;width:1.15em;height:1.15em;vertical-align:-.22em;color:var(--mark)}
+/* Los botones de abajo quedan a la vista aunque la pantalla se desplace. */
+.pv-nav{position:sticky;bottom:0;z-index:3;display:flex;gap:10px;margin-top:auto;padding:16px 0 calc(env(safe-area-inset-bottom) + 20px);background:linear-gradient(180deg,rgba(var(--rgb),0),var(--bg) 16px)}
 .pv-nav .btn.alt{margin-top:0;width:auto;flex:0 0 auto;padding:15px 22px}
 .pv-nav .principal{flex:1}
+.pv-nav.columna{flex-direction:column;align-items:center;gap:4px}
+.pv-nav.columna .principal{width:100%}
+/* Portada: las tres partes, para saltar a una. */
+.indice{margin:4px 0 6px}
+.indice .fila{padding:12px 0}
+.indice .fila b{font-size:calc(15px*var(--letra));font-weight:600}
+.fila > .ico{width:18px;height:18px;color:var(--muted)}
+/* Desplegables: los grupos de misterios y las oraciones. */
+.desplegables{margin:4px 0 14px;border-bottom:1px solid var(--line)}
+.desplegable .fila{gap:14px;padding:12px 0}
+.desplegable .nombre{flex:1;min-width:0}
+.desplegable .nombre b{font-size:calc(15px*var(--letra));font-weight:600}
+.desplegable .flecha{transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.desplegable.abierto .flecha{transform:rotate(180deg)}
+.desplegable .contenido{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s cubic-bezier(.16,1,.3,1)}
+.desplegable.abierto .contenido{grid-template-rows:1fr}
+.desplegable .contenido > div{overflow:hidden;min-height:0}
+.miniatura{width:44px;height:56px;flex-shrink:0;border-radius:var(--radio-mini);background-color:var(--bg);background-size:cover;background-position:50% 30%}
+.desplegable .sub{font-size:calc(13px*var(--letra));color:var(--muted);margin:0 0 8px 58px}
+.desplegable ol{list-style:none;counter-reset:m;margin:0 0 16px 58px}
+.desplegable li{counter-increment:m;position:relative;font-size:calc(14px*var(--letra));line-height:1.4;color:var(--soft);padding:3px 0 3px 20px}
+.desplegable li::before{content:counter(m);position:absolute;left:0;color:var(--oro-texto);font-weight:600;font-size:calc(12px*var(--letra));top:5px}
+.explica-pv{font-size:calc(14px*var(--letra));line-height:1.5;color:var(--soft);margin-bottom:12px}
+.parte-pv{line-height:1.45;margin-bottom:10px}
+.parte-pv .k{display:block;margin-bottom:1px}
+.parte-pv.guia{font-size:calc(14px*var(--letra));color:var(--muted)}
+.parte-pv.todos{font-size:calc(15.5px*var(--letra));font-weight:500}
+.oir{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 16px;margin:4px 0 16px;border:1px solid var(--line);border-radius:999px;font-size:calc(13px*var(--letra));font-weight:600;color:var(--oro-texto)}
+.oir .ico{width:16px;height:16px}
+/* El mapa, cuenta por cuenta. */
+.pv .ros{flex:1;min-height:220px;width:100%;margin:2px 0 6px}
+.ros .marca{fill:var(--mark);stroke:var(--mark)}
+.ros .cadena.marca{stroke:var(--mark);stroke-width:5.5}
+.pv-aqui{min-height:calc(7.2em*var(--letra));text-align:center}
+.pv-aqui b{display:block;font-family:Spectral,serif;font-weight:300;font-size:calc(21px*var(--letra));line-height:1.2;margin-bottom:4px}
+.pv-aqui span{display:block;font-size:calc(14px*var(--letra));line-height:1.5;color:var(--soft);text-wrap:balance}
+/* Inicio, en chico. */
+.captura{display:flex;flex-direction:column;gap:8px;margin:2px 0 16px;padding:10px;border-radius:var(--radio-sup);background:rgba(127,127,127,.1);pointer-events:none}
+.captura .btn.alt{margin-top:0}
+/* Un misterio, de punta a punta. */
+.linea{list-style:none;margin:6px 0 10px}
+.linea li{position:relative;display:flex;gap:14px;padding-bottom:16px}
+.linea li::before{content:'';position:absolute;left:11.5px;top:26px;bottom:2px;width:1px;background:var(--line)}
+.linea li:last-child::before{display:none}
+.hito{width:24px;height:24px;flex-shrink:0;color:var(--mark)}
+.linea b{display:block;font-size:calc(15px*var(--letra));font-weight:600;line-height:1.3;margin-top:2px}
+.linea small{display:block;font-size:calc(13px*var(--letra));line-height:1.45;color:var(--muted);margin-top:2px}
+/* La práctica: la pantalla de rezo en chico. */
+.pr-guia{display:flex;gap:10px;align-items:flex-start;min-height:calc(4.4em*var(--letra));margin-bottom:12px}
+.pr-n{flex-shrink:0;margin-top:2px;padding:2px 9px;border-radius:999px;background:var(--accent);color:var(--on);font-size:calc(11px*var(--letra));font-weight:600;white-space:nowrap}
+.pr-guia p{font-size:calc(14.5px*var(--letra));line-height:1.45;text-wrap:pretty}
+.maqueta{position:relative;flex:1 0 300px;display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--line);border-radius:28px;background:var(--bg);cursor:pointer;transition:box-shadow .3s}
+.mq-arte{position:absolute;inset:0 0 32% 0;background-size:cover;background-repeat:no-repeat;-webkit-mask-image:linear-gradient(180deg,#000 55%,transparent);mask-image:linear-gradient(180deg,#000 55%,transparent)}
+.mq-barra{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:12px 12px 0}
+.mq-chico{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;color:var(--ink);font-size:16px}
+.mq-barra .mq-chico{background:rgba(var(--rgb),.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.mq-barra .g-ros{width:19px;height:19px}
+.maqueta .cinco{padding:8px 11px;gap:6px}
+.maqueta .cinco i{width:7px;height:7px}
+.mq-mapa{position:absolute;z-index:1;inset:52px 0 0;display:flex;padding:8px 18px 18px;background:var(--bg);opacity:0;pointer-events:none;transition:opacity .35s}
+.maqueta.con-mapa .mq-mapa{opacity:1;pointer-events:auto}
+.mq-mapa .ros{flex:1;width:100%;min-height:0}
+.mq-cuerpo{position:relative;margin-top:auto;padding:22px 14px 8px;background:linear-gradient(180deg,rgba(var(--rgb),0) 0,var(--bg) 22px)}
+.mq-titulo{font-family:Spectral,serif;font-weight:300;font-size:calc(19px*var(--letra));line-height:1.15;margin:2px 0 10px}
+.maqueta .tira{height:20px;margin-bottom:10px}
+.mq-guia{font-size:calc(11.5px*var(--letra));line-height:1.45;color:var(--muted);margin-bottom:5px}
+.mq-guia:empty{display:none}
+.mq-todos{font-size:calc(14px*var(--letra));line-height:1.4;font-weight:500}
+.maqueta.sin-texto .mq-guia,.maqueta.sin-texto .mq-todos{display:none}
+.mq-pie{display:grid;grid-template-columns:1fr max-content 1fr;align-items:center;column-gap:6px;margin-top:8px}
+.mq-pie .mq-chico{color:var(--muted)}
+.mq-etq{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:4px 9px 4px 12px;border:1px solid var(--line);border-radius:999px;font-size:calc(11.5px*min(var(--letra),1.2));white-space:nowrap;color:var(--soft);background:rgba(var(--rgb),.35)}
+.mq-etq .ico{width:13px;height:13px;color:var(--muted)}
+.mq-controles{display:flex;align-items:center;justify-self:end}
+.mq-vel{display:grid;place-items:center;min-width:40px;height:36px}
+.mq-vel span{padding:3px 7px;border-radius:999px;background:rgba(127,127,127,.16);font-size:calc(11px*min(var(--letra),1.15));font-weight:600;font-variant-numeric:tabular-nums;color:var(--soft)}
+/* Lo que hay que tocar, con un anillo dorado que respira. */
+.maqueta .foco:not(.mq-vel){box-shadow:0 0 0 2px var(--mark);border-radius:999px}
+.maqueta.foco{box-shadow:0 0 0 2px var(--mark)}
+.mq-vel.foco span{box-shadow:0 0 0 2px var(--mark)}
+@media (prefers-reduced-motion:no-preference){.maqueta .foco:not(.mq-vel),.maqueta.foco,.mq-vel.foco span{animation:respirar 1.8s ease-in-out infinite}}
+@keyframes respirar{50%{box-shadow:0 0 0 2px var(--mark),0 0 0 7px rgba(232,184,107,.22)}}
 .acerca .hero{inset:0 0 auto 0;height:42dvh}
 .acerca .cuerpo{margin-top:30dvh}
 .acerca h1{font-size:calc(33px*var(--letra));line-height:1.06;margin-bottom:8px}
@@ -250,7 +353,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 @keyframes subir{from{transform:translateY(40px);opacity:0}}
 /* Viudas: títulos, preguntas y frases parejas, sin una palabra sola en el último renglón. */
 .t1,.mira,.fruto,.vida-q,.explica,.papa-t,.aqui,.sub{text-wrap:balance}
-.todos,.guia,.pv p{text-wrap:pretty}
+.todos,.guia,.pv p,.linea small,.explica-pv{text-wrap:pretty}
 
 /* Fundido entre pantallas (View Transitions) */
 ::view-transition-old(root),::view-transition-new(root){animation-duration:.45s;animation-timing-function:ease}
