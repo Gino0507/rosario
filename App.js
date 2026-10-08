@@ -382,10 +382,10 @@ function etiqueta(p) {
   return cfg.forma === 'todo' && pausa ? 'En pausa' : p.etq;
 }
 // La oración se ve entera o solo su nombre según Ajustes (el Credo y la Salve, siempre enteras).
-// Tocando el nombre, abajo, se muestra u oculta, y queda así para esa oración mientras dure el rezo.
+// Tocando el nombre, abajo, se muestra u oculta, y lo elegido vale para todas las oraciones que
+// siguen en ese rezo (también al retomarlo o al seguir con "un misterio más"). Se guarda en ses.texto.
 function conTexto(p) {
-  const base = textosEnteros() || SIEMPRE_ENTERAS.includes(p.o);
-  return S.invertidas.has(p.o) ? !base : base;
+  return S.ses.texto != null ? S.ses.texto : textosEnteros() || SIEMPRE_ENTERAS.includes(p.o);
 }
 // La etiqueta de abajo es el nombre de la oración y el botón para verla entera. Para pasar a la
 // siguiente se toca cualquier otra parte; con VoiceOver o teclado está el botón "Pasar a la siguiente".
@@ -416,7 +416,7 @@ function iniciar(modo, gid, m) { abrirSesion({ fecha: hoyISO(), modo, grupo: gid
 function abrirSesion(ses) {
   pausa = false;
   guardar('yaReza', true);
-  S = { ses, pasos: construirPasos(ses), invertidas: new Set() };
+  S = { ses, pasos: construirPasos(ses) };
   if (ses.paso >= S.pasos.length) ses.paso = 0;
   montarRezo();
   actualizar();
@@ -797,13 +797,14 @@ const acciones = {
   uno: () => transicion(() => iniciar('uno', grupoInicio, proximo(grupoInicio))),
   entero: () => transicion(() => iniciar('entero', grupoInicio, 0)),
   retomar: () => { const s = leer('sesion', null); if (s) transicion(() => { grupoInicio = s.grupo; abrirSesion(s); }); },
-  mas: () => { const gid = S.ses.grupo; transicion(() => abrirSesion({ fecha: hoyISO(), modo: 'uno', grupo: gid, misterio: proximo(gid), paso: 0, seguido: true })); },
-  salve: () => { const { grupo: gid, misterio } = S.ses; transicion(() => abrirSesion({ fecha: hoyISO(), modo: 'salve', grupo: gid, misterio, paso: 0 })); },
+  mas: () => { const { grupo: gid, texto } = S.ses; transicion(() => abrirSesion({ fecha: hoyISO(), modo: 'uno', grupo: gid, misterio: proximo(gid), paso: 0, seguido: true, texto })); },
+  salve: () => { const { grupo: gid, misterio, texto } = S.ses; transicion(() => abrirSesion({ fecha: hoyISO(), modo: 'salve', grupo: gid, misterio, paso: 0, texto })); },
   seguir: () => avanzar(),
-  // El nombre de la oración muestra u oculta su texto entero (sin cortar la voz).
+  // El nombre de la oración muestra u oculta su texto entero (sin cortar la voz), y así sigue.
   texto: () => {
-    const p = S.pasos[S.ses.paso], inv = S.invertidas;
-    if (inv.has(p.o)) inv.delete(p.o); else inv.add(p.o);
+    const p = S.pasos[S.ses.paso];
+    S.ses.texto = !conTexto(p);
+    guardar('sesion', S.ses);
     aplicarTexto(p);
     if (conTexto(p)) { fundir($('.guia')); fundir($('.todos')); }
   },
