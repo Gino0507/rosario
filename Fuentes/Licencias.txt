@@ -1,0 +1,9 @@
+Letras guardadas en la app. Las dos tienen licencia SIL Open Font License 1.1
+(https://openfontlicense.org), que permite usarlas, guardarlas y compartirlas con la app.
+Se bajaron de Google Fonts (solo los caracteres latinos) el 8 de octubre de 2026.
+
+Spectral: Copyright 2017 The Spectral Project Authors (https://github.com/productiontype/spectral)
+Manrope: Copyright 2018 The Manrope Project Authors (https://github.com/sharanda/manrope)
+
+Los íconos de la app son de Tabler Icons (https://tabler.io/icons), licencia MIT,
+Copyright (c) 2020-2024 Paweł Kuna. Están copiados como dibujo en App.js.

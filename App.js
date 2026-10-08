@@ -14,7 +14,26 @@ const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', '
 const DEL_DIA = ['gloriosos', 'gozosos', 'dolorosos', 'gloriosos', 'luminosos', 'dolorosos', 'gozosos'];
 const SINGULAR = { gozosos: 'gozoso', luminosos: 'luminoso', dolorosos: 'doloroso', gloriosos: 'glorioso' };
 
-const ICONO_ROSARIO = '<svg class="g-ros" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8.5" r="6" stroke-width="2.4" stroke-dasharray="0.01 2.75"/><path d="M12 15.2v2.3M12 18.6v4M10.2 20.2h3.6" stroke-width="1.6"/></svg><i class="ti ti-photo g-arte" aria-hidden="true"></i>';
+// Íconos de Tabler (licencia MIT), guardados como dibujo adentro de la app: pesan casi nada
+// y funcionan sin conexión. Para sumar uno: copiar sus trazos de tabler.io/icons (versión "outline").
+const ICONOS = {
+  'adjustments-horizontal': '<path d="M14 6m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M4 6l8 0"/><path d="M16 6l4 0"/><path d="M8 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M4 12l2 0"/><path d="M10 12l10 0"/><path d="M17 18m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M4 18l11 0"/><path d="M19 18l1 0"/>',
+  'arrow-back-up': '<path d="M9 14l-4 -4l4 -4"/><path d="M5 10h11a4 4 0 1 1 0 8h-1"/>',
+  'arrow-left': '<path d="M5 12l14 0"/><path d="M5 12l6 6"/><path d="M5 12l6 -6"/>',
+  'book-2': '<path d="M19 4v16h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12z"/><path d="M19 16h-12a2 2 0 0 0 -2 2"/><path d="M9 8h6"/>',
+  'chevron-down': '<path d="M6 9l6 6l6 -6"/>',
+  'chevron-up': '<path d="M6 15l6 -6l6 6"/>',
+  'photo': '<path d="M15 8h.01"/><path d="M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12z"/><path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5"/><path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3"/>',
+  'player-pause': '<path d="M6 5m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z"/><path d="M14 5m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z"/>',
+  'player-play': '<path d="M7 4v16l13 -8z"/>',
+  'sparkles': '<path d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z"/>',
+  'volume': '<path d="M15 8a5 5 0 0 1 0 8"/><path d="M17.7 5a9 9 0 0 1 0 14"/><path d="M6 15h-2a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h2l3.5 -4.5a.8 .8 0 0 1 1.5 .5v14a.8 .8 0 0 1 -1.5 .5l-3.5 -4.5"/>',
+  'volume-off': '<path d="M15 8a5 5 0 0 1 1.912 4.934m-1.377 2.602a5 5 0 0 1 -.535 .464"/><path d="M17.7 5a9 9 0 0 1 2.362 11.086m-1.676 2.299a9 9 0 0 1 -.686 .615"/><path d="M9.069 5.054l.431 -.554a.8 .8 0 0 1 1.5 .5v2m0 4v8a.8 .8 0 0 1 -1.5 .5l-3.5 -4.5h-2a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h2l1.294 -1.664"/><path d="M3 3l18 18"/>',
+  'x': '<path d="M18 6l-12 12"/><path d="M6 6l12 12"/>',
+};
+const icono = (n, clase = '') => `<svg class="ico ${clase}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONOS[n]}</svg>`;
+
+const ICONO_ROSARIO = '<svg class="g-ros" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8.5" r="6" stroke-width="2.4" stroke-dasharray="0.01 2.75"/><path d="M12 15.2v2.3M12 18.6v4M10.2 20.2h3.6" stroke-width="1.6"/></svg>' + icono('photo', 'g-arte');
 
 /* ---------- Guardado local (puede no estar disponible) ---------- */
 const memoria = {};
@@ -52,7 +71,7 @@ const OPCIONES = {
     ['ilustraciones', 'Ilustraciones', 'Ilustraciones de hoy, más simples y serenas.'],
     ['ninguna', 'Sin imágenes', 'Solo luz y color, para rezar sin nada que mirar.']] },
   modo: { titulo: 'Modo', items: [
-    ['auto', 'Automático', 'De 19 a 7 se usa el modo oscuro, y el resto del día, el claro.'],
+    ['auto', 'Automático', 'Como esté el celular: si está en modo oscuro, la app también.'],
     ['dia', 'Claro', 'Fondo claro, para rezar de día o con mucha luz.'],
     ['noche', 'Oscuro', 'Fondo oscuro, para rezar de noche o con poca luz.']] },
 };
@@ -83,12 +102,14 @@ function marcarRezado(id, m) { const r = rezados(id); if (!r.includes(m)) { r.pu
 function proximo(id) { const r = rezados(id); for (let i = 0; i < 5; i++) if (!r.includes(i)) return i; return 0; }
 
 /* ---------- Tema ---------- */
+// Automático sigue al celular (ver Decisiones.md, 8 de octubre), y cambia en el momento si el celular cambia.
+const oscuroCelular = matchMedia('(prefers-color-scheme: dark)');
 function aplicarTema() {
-  const h = new Date().getHours();
-  const noche = cfg.modo === 'noche' || (cfg.modo === 'auto' && (h >= 19 || h < 7));
+  const noche = cfg.modo === 'noche' || (cfg.modo === 'auto' && oscuroCelular.matches);
   document.body.className = noche ? 'noche' : 'dia';
   $('meta[name="theme-color"]').setAttribute('content', noche ? '#0d1120' : '#f6f6f4');
 }
+oscuroCelular.addEventListener('change', aplicarTema);
 
 /* ---------- Pantalla encendida mientras se reza ---------- */
 let bloqueo = null;
@@ -209,14 +230,14 @@ const conCredito = mis => cfg.imagenes === 'pinturas' || (cfg.imagenes === 'ilus
 function vistaInicio() {
   S = null; silencio(); soltarPantalla(); aplicarTema();
   const g = grupo(grupoInicio), m = proximo(g.id), mis = g.misterios[m], hoy = new Date();
-  const acerca = '<button class="mini" data-accion="acerca"><i class="ti ti-book-2"></i>Acerca del Rosario</button>';
+  const acerca = `<button class="mini" data-accion="acerca">${icono('book-2')}Acerca del Rosario</button>`;
   let opciones;
   if (!yaReza()) {
     // La primera vez en este celular: lo principal es que te acompañen.
     opciones = `
       <button class="btn principal primera" data-accion="primera"><span>Es mi primera vez<small>Te acompañamos cuenta por cuenta</small></span></button>
       <button class="btn alt centro" data-accion="yaSe">Ya sé rezarlo</button>
-      <button class="enlace solo-acerca" data-accion="acerca"><i class="ti ti-book-2"></i>Acerca del Rosario</button>`;
+      <button class="enlace solo-acerca" data-accion="acerca">${icono('book-2')}Acerca del Rosario</button>`;
   } else {
     // Con un rezo a medias, lo principal es retomarlo, y se dice dónde.
     const ses = leer('sesion', null);
@@ -233,17 +254,17 @@ function vistaInicio() {
       <button class="btn ${retomar ? 'alt' : 'principal'}" data-accion="uno"><span>Un misterio<small>${esc(mis.titulo)}</small></span><span class="min">4 min</span></button>
       <button class="btn alt" data-accion="entero"><span>El Rosario entero</span><span class="min">20 min</span></button>
       <div class="accesos">
-        <button class="mini" data-accion="primera"><i class="ti ti-sparkles"></i>Es mi primera vez</button>
+        <button class="mini" data-accion="primera">${icono('sparkles')}Es mi primera vez</button>
         ${acerca}
       </div>`;
   }
   app.innerHTML = `
   <section class="vista inicio">
     ${heroHTML(mis)}
-    <header class="barra"><span></span><button class="ic" data-accion="ajustes" aria-label="Ajustes"><i class="ti ti-adjustments-horizontal"></i></button></header>
+    <header class="barra"><span></span><button class="ic" data-accion="ajustes" aria-label="Ajustes">${icono('adjustments-horizontal')}</button></header>
     <div class="cuerpo">
       <div class="k lift">${cap(DIAS[hoy.getDay()])} ${hoy.getDate()} de ${MESES[hoy.getMonth()]}</div>
-      <button class="grupo-sel" data-accion="grupos" aria-label="Elegir otros misterios"><h1 class="t1">${g.nombre}<i class="ti ti-chevron-down"></i></h1></button>
+      <button class="grupo-sel" data-accion="grupos" aria-label="Elegir otros misterios"><h1 class="t1">${g.nombre}${icono('chevron-down')}</h1></button>
       <p class="sub lift">${esc(g.subtitulo)}</p>
       ${opciones}
     </div>
@@ -344,30 +365,45 @@ function hablar() {
 function ponerPausa(v) {
   pausa = v;
   const b = $('[data-accion="pausa"]');
-  if (b) { b.innerHTML = `<i class="ti ti-player-${v ? 'play' : 'pause'}"></i>`; b.setAttribute('aria-label', v ? 'Seguir con la voz' : 'Pausar la voz'); }
+  if (b) { b.innerHTML = icono(v ? 'player-play' : 'player-pause'); b.setAttribute('aria-label', v ? 'Seguir con la voz' : 'Pausar la voz'); }
   ponerEtiqueta(S.pasos[S.ses.paso]);
   if (v) silencio(); else hablar();
 }
 
 // El parlante del rezo (A dos voces): calla la voz o la vuelve a activar, y se recuerda.
 function pintarVoz(b) {
-  b.innerHTML = `<i class="ti ti-volume${cfg.mudo ? '-off' : ''}"></i>`;
+  b.innerHTML = icono(cfg.mudo ? 'volume-off' : 'volume');
   b.setAttribute('aria-label', cfg.mudo ? 'Activar la voz' : 'Callar la voz');
 }
 
 // El anuncio ya tiene su botón "Empezar" y la pregunta para tu vida el suyo: ahí no va etiqueta.
 function etiqueta(p) {
   if (p.t !== 'oracion') return '';
-  if (cfg.forma === 'todo') return pausa ? 'En pausa' : p.etq;
-  return p.etq + ' · tocá para seguir';
+  return cfg.forma === 'todo' && pausa ? 'En pausa' : p.etq;
 }
-// La etiqueta de abajo es también el botón "siguiente", para quien no puede tocar
-// cualquier parte de la pantalla (VoiceOver, teclado).
+// La oración se ve entera o solo su nombre según Ajustes (el Credo y la Salve, siempre enteras).
+// Tocando el nombre, abajo, se muestra u oculta, y queda así para esa oración mientras dure el rezo.
+function conTexto(p) {
+  const base = textosEnteros() || SIEMPRE_ENTERAS.includes(p.o);
+  return S.invertidas.has(p.o) ? !base : base;
+}
+// La etiqueta de abajo es el nombre de la oración y el botón para verla entera. Para pasar a la
+// siguiente se toca cualquier otra parte; con VoiceOver o teclado está el botón "Pasar a la siguiente".
 function ponerEtiqueta(p) {
-  const e = $('.etq'), t = etiqueta(p);
-  e.textContent = t;
-  if (t) e.setAttribute('aria-label', t + '. Pasar a la siguiente');
-  else e.removeAttribute('aria-label');
+  const e = $('.etq'), t = etiqueta(p), visible = p.t === 'oracion' && conTexto(p);
+  e.classList.toggle('vacia', !t);
+  e.innerHTML = t ? `<span>${esc(t)}${icono(visible ? 'chevron-down' : 'chevron-up')}</span>` : '';
+  if (t) { e.setAttribute('aria-label', `${t}. ${visible ? 'Ocultar' : 'Mostrar'} la oración`); e.setAttribute('aria-expanded', visible); }
+  else { e.removeAttribute('aria-label'); e.removeAttribute('aria-expanded'); }
+  // Las dos primeras oraciones de cada rezo llevan una pista de cómo se usa la pantalla.
+  const { ses, pasos } = S, previas = pasos.slice(0, ses.paso).filter(x => x.t === 'oracion').length;
+  const ver = `el nombre para ${visible ? 'ocultar' : 'ver'} la oración`;
+  $('.pista-rezo').textContent = p.t !== 'oracion' || ses.seguido || ses.modo === 'salve' || previas > 1 ? ''
+    : cfg.forma === 'todo' ? `Tocá ${ver}.` : `Tocá la pantalla para seguir, y ${ver}.`;
+}
+function aplicarTexto(p) {
+  $('.rezo').classList.toggle('sin-texto', p.t === 'oracion' && !conTexto(p));
+  ponerEtiqueta(p);
 }
 
 // Si el celular cortó la voz al bloquearse o al cambiar de app, retoma el paso.
@@ -380,7 +416,7 @@ function iniciar(modo, gid, m) { abrirSesion({ fecha: hoyISO(), modo, grupo: gid
 function abrirSesion(ses) {
   pausa = false;
   guardar('yaReza', true);
-  S = { ses, pasos: construirPasos(ses) };
+  S = { ses, pasos: construirPasos(ses), invertidas: new Set() };
   if (ses.paso >= S.pasos.length) ses.paso = 0;
   montarRezo();
   actualizar();
@@ -392,7 +428,7 @@ function montarRezo() {
   <section class="vista fija rezo es-oracion">
     <div class="hero"><div class="arte capa"></div><div class="arte capa"></div><div class="fundido"></div></div>
     <header class="barra">
-      <button class="ic" data-accion="salir" aria-label="Salir"><i class="ti ti-x"></i></button>
+      <button class="ic" data-accion="salir" aria-label="Salir">${icono('x')}</button>
       <span class="cinco" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
       <button class="ic" data-accion="mapa" aria-label="Ver el mapa del Rosario">${ICONO_ROSARIO}</button>
     </header>
@@ -417,11 +453,13 @@ function montarRezo() {
       <div class="vida-q"></div>
       <div class="acciones"></div>
       <div class="pie">
-        <button class="ic chico" data-accion="atras" aria-label="Volver a la oración anterior"><i class="ti ti-arrow-back-up"></i></button>
-        <button class="etq" data-accion="seguir"></button>
-        ${cfg.forma === 'todo' ? '<button class="ic chico" data-accion="pausa" aria-label="Pausar la voz"><i class="ti ti-player-pause"></i></button>'
+        <button class="ic chico" data-accion="atras" aria-label="Volver a la oración anterior">${icono('arrow-back-up')}</button>
+        <button class="etq" data-accion="texto"></button>
+        <button class="siguiente" data-accion="seguir">Pasar a la siguiente</button>
+        ${cfg.forma === 'todo' ? `<button class="ic chico" data-accion="pausa" aria-label="Pausar la voz">${icono('player-pause')}</button>`
           : cfg.forma === 'guia' ? '<button class="ic chico" data-accion="voz"></button>' : '<span class="ic chico fantasma"></span>'}
       </div>
+      <p class="pista-rezo"></p>
     </div>
   </section>`;
   dibujarMapa($('.ros'));
@@ -464,7 +502,7 @@ function actualizar() {
   tira.style.display = p.tira ? '' : 'none';
   if (p.tira) dibujarTira(tira, p.tira.n, p.tira.i);
 
-  r.classList.toggle('sin-texto', p.t === 'oracion' && !textosEnteros() && !SIEMPRE_ENTERAS.includes(p.o));
+  r.classList.toggle('sin-texto', p.t === 'oracion' && !conTexto(p));
   if (p.t === 'oracion') {
     // A dos voces se separa lo que reza cada uno. Solo o escuchando, la oración va entera.
     const t = textos(p), separar = cfg.forma === 'guia';
@@ -619,7 +657,7 @@ function vistaFin(ses) {
   app.innerHTML = `
   <section class="vista fija fin">
     ${heroHTML(mis)}
-    <header class="barra"><button class="ic" data-accion="inicio" aria-label="Volver al inicio"><i class="ti ti-x"></i></button><span></span></header>
+    <header class="barra"><button class="ic" data-accion="inicio" aria-label="Volver al inicio">${icono('x')}</button><span></span></header>
     <div class="cuerpo">
       <h1 class="t1 amen">Amén</h1>
       <p class="sub">${rezaste}</p>
@@ -647,7 +685,7 @@ function vistaPrimera(i) {
   app.innerHTML = `
   <section class="vista fija pv">
     ${heroHTML(grupo('gozosos').misterios[0])}
-    <header class="barra"><button class="ic" data-accion="inicio" aria-label="Cerrar"><i class="ti ti-x"></i></button><span></span></header>
+    <header class="barra"><button class="ic" data-accion="inicio" aria-label="Cerrar">${icono('x')}</button><span></span></header>
     <div class="cuerpo">
       <div class="puntos">${PRIMERA.map((_, j) => `<i class="${j <= i ? 'on' : ''}"></i>`).join('')}</div>
       <h1 class="t1">${esc(c.t)}</h1>
@@ -673,7 +711,7 @@ function vistaAcerca() {
   app.innerHTML = `
   <section class="vista acerca">
     ${heroHTML(grupo('gloriosos').misterios[4])}
-    <header class="barra"><button class="ic" data-accion="inicio" aria-label="Volver al inicio"><i class="ti ti-arrow-left"></i></button><span></span></header>
+    <header class="barra"><button class="ic" data-accion="inicio" aria-label="Volver al inicio">${icono('arrow-left')}</button><span></span></header>
     <div class="cuerpo">
       <h1 class="t1">Acerca del Rosario</h1>
       <p class="sub" style="margin-bottom:14px">Para conocerlo a fondo, de a un capítulo.</p>
@@ -762,6 +800,13 @@ const acciones = {
   mas: () => { const gid = S.ses.grupo; transicion(() => abrirSesion({ fecha: hoyISO(), modo: 'uno', grupo: gid, misterio: proximo(gid), paso: 0, seguido: true })); },
   salve: () => { const { grupo: gid, misterio } = S.ses; transicion(() => abrirSesion({ fecha: hoyISO(), modo: 'salve', grupo: gid, misterio, paso: 0 })); },
   seguir: () => avanzar(),
+  // El nombre de la oración muestra u oculta su texto entero (sin cortar la voz).
+  texto: () => {
+    const p = S.pasos[S.ses.paso], inv = S.invertidas;
+    if (inv.has(p.o)) inv.delete(p.o); else inv.add(p.o);
+    aplicarTexto(p);
+    if (conTexto(p)) { fundir($('.guia')); fundir($('.todos')); }
+  },
   terminar: () => transicion(terminar),
   atras: () => atras(),
   salir: () => transicion(vistaInicio),
