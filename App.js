@@ -207,7 +207,8 @@ function construirPasos(ses) {
     return P;
   }
   const entero = ses.modo === 'entero';
-  P.push({ t: 'oracion', o: 'senal', pos: 'cruz', etq: 'Señal de la cruz', nota: 'Nos ponemos en presencia de Dios.' });
+  // Si se sigue con "un misterio más", ya se hizo la señal de la cruz: se arranca en el anuncio.
+  if (!ses.seguido) P.push({ t: 'oracion', o: 'senal', pos: 'cruz', etq: 'Señal de la cruz', nota: 'Nos ponemos en presencia de Dios.' });
   if (entero) {
     P.push({ t: 'oracion', o: 'credo', pos: 'cruz', etq: 'Credo', nota: 'Lo que creemos, en pocas palabras.' });
     P.push({ t: 'oracion', o: 'padre', pos: 'p1', tira: { n: 3, i: 0 }, etq: 'Padrenuestro' });
@@ -496,11 +497,19 @@ function vistaFin(ses) {
   const g = grupo(ses.grupo), uno = ses.modo === 'uno', mis = g.misterios[uno ? ses.misterio : 4];
   const quedan = 5 - rezados(g.id).length;
   const manana = new Date(Date.now() + 864e5).getDay();
-  let detalle;
-  if (uno && quedan > 0 && g.id === DEL_DIA[new Date().getDay()])
-    detalle = quedan === 1 ? 'Te queda un misterio de hoy. Lo podés rezar en otro momento del día.'
-      : `Te quedan ${NUMERO[quedan]} misterios de hoy. Los podés rezar en otro momento del día.`;
-  else detalle = `Mañana, ${DIAS[manana]}, tocan los misterios ${DEL_DIA[manana]}.`;
+  const hoy = g.id === DEL_DIA[new Date().getDay()], siguiente = g.misterios[proximo(g.id)];
+  let detalle, botones;
+  if (uno && quedan > 0) {
+    detalle = (quedan === 1 ? `Te queda un misterio ${hoy ? 'de hoy' : SINGULAR[g.id]}.` : `Te quedan ${NUMERO[quedan]} misterios ${hoy ? 'de hoy' : g.id}.`)
+      + ` Podés seguir ahora o ${quedan === 1 ? 'rezarlo' : 'rezarlos'} en otro momento del día.`;
+    botones = `<button class="btn principal" data-accion="mas"><span>Un misterio más<small>${esc(siguiente.titulo)}</small></span><span class="min">4 min</span></button>
+      <button class="btn alt" data-accion="salve" style="justify-content:center">Rezar la Salve</button>
+      <div style="text-align:center;margin-top:8px"><button class="enlace" data-accion="inicio">Volver al inicio</button></div>`;
+  } else {
+    detalle = uno ? `Con este completaste los cinco misterios ${g.id}${hoy ? ' de hoy' : ''}: un Rosario entero.` : `Mañana, ${DIAS[manana]}, tocan los misterios ${DEL_DIA[manana]}.`;
+    botones = uno ? '<button class="btn principal" data-accion="salve" style="justify-content:center">Rezar la Salve</button><button class="btn alt" data-accion="inicio" style="justify-content:center">Volver al inicio</button>'
+      : '<button class="btn principal" data-accion="inicio" style="justify-content:center">Volver al inicio</button>';
+  }
   app.innerHTML = `
   <section class="vista fija fin">
     ${heroHTML(mis)}
@@ -509,8 +518,7 @@ function vistaFin(ses) {
       <div class="k lift">Amén</div>
       <h1 class="t1">${uno ? `Rezaste el ${ORDINAL[ses.misterio]} misterio ${SINGULAR[g.id]}` : `Rezaste los ${g.nombre.toLowerCase()}`}</h1>
       <p class="sub" style="margin-bottom:26px">${detalle}</p>
-      ${uno ? '<button class="btn principal" data-accion="salve" style="justify-content:center">Rezar la Salve</button><button class="btn alt" data-accion="inicio" style="justify-content:center">Volver al inicio</button>'
-            : '<button class="btn principal" data-accion="inicio" style="justify-content:center">Volver al inicio</button>'}
+      ${botones}
     </div>
   </section>`;
   S = { ses, pasos: [] };
@@ -627,6 +635,7 @@ const acciones = {
   uno: () => iniciar('uno', grupoInicio, proximo(grupoInicio)),
   entero: () => iniciar('entero', grupoInicio, 0),
   retomar: () => { const s = leer('sesion', null); if (s) { grupoInicio = s.grupo; abrirSesion(s); } },
+  mas: () => { const gid = S.ses.grupo; abrirSesion({ fecha: hoyISO(), modo: 'uno', grupo: gid, misterio: proximo(gid), paso: 0, seguido: true }); },
   salve: () => abrirSesion({ fecha: hoyISO(), modo: 'salve', grupo: S.ses.grupo, misterio: S.ses.misterio, paso: 0 }),
   seguir: () => avanzar(),
   terminar: () => terminar(),
