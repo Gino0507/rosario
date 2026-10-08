@@ -12,7 +12,8 @@
 .dia{--bg:#f6f6f4;--rgb:246,246,244;--ink:#1b1d26;--soft:#34363f;--muted:#5a5c66;--accent:#e8b86b;--on:#1a1408;--mark:#a8741f;--oro-texto:#8f6218;--bead:rgba(27,29,38,.16);--line:rgba(27,29,38,.22);--glow:rgba(246,246,244,.75);--hoja:#ffffff}
 
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--seguro:env(safe-area-inset-top,0px);--radio-sup:20px;--radio-mini:12px}
+:root{--seguro:env(safe-area-inset-top,0px);--radio-sup:20px;--radio-mini:12px;--letra:1}
+/* Tamaño de letra (Ajustes): cada font-size va multiplicado por --letra. Los íconos (.ic) no. */
 /* Redondeos: botones, etiquetas e interruptores en píldora (999px); superficies (hojas, accesos)
    en --radio-sup; miniaturas y segmentos en --radio-mini; puntos y cuentas, círculos. */
 html,body{background:var(--bg);color:var(--ink)}
@@ -28,7 +29,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .t1{font-family:Spectral,serif;font-weight:300;letter-spacing:-.01em}
 /* Íconos (dibujos de Tabler, ver App.js) */
 .ico{display:block;width:1em;height:1em;flex-shrink:0}
-.k{font-size:12px;color:var(--muted)}
+.k{font-size:calc(12px*var(--letra));color:var(--muted)}
 
 /* Pintura de fondo */
 .hero{position:absolute;inset:0 0 34% 0;overflow:hidden}
@@ -57,21 +58,21 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .vista h1,.vista h2,.lift{text-shadow:0 1px 14px var(--glow)}
 
 /* Inicio */
-.grupo-t{font-size:35px;line-height:1.05;margin:6px 0 8px}
+.grupo-t{font-size:calc(35px*var(--letra));line-height:1.05;margin:6px 0 8px}
 .grupo-sel{display:block;width:100%;text-align:left}
 .grupo-sel .ico{display:inline-block;width:18px;height:18px;color:var(--muted);margin-left:8px;vertical-align:middle}
-.sub{font-size:14px;color:var(--soft);line-height:1.45}
-.pregunta{font-size:19px;font-weight:600;margin:22px 0 12px;letter-spacing:-.01em}
-.btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;border-radius:999px;padding:15px 22px;font-size:15px;transition:transform .2s cubic-bezier(.16,1,.3,1)}
+.sub{font-size:calc(14px*var(--letra));color:var(--soft);line-height:1.45}
+.pregunta{font-size:calc(19px*var(--letra));font-weight:600;margin:22px 0 12px;letter-spacing:-.01em}
+.btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;border-radius:999px;padding:15px 22px;font-size:calc(15px*var(--letra));transition:transform .2s cubic-bezier(.16,1,.3,1)}
 .btn:active{transform:scale(.98)}
 .btn.principal{background:var(--accent);color:var(--on);font-weight:600}
-.btn small{display:block;font-weight:500;font-size:12px;opacity:.75;margin-top:1px}
+.btn small{display:block;font-weight:500;font-size:calc(12px*var(--letra));opacity:.75;margin-top:1px}
 .btn.centro{justify-content:center}
 .btn.alt{border:1px solid var(--line);margin-top:10px}
-.btn .min{font-size:13px;font-weight:500;flex-shrink:0}
+.btn .min{font-size:calc(13px*var(--letra));font-weight:500;flex-shrink:0}
 .btn.alt .min{color:var(--muted)}
 .accesos{display:flex;gap:8px;margin-top:14px}
-.mini{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:500;background:rgba(var(--rgb),.5);border:1px solid var(--line);border-radius:var(--radio-sup);padding:10px 4px 9px;white-space:nowrap}
+.mini{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:calc(12px*var(--letra));font-weight:500;background:rgba(var(--rgb),.5);border:1px solid var(--line);border-radius:var(--radio-sup);padding:10px 4px 9px;white-space:nowrap}
 .mini .ico{width:18px;height:18px;color:var(--mark)}
 /* Retomar, o la primera vez: el botón principal va primero, sin la pregunta del tiempo. */
 .sub + .btn{margin-top:22px}
@@ -87,9 +88,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .g-arte{display:none}
 .con-mapa .g-ros{display:none}.con-mapa .g-arte{display:block}
 
-.rezo .titulo{font-size:25px;line-height:1.12;margin:4px 0 4px}
-.rezo .cita{font-size:12px;color:var(--muted);margin-bottom:10px}
-.rezo .mira{font-family:Spectral,serif;font-style:italic;font-weight:300;font-size:16px;line-height:1.42;color:var(--soft);margin-bottom:14px;min-height:1.42em;transition:opacity .5s}
+.rezo .titulo{font-size:calc(25px*var(--letra));line-height:1.12;margin:4px 0 4px}
+.rezo .cita{font-size:calc(12px*var(--letra));color:var(--muted);margin-bottom:10px}
+.rezo .mira{font-family:Spectral,serif;font-style:italic;font-weight:300;font-size:calc(16px*var(--letra));line-height:1.42;color:var(--soft);margin-bottom:14px;min-height:1.42em;transition:opacity .5s}
 .tira{display:block;width:100%;height:26px;margin:0 0 14px;overflow:visible}
 /* Pasar una cuenta: la nueva crece, late y se asienta; las ya rezadas quedan marcadas y más tenues. */
 .tira .hebra,.tira .hilo{stroke:var(--line);stroke-width:1.2;stroke-linecap:round;transition:stroke .35s,stroke-width .35s}
@@ -98,10 +99,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .tira circle.hecha{fill:var(--mark);opacity:.55}
 .tira circle.actual{fill:var(--mark);transform:scale(1.35);animation:pasar .6s cubic-bezier(.16,1,.3,1)}
 @keyframes pasar{0%{transform:scale(1)}40%{transform:scale(1.75)}100%{transform:scale(1.35)}}
-.guia{font-size:13px;line-height:1.5;color:var(--muted);margin-bottom:8px}
+.guia{font-size:calc(13px*var(--letra));line-height:1.5;color:var(--muted);margin-bottom:8px}
 .guia:empty{display:none}
-.todos{font-size:18px;line-height:1.4;font-weight:500}
-.todos.largo{font-size:15px;line-height:1.45}
+.todos{font-size:calc(18px*var(--letra));line-height:1.4;font-weight:500}
+.todos.largo{font-size:calc(15px*var(--letra));line-height:1.45}
 .todos span{transition:opacity .4s}
 /* Texto de las oraciones: solo el nombre (abajo, en la etiqueta). Ver Decisiones.md, 7 de octubre. */
 .sin-texto .guia,.sin-texto .todos{display:none}
@@ -110,38 +111,38 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .pie{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
 /* El nombre de la oración: tocarlo muestra u oculta el texto entero. */
 .etq{flex:1;min-height:44px;display:flex;align-items:center;justify-content:center}
-.etq span{display:inline-flex;align-items:center;gap:6px;padding:6px 10px 6px 14px;border:1px solid var(--line);border-radius:999px;font-size:12px;color:var(--soft);background:rgba(var(--rgb),.35)}
+.etq span{display:inline-flex;align-items:center;gap:6px;padding:6px 10px 6px 14px;border:1px solid var(--line);border-radius:999px;font-size:calc(12px*var(--letra));color:var(--soft);background:rgba(var(--rgb),.35)}
 .etq .ico{width:14px;height:14px;color:var(--muted)}
 .etq.vacia{visibility:hidden}
 /* Para VoiceOver y teclado: invisible hasta que recibe el foco. */
 .siguiente{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-.siguiente:focus-visible{position:static;width:auto;height:44px;clip-path:none;padding:0 14px;border-radius:999px;font-size:13px;background:var(--accent);color:var(--on)}
-.pista-rezo{font-size:12px;line-height:1.4;color:var(--muted);text-align:center;margin-top:2px;text-wrap:balance}
+.siguiente:focus-visible{position:static;width:auto;height:44px;clip-path:none;padding:0 14px;border-radius:999px;font-size:calc(13px*var(--letra));background:var(--accent);color:var(--on)}
+.pista-rezo{font-size:calc(12px*var(--letra));line-height:1.4;color:var(--muted);text-align:center;margin-top:2px;text-wrap:balance}
 .pista-rezo:empty{display:none}
 
 .pide,.credito,.vida-q,.acciones{display:none}
-.es-anuncio .titulo{font-size:33px;line-height:1.06;margin-bottom:8px}
-.es-anuncio .cita{font-size:14px;margin-bottom:22px}
+.es-anuncio .titulo{font-size:calc(33px*var(--letra));line-height:1.06;margin-bottom:8px}
+.es-anuncio .cita{font-size:calc(14px*var(--letra));margin-bottom:22px}
 .es-anuncio .pide{display:block;margin-bottom:22px}
 .pide .k{display:block;margin-bottom:4px}
-.fruto{display:block;font-family:Spectral,serif;font-style:italic;font-weight:500;font-size:22px;line-height:1.15;color:var(--mark)}
-.es-anuncio .credito{display:block;font-size:11px;line-height:1.35;color:var(--muted);text-align:right;margin:0 0 18px 30%}
+.fruto{display:block;font-family:Spectral,serif;font-style:italic;font-weight:500;font-size:calc(22px*var(--letra));line-height:1.15;color:var(--mark)}
+.es-anuncio .credito{display:block;font-size:calc(11px*var(--letra));line-height:1.35;color:var(--muted);text-align:right;margin:0 0 18px 30%}
 .es-anuncio .mira,.es-anuncio .tira,.es-anuncio .guia,.es-anuncio .todos{display:none}
 .es-anuncio .acciones,.es-vida .acciones{display:flex;flex-direction:column;gap:10px;align-items:center}
 .es-vida .fundido{background:linear-gradient(180deg,rgba(var(--rgb),.55) 0%,rgba(var(--rgb),.8) 50%,var(--bg) 100%)}
 .dia .es-vida .fundido{background:linear-gradient(180deg,rgba(var(--rgb),.3) 0%,rgba(var(--rgb),.5) 50%,var(--bg) 100%)}
 .es-vida .titulo,.es-vida .cita,.es-vida .mira,.es-vida .tira,.es-vida .guia,.es-vida .todos{display:none}
-.es-vida .vida-q{display:block;font-family:Spectral,serif;font-weight:300;font-size:24px;line-height:1.24;margin:10px 0 30px}
-.enlace{font-size:13px;color:var(--muted);min-height:44px;padding:6px 12px}
+.es-vida .vida-q{display:block;font-family:Spectral,serif;font-weight:300;font-size:calc(24px*var(--letra));line-height:1.24;margin:10px 0 30px}
+.enlace{font-size:calc(13px*var(--letra));color:var(--muted);min-height:44px;padding:6px 12px}
 
 /* Mapa */
 .mapa{position:absolute;inset:0;z-index:4;background:var(--bg);display:flex;flex-direction:column;padding:calc(var(--seguro) + 76px) 26px calc(env(safe-area-inset-bottom) + 24px);opacity:0;pointer-events:none;transition:opacity .35s}
 .con-mapa .mapa{opacity:1;pointer-events:auto}
-.mapa .mapa-t{font-size:21px;line-height:1.15;margin:2px 0 6px}
+.mapa .mapa-t{font-size:calc(21px*var(--letra));line-height:1.15;margin:2px 0 6px}
 .mapa svg{flex:1;width:100%;min-height:0}
-.aqui{font-size:15px;text-align:center;margin-top:10px}
-.pista{font-size:12px;color:var(--muted);text-align:center;margin-top:4px}
-.aqui.es-pregunta{font-family:Spectral,serif;font-weight:300;font-size:19px;line-height:1.3;margin-top:14px}
+.aqui{font-size:calc(15px*var(--letra));text-align:center;margin-top:10px}
+.pista{font-size:calc(12px*var(--letra));color:var(--muted);text-align:center;margin-top:4px}
+.aqui.es-pregunta{font-family:Spectral,serif;font-weight:300;font-size:calc(19px*var(--letra));line-height:1.3;margin-top:14px}
 .aqui.es-pregunta .k{display:block;font-family:Manrope,system-ui,sans-serif;margin-bottom:6px}
 .aqui.es-pregunta + .pista{margin-top:12px}
 .ros .cuenta{fill:var(--bg);stroke:var(--muted);stroke-width:1;transform-box:fill-box;transform-origin:center;transition:all .35s}
@@ -157,7 +158,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .ros .gloria.ahora{fill:var(--mark);opacity:1;transform:scale(1.55)}
 
 /* Fin, Primera vez y Acerca */
-.fin .amen{font-size:48px;line-height:1;margin:0 0 12px}
+.fin .amen{font-size:calc(48px*var(--letra));line-height:1;margin:0 0 12px}
 .fin .pide{display:block;margin:18px 0 0}
 .fin .detalle{margin-top:14px}
 /* Las opciones para seguir aparecen después del Amén, para no cortar la quietud del final. */
@@ -168,47 +169,48 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .puntos{display:flex;gap:6px;margin-bottom:16px}
 .puntos i{width:22px;height:4px;border-radius:999px;background:var(--line)}
 .puntos i.on{background:var(--mark)}
-.pv h1{font-size:28px;line-height:1.14;margin-bottom:12px}
-.pv p{font-size:15px;line-height:1.55;color:var(--soft);margin-bottom:22px}
+.pv h1{font-size:calc(28px*var(--letra));line-height:1.14;margin-bottom:12px}
+.pv p{font-size:calc(15px*var(--letra));line-height:1.55;color:var(--soft);margin-bottom:22px}
 .pv .tira{margin:-6px 0 22px}
+.pv-nav{display:flex;gap:10px}
+.pv-nav .btn.alt{margin-top:0;width:auto;flex:0 0 auto;padding:15px 22px}
+.pv-nav .principal{flex:1}
 .acerca .hero{inset:0 0 auto 0;height:42dvh}
 .acerca .cuerpo{margin-top:30dvh}
-.acerca h1{font-size:33px;line-height:1.06;margin-bottom:8px}
+.acerca h1{font-size:calc(33px*var(--letra));line-height:1.06;margin-bottom:8px}
 .acerca .sub{margin-bottom:14px}
 .capitulo{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 0;border-bottom:1px solid var(--line)}
-.capitulo b{display:block;font-weight:600;font-size:15px}
-.capitulo span{font-size:13px;color:var(--muted)}
+.capitulo b{display:block;font-weight:600;font-size:calc(15px*var(--letra))}
+.capitulo span{font-size:calc(13px*var(--letra));color:var(--muted)}
 /* "En preparación" es un aviso, no un botón: texto suelto, sin borde. */
-.capitulo em{font-size:12px;color:var(--muted);flex-shrink:0}
+.capitulo em{font-size:calc(12px*var(--letra));color:var(--muted);flex-shrink:0}
 
 /* Hojas (ajustes y elegir misterios) */
 .velo{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;animation:aparecer .25s}
 .hoja{width:100%;max-width:520px;max-height:90dvh;overflow-y:auto;overscroll-behavior:contain;background:var(--hoja);border-radius:var(--radio-sup) var(--radio-sup) 0 0;padding:22px 22px calc(env(safe-area-inset-bottom) + 24px);animation:subir .3s cubic-bezier(.16,1,.3,1)}
 .hoja:focus{outline:none}
 .hoja-cab{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:-8px 0 6px}
-.hoja-cab h2{font-size:17px;font-weight:600}
-.listo{min-height:44px;padding:0 4px 0 12px;font-size:15px;font-weight:600;color:var(--oro-texto)}
+.hoja-cab h2{font-size:calc(17px*var(--letra));font-weight:600}
+.listo{min-height:44px;padding:0 4px 0 12px;font-size:calc(15px*var(--letra));font-weight:600;color:var(--oro-texto)}
 .fila{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--line);width:100%}
-.fila small{display:block;font-size:12px;color:var(--muted)}
+.fila small{display:block;font-size:calc(12px*var(--letra));color:var(--muted)}
 .fila.sel b{color:var(--oro-texto)}
-.etiqueta{font-size:11px;font-weight:600;color:var(--on);background:var(--accent);border-radius:999px;padding:3px 9px}
+.etiqueta{font-size:calc(11px*var(--letra));font-weight:600;color:var(--on);background:var(--accent);border-radius:999px;padding:3px 9px}
 .segmentos{display:flex;background:rgba(127,127,127,.13);border-radius:var(--radio-mini);padding:3px;margin-top:8px}
-.segmentos button{flex:1;text-align:center;padding:8px 4px;border-radius:calc(var(--radio-mini) - 3px);font-size:13px;color:var(--soft);transition:background .2s,color .2s}
+.segmentos button{flex:1;text-align:center;padding:8px 4px;border-radius:calc(var(--radio-mini) - 3px);font-size:calc(13px*var(--letra));color:var(--soft);transition:background .2s,color .2s}
 /* Lo elegido, en tinta llena: se distingue de un vistazo, de día y de noche. */
 .segmentos button.sel{background:var(--ink);color:var(--hoja);font-weight:600}
-.opcion-desc{display:block;font-size:12px;line-height:1.45;color:var(--muted);margin-top:8px;min-height:2.9em}
-.pv .segmentos{margin:-8px 0 0}
-.pv .opcion-desc{margin-bottom:20px}
+.opcion-desc{display:block;font-size:calc(12px*var(--letra));line-height:1.45;color:var(--muted);margin-top:8px;min-height:2.9em}
 .segmentos button:disabled{opacity:.35;cursor:default}
 .muestras{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
-.muestra{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--muted);text-align:center}
+.muestra{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:calc(12px*var(--letra));color:var(--muted);text-align:center}
 .muestra span{display:block;width:100%;aspect-ratio:3/4;border-radius:var(--radio-mini);background-color:var(--bg);background-size:cover;background-position:50% 30%;background-repeat:no-repeat;border:2px solid transparent;transition:border-color .2s}
 .muestra.sel{color:var(--ink);font-weight:600}
 .muestra.sel span{border-color:var(--ink)}
 .muestra:disabled{opacity:.35;cursor:default}
 .ajuste{padding:14px 0;border-top:1px solid var(--line)}
 .hoja-cab + .ajuste{border-top:0;padding-top:0}
-.ajuste > b{font-size:14px}
+.ajuste > b{font-size:calc(14px*var(--letra))}
 .interruptor{width:46px;height:28px;border-radius:999px;background:var(--line);position:relative;flex-shrink:0;transition:background .2s}
 .interruptor::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s}
 .interruptor.on{background:var(--mark)}

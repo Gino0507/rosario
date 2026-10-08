@@ -48,7 +48,7 @@ const pad = n => String(n).padStart(2, '0');
 function hoyISO() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
 
 // mudo: la voz callada con el parlante del rezo (A dos voces). Se recuerda para la próxima vez.
-const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia', voz: 'femenina', lengua: 'es', imagenes: 'ilustraciones', mudo: false, textos: 'auto' }, leer('ajustes', {}));
+const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia', voz: 'femenina', lengua: 'es', imagenes: 'ilustraciones', mudo: false, textos: 'auto', letra: 'normal' }, leer('ajustes', {}));
 
 // Formas de rezar (ver Decisiones.md, 6 de octubre)
 const FORMAS = [
@@ -66,6 +66,10 @@ const OPCIONES = {
   textos: { titulo: 'Texto de las oraciones', items: [
     ['nombre', 'Solo el nombre', 'Solo el nombre de cada oración, para dejarle lugar a la pintura. El Credo y la Salve se ven siempre enteros.'],
     ['completas', 'Completas', 'Cada oración entera en pantalla, para leerla mientras rezás.']] },
+  letra: { titulo: 'Tamaño de letra', items: [
+    ['normal', 'Normal', 'La letra como viene.'],
+    ['grande', 'Grande', 'Un poco más grande, para leer más cómodo.'],
+    ['mayor', 'Muy grande', 'Bien grande. Si una oración larga no entra, se desplaza para leerla entera.']] },
   imagenes: { titulo: 'Imágenes', items: [
     ['pinturas', 'Pinturas', 'Obras de grandes maestros que muestran cada escena.'],
     ['ilustraciones', 'Ilustraciones', 'Ilustraciones de hoy, más simples y serenas.'],
@@ -100,6 +104,12 @@ const grupo = id => D.grupos.find(g => g.id === id);
 const rezados = id => leer('rezados.' + hoyISO() + '.' + id, []);
 function marcarRezado(id, m) { const r = rezados(id); if (!r.includes(m)) { r.push(m); guardar('rezados.' + hoyISO() + '.' + id, r); } }
 function proximo(id) { const r = rezados(id); for (let i = 0; i < 5; i++) if (!r.includes(i)) return i; return 0; }
+
+/* ---------- Tamaño de letra ---------- */
+// Todos los tamaños de letra de Estilos.css se multiplican por --letra (los íconos no).
+const LETRA = { normal: 1, grande: 1.15, mayor: 1.3 };
+function aplicarLetra() { document.documentElement.style.setProperty('--letra', LETRA[cfg.letra] || 1); }
+aplicarLetra();
 
 /* ---------- Tema ---------- */
 // Automático sigue al celular (ver Decisiones.md, 8 de octubre), y cambia en el momento si el celular cambia.
@@ -290,6 +300,12 @@ function vistaInicio() {
 // h0-h4 (hilo después de cada decena), med (medalla).
 function cuentaGrande(m) { return m === 0 ? 'p2' : 'L' + ((m - 1) * 11 + 10); }
 const NOTA_SALVE = 'Saludamos a María, nuestra Madre.';
+// La primera vez que aparecen en cada rezo, el Gloria y el Oh Jesús mío llevan una línea que los
+// explica (en lugar de la frase para mirar). Borrador para Pablo.
+const NOTA_PRIMERA = {
+  gloria: 'Alabamos a Dios, que es Padre, Hijo y Espíritu Santo.',
+  ohjesus: 'La pidió la Virgen en Fátima, en 1917: pedimos perdón y el cielo para todos.',
+};
 
 function construirPasos(ses) {
   const P = [];
@@ -324,6 +340,7 @@ function construirPasos(ses) {
     P.push({ t: 'oracion', o: 'salve', parte: 0, pos: 'med', etq: 'Salve', nota: NOTA_SALVE });
     P.push({ t: 'oracion', o: 'salve', parte: 1, pos: 'med', etq: 'Salve', nota: NOTA_SALVE });
   }
+  Object.keys(NOTA_PRIMERA).forEach(o => { const x = P.find(q => q.o === o); if (x) x.nota = NOTA_PRIMERA[o]; });
   return P;
 }
 
@@ -517,7 +534,7 @@ function actualizar() {
   $('.kicker').textContent = kicker;
   $('.titulo').textContent = enMisterio ? mis.titulo : (alFinal ? 'Salve' : g.nombre);
   $('.cita').textContent = enMisterio ? mis.cita : '';
-  ponerTexto($('.mira'), p.t === 'oracion' ? (enMisterio ? fraseMirar(mis, p) : (p.nota || '')) : '');
+  ponerTexto($('.mira'), p.t === 'oracion' ? (p.nota || (enMisterio ? fraseMirar(mis, p) : '')) : '');
   $('.fruto').textContent = enMisterio ? mis.pedir : '';
   $('.credito').innerHTML = enMisterio && conCredito(mis) ? `${esc(mis.autor)}, <em>${esc(mis.obra)}</em>` : '';
 
@@ -705,9 +722,16 @@ const PRIMERA = [
     b: 'Cada cuenta es una oración. En las grandes se reza el Padrenuestro y en las chicas, el Avemaría. Con el Rosario en la mano, pasás una cuenta por oración y sabés siempre por dónde vas.' },
   { t: '¿Por qué se repite tanto?',
     b: 'Las Avemarías marcan un ritmo, como la respiración. Cuando ya no tenés que pensar las palabras, la atención queda libre para la escena.' },
-  { t: 'No hace falta saberse nada', formas: true,
-    b: 'La app reza con vos y te muestra cada oración entera. Tocás la pantalla para pasar a la cuenta siguiente, y con el ícono del Rosario ves en qué parte estás. Elegí cómo querés rezar (lo podés cambiar cuando quieras en Ajustes).' },
+  { t: 'No hace falta saberse nada', voz: true,
+    b: 'La app te muestra cada oración entera. Tocás la pantalla para pasar a la cuenta siguiente, y con el ícono del Rosario, arriba, ves en qué parte estás.' },
 ];
+// La última tarjeta cuenta cómo suena la forma de rezar que está elegida, sin pedir que se elija
+// antes de haber rezado (se cambia después, en Ajustes).
+const VOZ_PRIMERA = {
+  guia: 'Una voz dice la primera parte de cada oración y vos respondés la segunda. Si preferís rezar en silencio, tocá el parlante, abajo a la derecha.',
+  todo: 'Una voz reza todo y la app avanza sola. Con el botón de abajo a la derecha la ponés en pausa.',
+  solo: 'Rezás a tu ritmo, sin voz.',
+};
 function vistaPrimera(i) {
   const c = PRIMERA[i], ultimo = i === PRIMERA.length - 1;
   app.innerHTML = `
@@ -719,8 +743,11 @@ function vistaPrimera(i) {
       <h1 class="t1">${esc(c.t)}</h1>
       ${c.tira ? '<svg class="tira" viewBox="0 0 264 26" aria-hidden="true"></svg>' : ''}
       <p>${esc(c.b)}</p>
-      ${c.formas ? selector('forma') : ''}
-      <button class="btn principal centro" data-accion="${ultimo ? 'primerRezo' : 'pv'}" data-v="${i + 1}">${ultimo ? 'Rezar un misterio' : 'Siguiente'}</button>
+      ${c.voz ? `<p>${VOZ_PRIMERA[cfg.forma]}</p>` : ''}
+      <div class="pv-nav">
+        ${i > 0 ? `<button class="btn alt" data-accion="pv" data-v="${i - 1}">Anterior</button>` : ''}
+        <button class="btn principal centro" data-accion="${ultimo ? 'primerRezo' : 'pv'}" data-v="${i + 1}">${ultimo ? 'Rezar un misterio' : 'Siguiente'}</button>
+      </div>
     </div>
   </section>`;
   if (c.tira) dibujarTira($('.pv .tira'), 10, 4);
@@ -809,7 +836,7 @@ function hojaAjustes() {
   const bloque = k => `<div class="ajuste"><b>${OPCIONES[k].titulo}</b>${selector(k)}</div>`;
   const sw = (k, t, d) => `<button class="fila" data-accion="alternar" data-v="${k}" role="switch" aria-checked="${cfg[k]}"><span><b>${t}</b><small>${d}</small></span><span class="interruptor${cfg[k] ? ' on' : ''}"></span></button>`;
   hoja('Ajustes', `
-    ${['forma', 'voz', 'lengua', 'textos', 'imagenes', 'modo'].map(bloque).join('')}
+    ${['forma', 'voz', 'lengua', 'textos', 'letra', 'imagenes', 'modo'].map(bloque).join('')}
     ${sw('ohJesus', 'Oh Jesús mío', 'Después de cada Gloria')}
     ${sw('vida', 'Pregunta para tu vida', 'Al terminar cada misterio')}`);
 }
@@ -863,6 +890,7 @@ const acciones = {
     });
     document.querySelectorAll('.opcion-desc').forEach(x => { x.textContent = descripcion(x.dataset.k); });
     if (k === 'modo') aplicarTema();
+    if (k === 'letra') aplicarLetra();
     if (k === 'imagenes' && $('.inicio')) vistaInicio();
     if (k === 'forma' || k === 'voz' || k === 'lengua') muestra();
   },
