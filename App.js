@@ -256,22 +256,43 @@ const voz = (() => {
 
   // Las tomas de un mismo texto se van turnando, para que no suene a disco rayado.
   const tomas = {};
+  const urlDe = (archivo, t) => `Audio/${cfg.voz}/${archivo}.mp3?${t.h}`;
   function pista(texto, avanzar) {
     const archivos = A.textos[texto], tiempos = A.tiempos[cfg.voz];
     if (!archivos || !tiempos) return null;
     const n = tomas[texto] || 0, archivo = archivos[n % archivos.length], t = tiempos[archivo];
     if (!t) return null;
     if (avanzar) tomas[texto] = n + 1;
-    return { url: `Audio/${cfg.voz}/${archivo}.mp3?${t.h}`, f: t.f };
+    const url = urlDe(archivo, t);
+    return { url: enMemoria.get(url) || url, f: t.f };
   }
-  const bajados = new Set();
-  // Baja de antemano lo que se va a decir después, para que no haya un hueco entre oraciones.
-  function preparar(partes) {
-    partes.forEach(texto => {
-      const p = pista(texto, false);
-      if (p && !bajados.has(p.url)) { bajados.add(p.url); fetch(p.url).catch(() => bajados.delete(p.url)); }
-    });
+  // Los audios del rezo se bajan de antemano y quedan en memoria: así cada oración empieza
+  // enseguida. Pedirlos a la red en cada toque tardaba medio segundo o más (8 de octubre).
+  const enMemoria = new Map(); // url → blob:, cuando ya bajó
+  const pedidos = new Set();
+  let fila = [], bajando = 0;
+  function bajar() {
+    while (bajando < 2 && fila.length) {
+      const url = fila.shift();
+      if (pedidos.has(url)) continue;
+      pedidos.add(url); bajando++;
+      fetch(url).then(r => r.ok ? r.blob() : Promise.reject())
+        .then(b => enMemoria.set(url, URL.createObjectURL(b)))
+        .catch(() => pedidos.delete(url))
+        .finally(() => { bajando--; bajar(); });
+    }
   }
+  // textos: lo que se va a decir, en el orden en que se dice (con todas sus tomas). Con primero,
+  // pasan adelante de lo que ya estaba esperando.
+  function precargar(textos, primero) {
+    const tiempos = A.tiempos[cfg.voz];
+    if (!tiempos) return;
+    const urls = textos.flatMap(t => (A.textos[t] || []).filter(a => tiempos[a]).map(a => urlDe(a, tiempos[a])))
+      .filter(u => !pedidos.has(u));
+    fila = primero ? [...new Set([...urls, ...fila])] : [...new Set([...fila, ...urls])];
+    bajar();
+  }
+  const preparar = partes => precargar(partes, true);
   function grabadas(partes, al, yo) {
     const pistas = partes.map(t => pista(t, false));
     if (pistas.some(p => !p)) return false;
@@ -334,7 +355,7 @@ const voz = (() => {
     if (!grabadas(partes, al, yo)) celular(partes.flatMap(partir), al, lengua, yo);
   }
   const hablando = () => grabada || (!!sintesis && sintesis.speaking);
-  return { decir, callar, preparar, latinItaliano, hablando };
+  return { decir, callar, preparar, precargar, latinItaliano, hablando };
 })();
 
 // Frases cortas: algunos navegadores cortan la voz a mitad de una frase muy larga.
@@ -552,6 +573,13 @@ function hablar() {
   if (pasos[ses.paso + 1]) voz.preparar(locucion(pasos[ses.paso + 1], g).partes);
 }
 
+// Todo lo que va a decir la voz en este rezo, desde donde se está, se baja de antemano.
+function precargarRezo() {
+  if (!S || cfg.forma === 'solo') return;
+  const g = grupo(S.ses.grupo);
+  voz.precargar(S.pasos.slice(S.ses.paso).flatMap(p => locucion(p, g).partes));
+}
+
 // En la pantalla bloqueada se ve qué se está rezando, con la imagen del misterio. Escuchando,
 // desde ahí se pausa y se sigue.
 function ponerMedios(p, g) {
@@ -622,6 +650,7 @@ function abrirSesion(ses) {
   guardar('yaReza', true);
   S = { ses, pasos: construirPasos(ses) };
   if (ses.paso >= S.pasos.length) ses.paso = 0;
+  precargarRezo();
   montarRezo();
   actualizar();
   mantenerEncendida();
@@ -1130,7 +1159,7 @@ const acciones = {
     if (k === 'modo') aplicarTema();
     if (k === 'letra') aplicarLetra();
     if (k === 'imagenes' && $('.inicio')) vistaInicio();
-    if (k === 'forma' || k === 'voz' || k === 'lengua') muestra(k);
+    if (k === 'forma' || k === 'voz' || k === 'lengua') { muestra(k); precargarRezo(); }
   },
   pausa: () => ponerPausa(!pausa),
   voz: b => { cfg.mudo = !cfg.mudo; guardar('ajustes', cfg); pintarVoz(b); if (cfg.mudo) silencio(); else hablar(); },
