@@ -451,7 +451,8 @@ window.DATOS = {
      ],
      "pedir": "el dominio de uno mismo",
      "vida": [
-      "Pilato cedió para no tener problemas. ¿En qué situación te cuesta sostener lo que sabés que está bien?"
+      "Pilato cedió para no tener problemas. ¿En qué situación te cuesta sostener lo que sabés que está bien?",
+      "Jesús se dejó atar a la columna para desatarnos a nosotros. ¿Qué te tiene atado hoy, y qué primer paso darías para soltarte?"
      ],
      "autor": "Caravaggio",
      "obra": "La flagelación de Cristo",
@@ -494,7 +495,8 @@ window.DATOS = {
      ],
      "pedir": "la paciencia",
      "vida": [
-      "A Simón lo obligaron a ayudar y terminó caminando al lado de Jesús. ¿Qué carga ajena te tocó llevar sin buscarla?"
+      "A Simón lo obligaron a ayudar y terminó caminando al lado de Jesús. ¿Qué carga ajena te tocó llevar sin buscarla?",
+      "\"Que cargue con su cruz cada día y me siga\", había dicho Jesús. ¿Cuál es tu cruz de todos los días, y la estás llevando con él?"
      ],
      "autor": "Tiziano",
      "obra": "Cristo camino del Calvario",
