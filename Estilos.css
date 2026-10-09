@@ -99,6 +99,15 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .rezo .titulo{font-size:calc(25px*var(--letra));line-height:1.12;margin:4px 0 4px}
 .rezo .cita{font-size:calc(12px*var(--letra));color:var(--muted);margin-bottom:10px}
 .rezo .mira{font-family:Spectral,serif;font-style:italic;font-weight:300;font-size:calc(16px*var(--letra));line-height:1.42;color:var(--soft);margin-bottom:14px;min-height:1.42em;transition:opacity .5s}
+/* Lo que se contempla en cada misterio: cerrado, la píldora "Para contemplar", igual a la del
+   nombre de la oración; abierto, el texto y al final una flechita para cerrarlo. */
+.abre-mira,.cierra-mira{display:none}
+.con-frase:not(.mira-abierta) .mira{display:none}
+.con-frase:not(.mira-abierta) .abre-mira{display:flex;align-items:center;min-height:44px;margin:-8px 0 6px}
+.con-frase.mira-abierta .cierra-mira{display:inline-grid}
+.cierra-mira{position:relative;place-items:center;width:24px;height:1em;margin-left:2px;vertical-align:-.08em;color:var(--muted)}
+.cierra-mira::before{content:'';position:absolute;inset:-14px -10px}
+.cierra-mira .ico{width:16px;height:16px}
 .tira{display:block;width:100%;height:26px;margin:0 0 14px;overflow:visible}
 /* Pasar una cuenta: se desliza por el hilo hacia el Padrenuestro, como en el Rosario físico.
    Las cuentas son macizas, para que el hilo no se vea a través. */
@@ -130,8 +139,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .vel[hidden]{display:none}
 /* El nombre de la oración: tocarlo muestra u oculta el texto entero. */
 .etq{flex:1;min-height:44px;display:flex;align-items:center;justify-content:center}
-.etq span{display:inline-flex;align-items:center;gap:6px;padding:6px 10px 6px 14px;border:1px solid var(--line);border-radius:999px;font-size:calc(12px*min(var(--letra),1.2));white-space:nowrap;color:var(--soft);background:rgba(var(--rgb),.35)}
-.etq .ico{width:14px;height:14px;color:var(--muted)}
+.etq span,.abre-mira span{display:inline-flex;align-items:center;gap:6px;padding:6px 10px 6px 14px;border:1px solid var(--line);border-radius:999px;font-size:calc(12px*min(var(--letra),1.2));white-space:nowrap;color:var(--soft);background:rgba(var(--rgb),.35)}
+.etq .ico,.abre-mira .ico{width:14px;height:14px;color:var(--muted)}
 .etq.vacia{visibility:hidden}
 /* Para VoiceOver y teclado: invisible hasta que recibe el foco. */
 .siguiente{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
@@ -291,8 +300,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .maqueta.sin-texto .mq-guia,.maqueta.sin-texto .mq-todos{display:none}
 .mq-pie{display:grid;grid-template-columns:1fr max-content 1fr;align-items:center;column-gap:6px;margin-top:8px}
 .mq-pie .mq-chico{color:var(--muted)}
-.mq-etq{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:4px 9px 4px 12px;border:1px solid var(--line);border-radius:999px;font-size:calc(11.5px*min(var(--letra),1.2));white-space:nowrap;color:var(--soft);background:rgba(var(--rgb),.35)}
-.mq-etq .ico{width:13px;height:13px;color:var(--muted)}
+.mq-etq,.mq-abre{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:4px 9px 4px 12px;border:1px solid var(--line);border-radius:999px;font-size:calc(11.5px*min(var(--letra),1.2));white-space:nowrap;color:var(--soft);background:rgba(var(--rgb),.35)}
+.mq-etq .ico,.mq-abre .ico{width:13px;height:13px;color:var(--muted)}
+.mq-abre{display:flex;width:max-content;margin:-2px 0 10px}
+.mq-mira{font-family:Spectral,serif;font-style:italic;font-weight:300;font-size:calc(13.5px*var(--letra));line-height:1.4;color:var(--soft);margin:-2px 0 10px;text-wrap:balance}
+.mq-cierra{display:inline-grid;place-items:center;width:20px;height:1em;margin-left:2px;vertical-align:-.08em;color:var(--muted)}
+.mq-cierra .ico{width:14px;height:14px}
+.maqueta:not(.mirando) .mq-mira,.maqueta.mirando .mq-abre{display:none}
 .mq-controles{display:flex;align-items:center;justify-self:end}
 .mq-vel{display:grid;place-items:center;min-width:40px;height:36px}
 .mq-vel span{padding:3px 7px;border-radius:999px;background:rgba(127,127,127,.16);font-size:calc(11px*min(var(--letra),1.15));font-weight:600;font-variant-numeric:tabular-nums;color:var(--soft)}

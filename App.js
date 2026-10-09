@@ -48,8 +48,9 @@ function borrar(k) { delete memoria[k]; try { localStorage.removeItem('rosario.'
 const pad = n => String(n).padStart(2, '0');
 function hoyISO() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
 
-// mudo: la voz callada con el parlante del rezo (A dos voces). Se recuerda para la próxima vez.
-const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia', voz: 'Amanda', vozLatin: 'Marco', lengua: 'es', musica: 'ninguna', velocidad: 1, imagenes: 'ilustraciones', mudo: false, textos: 'auto', letra: 'normal' }, leer('ajustes', {}));
+// mudo: la voz callada con el parlante del rezo (A dos voces). contemplar: el texto para contemplar
+// de cada misterio, abierto. Los dos se recuerdan para la próxima vez.
+const cfg = Object.assign({ modo: 'auto', ohJesus: true, vida: true, forma: 'guia', voz: 'Amanda', vozLatin: 'Marco', lengua: 'es', musica: 'ninguna', velocidad: 1, imagenes: 'ilustraciones', mudo: false, contemplar: false, textos: 'auto', letra: 'normal' }, leer('ajustes', {}));
 
 // Velocidad de la voz, que se cambia rezando con el botón "1×" de abajo (ver Decisiones.md, 8 de
 // octubre). Cada toque pasa a la siguiente, como la velocidad de los audios de WhatsApp. Las eligió José.
@@ -101,7 +102,7 @@ const OPCIONES = {
     ['Cuerdas', 'Cuerdas', 'Cuerdas cálidas y algún piano lejano, como en una capilla de noche.'],
     ['Luz', 'Luz', 'Un fondo claro y aireado, con campanas lejanas.']] },
   textos: { titulo: 'Texto de las oraciones', items: [
-    ['nombre', 'Solo el nombre', 'Solo el nombre de cada oración, para dejarle lugar a la pintura. El Credo y la Salve se ven siempre enteros.'],
+    ['nombre', 'Solo el nombre', 'Solo el nombre de cada oración, para dejarle lugar a la pintura. Tocándolo, la ves entera.'],
     ['completas', 'Completas', 'Cada oración entera en pantalla, para leerla mientras rezás.']] },
   letra: { titulo: 'Tamaño de letra', items: [
     ['normal', 'Normal', 'La letra como viene.'],
@@ -124,7 +125,6 @@ const textosEnteros = () => (cfg.textos === 'auto' ? (cfg.lengua === 'la' ? 'com
 // Con el latín elegido, la voz que se ve y se cambia en Ajustes es la del latín.
 const clave = k => k === 'voz' && latin() ? 'vozLatin' : k;
 const valor = k => k === 'textos' ? (textosEnteros() ? 'completas' : 'nombre') : cfg[clave(k)];
-const SIEMPRE_ENTERAS = ['credo', 'salve'];
 let grupoInicio = DEL_DIA[new Date().getDay()];
 
 // Si este celular ya rezó alguna vez, el inicio es el de siempre; si no, la acción principal
@@ -783,11 +783,12 @@ function etiqueta(p) {
   if (p.t !== 'oracion') return '';
   return cfg.forma === 'todo' && pausa ? 'En pausa' : p.etq;
 }
-// La oración se ve entera o solo su nombre según Ajustes (el Credo y la Salve, siempre enteras).
-// Tocando el nombre, abajo, se muestra u oculta, y lo elegido vale para todas las oraciones que
-// siguen en ese rezo (también al retomarlo o al seguir con "un misterio más"). Se guarda en ses.texto.
+// La oración se ve entera o solo su nombre según Ajustes (el Credo y la Salve también, desde el 9
+// de octubre). Tocando el nombre, abajo, se muestra u oculta, y lo elegido vale para todas las
+// oraciones que siguen en ese rezo (también al retomarlo o al seguir con "un misterio más"). Se
+// guarda en ses.texto.
 function conTexto(p) {
-  return S.ses.texto != null ? S.ses.texto : textosEnteros() || SIEMPRE_ENTERAS.includes(p.o);
+  return S.ses.texto != null ? S.ses.texto : textosEnteros();
 }
 // La etiqueta de abajo es el nombre de la oración y el botón para verla entera. Para pasar a la
 // siguiente se toca cualquier otra parte; con VoiceOver o teclado está el botón "Pasar a la siguiente".
@@ -849,7 +850,8 @@ function montarRezo() {
       <div class="k kicker lift"></div>
       <h2 class="t1 titulo"></h2>
       <div class="cita lift"></div>
-      <p class="mira lift"></p>
+      <button class="abre-mira" data-accion="mirar" aria-expanded="false"><span>Para contemplar${icono('chevron-down')}</span></button>
+      <p class="mira lift"><span class="mira-t"></span><button class="cierra-mira" data-accion="mirar" aria-expanded="true" aria-label="Ocultar el texto para contemplar">${icono('chevron-up')}</button></p>
       <p class="explica"></p>
       <p class="papa-t"></p>
       <div class="pide"><span class="k">En este misterio pedimos</span><span class="fruto"></span></div>
@@ -914,7 +916,11 @@ function actualizar() {
   $('.papa-t').textContent = papa;
   r.classList.toggle('con-papa', !!papa);
   $('.cita').textContent = enMisterio ? mis.cita : '';
-  ponerTexto($('.mira'), p.t === 'oracion' ? (p.nota || (enMisterio ? fraseMirar(mis, p) : '')) : '');
+  // Lo que se contempla del misterio se abre con "Para contemplar" (ver Decisiones.md, 9 de
+  // octubre). Las líneas que explican una oración (p.nota) se ven siempre.
+  r.classList.toggle('con-frase', p.t === 'oracion' && enMisterio && !p.nota);
+  r.classList.toggle('mira-abierta', cfg.contemplar);
+  ponerTexto($('.mira-t'), p.t === 'oracion' ? (p.nota || (enMisterio ? fraseMirar(mis, p) : '')) : '');
   $('.fruto').textContent = enMisterio ? mis.pedir : '';
   $('.credito').innerHTML = enMisterio && conCredito(mis) ? `${esc(mis.autor)}, <em>${esc(mis.obra)}</em>` : '';
 
@@ -1271,6 +1277,7 @@ function pasosPractica() {
   return [
     { en: 'pantalla', t: 'Tocá en cualquier parte de la pantalla para pasar a la cuenta siguiente.' },
     { en: 'etq', t: 'Tocá el nombre de la oración, abajo, para ocultarla y dejarle más lugar a la imagen. Otro toque la vuelve a mostrar.' },
+    { en: 'mirar', t: 'Debajo del título, «Para contemplar» te ayuda a imaginar la escena mientras rezás. Tocalo; la flechita lo vuelve a cerrar.' },
     { en: 'atras', t: 'Si pasaste una de más, la flecha de la izquierda te devuelve a la anterior.' },
     { en: 'mapa', si: () => RP.mapa, t: 'Arriba, los cinco círculos son los cinco misterios. A la derecha está el Rosario entero, con la cuenta en la que vas: tocalo.' },
     { en: 'mapa', si: () => !RP.mapa, t: 'Desde el mapa también se sigue rezando. Para volver a la escena, tocá el mismo botón.' },
@@ -1282,6 +1289,7 @@ function practicar(que) {
   if (que === 'pantalla' && RP.cuenta < 11) { RP.cuenta++; vibrar(); }
   else if (que === 'atras') RP.cuenta = Math.max(0, RP.cuenta - 1);
   else if (que === 'etq') RP.texto = !RP.texto;
+  else if (que === 'mirar') RP.mirar = !RP.mirar;
   else if (que === 'mapa') RP.mapa = !RP.mapa;
   else if (que === 'vel') RP.vel = VELOCIDADES[(VELOCIDADES.indexOf(RP.vel) + 1) % VELOCIDADES.length];
   else if (que === 'voz') RP.mudo = !RP.mudo;
@@ -1295,12 +1303,15 @@ function pintarPractica() {
   const pasos = pasosPractica(), P = pasos[RP.paso], c = RP.cuenta, m = RP.m;
   ponerTexto($('.pr-guia p'), P ? P.t : FIN_PRACTICA);
   $('.pr-n').textContent = P ? `${RP.paso + 1} de ${pasos.length}` : 'Listo';
-  // Lo que hay que tocar, marcado; si es un botón, lo demás se atenúa.
-  [q, ...q.querySelectorAll('.foco')].forEach(x => x.classList.remove('foco'));
-  if (P) (P.en === 'pantalla' ? q : q.querySelector(`[data-v="${P.en}"]`)).classList.add('foco');
-  q.classList.toggle('guiando', !!P && P.en !== 'pantalla');
   q.classList.toggle('sin-texto', !RP.texto);
+  q.classList.toggle('mirando', RP.mirar);
   q.classList.toggle('con-mapa', RP.mapa);
+  // Lo que hay que tocar, marcado; si es un botón, lo demás se atenúa. "Para contemplar" y su
+  // flechita son el mismo botón: se marca el que está a la vista.
+  [q, ...q.querySelectorAll('.foco')].forEach(x => x.classList.remove('foco'));
+  if (P) (P.en === 'pantalla' ? q : [...q.querySelectorAll(`[data-v="${P.en}"]`)].find(x => x.getClientRects().length)).classList.add('foco');
+  q.classList.toggle('guiando', !!P && P.en !== 'pantalla');
+  ponerTexto(q.querySelector('.mq-mira-t'), fraseMirar(RP.mis, { k: c }));
   // La oración y su nombre, como en el rezo: a dos voces, separadas.
   const t = textos({ o: c === 0 ? 'padre' : c > 10 ? 'gloria' : 'ave' }), separar = cfg.forma === 'guia';
   q.querySelector('.mq-guia').textContent = separar ? t.guia : '';
@@ -1392,7 +1403,7 @@ const PANTALLAS = {
     <p>También podés rezarlos de a uno a lo largo del día. Si dejás uno por la mitad, la app te ofrece retomarlo donde quedaste.</p>` }; },
   practica: () => {
     const g = grupo(grupoInicio), m = proximo(g.id), mis = g.misterios[m], arte = urlArte(mis);
-    RP = { paso: 0, cuenta: 1, texto: true, mapa: false, vel: cfg.velocidad, mudo: false, m };
+    RP = { paso: 0, cuenta: 1, texto: true, mirar: false, mapa: false, vel: cfg.velocidad, mudo: false, m, mis };
     const fondo = arte ? `background-image:url('${arte}');background-position:${arte === mis.imagen ? mis.foco : '50% 30%'}` : luz(g.id);
     const controles = cfg.forma === 'solo' ? '<span class="mq-chico fantasma"></span>'
       : `<button class="mq-vel" data-accion="pr" data-v="vel" aria-label="Velocidad de la voz"></button><button class="mq-chico" data-accion="pr" data-v="voz" aria-label="${cfg.forma === 'todo' ? 'Pausar la voz' : 'Callar la voz'}"></button>`;
@@ -1411,6 +1422,8 @@ const PANTALLAS = {
       <div class="mq-cuerpo">
         <div class="k">${cap(ORDINAL[m])} misterio ${SINGULAR[g.id]}</div>
         <div class="mq-titulo">${esc(mis.titulo)}</div>
+        <button class="mq-abre" data-accion="pr" data-v="mirar" aria-expanded="false">Para contemplar${icono('chevron-down')}</button>
+        <p class="mq-mira"><span class="mq-mira-t"></span><button class="mq-cierra" data-accion="pr" data-v="mirar" aria-expanded="true" aria-label="Ocultar el texto para contemplar">${icono('chevron-up')}</button></p>
         <svg class="tira" viewBox="0 0 264 26" aria-hidden="true"></svg>
         <p class="mq-guia"></p><p class="mq-todos"></p>
         <div class="mq-pie">
@@ -1597,6 +1610,17 @@ const acciones = {
     guardar('sesion', S.ses);
     aplicarTexto(p);
     if (conTexto(p)) { fundir($('.guia')); fundir($('.todos')); }
+  },
+  // "Para contemplar" abre el texto del misterio y la flechita lo cierra. Vale para todos los
+  // misterios y se recuerda, como el parlante.
+  mirar: b => {
+    const teclado = b.matches(':focus-visible');
+    cfg.contemplar = !cfg.contemplar;
+    guardar('ajustes', cfg);
+    $('.rezo').classList.toggle('mira-abierta', cfg.contemplar);
+    const otro = $(cfg.contemplar ? '.cierra-mira' : '.abre-mira');
+    fundir(cfg.contemplar ? $('.mira-t') : otro);
+    if (teclado) otro.focus();
   },
   terminar: () => transicion(terminar),
   atras: () => atras(),
