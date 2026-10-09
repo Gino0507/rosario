@@ -212,8 +212,9 @@ function transicion(fn) {
 // los arma Generar audios.py y se buscan por el texto exacto: si a un texto le falta su audio
 // (el latín, por ahora, o una oración corregida que todavía no se volvió a grabar), habla la
 // voz del celular, como antes.
-// partes: los textos a decir, en orden. al: { trozo(i), fin(), falla(), luego, silencio(s) },
-// donde luego son los segundos de silencio antes de fin() y silencio(s) avisa que empezaron.
+// partes: los textos a decir, en orden. al: { trozo(i), fin(), falla(), luego, silencio(s), proximo },
+// donde luego son los segundos de silencio antes de fin(), silencio(s) avisa que empezaron y
+// proximo son los textos que se dicen después (para dejarlos cargados).
 const voz = (() => {
   const A = window.AUDIOS || { textos: {}, tiempos: {} };
   const sintesis = window.speechSynthesis;
@@ -264,15 +265,27 @@ const voz = (() => {
   }
 
   /* La voz grabada */
-  const audio = new Audio();
-  audio.preload = 'auto';
+  // Tres reproductores que se turnan (ver Decisiones.md, 9 de octubre). Mientras uno suena, los
+  // otros dos ya tienen cargado lo que puede venir: lo que sigue solo (la otra parte de la
+  // oración, el silencio o la oración siguiente) y la oración siguiente, por si se pasa antes con
+  // un toque. En el iPhone, cargar un audio en el momento de decirlo tardaba de 0,1 a 0,5
+  // segundos cada vez, y con la pantalla bloqueada ese hueco es donde a veces se trababa.
+  const reproductores = [new Audio(), new Audio(), new Audio()];
+  let audio = reproductores[0]; // el que suena, o el último que sonó
   // La velocidad: el celular acelera o frena el audio sin cambiar el tono de la voz. Los
   // silencios van siempre a velocidad normal, para que duren lo que tienen que durar.
   let enSilencio = false;
   const ritmo = () => enSilencio ? 1 : cfg.velocidad;
-  function velocidad() { audio.defaultPlaybackRate = audio.playbackRate = ritmo(); }
-  // Algunos Safari vuelven a la velocidad normal al empezar un audio: se repone.
-  audio.addEventListener('playing', () => { if (audio.playbackRate !== ritmo()) velocidad(); });
+  const ponerRitmo = (a, r) => { a.defaultPlaybackRate = a.playbackRate = r; };
+  function velocidad() { ponerRitmo(audio, ritmo()); }
+  reproductores.forEach(a => {
+    a.preload = 'auto';
+    // Algunos Safari vuelven a la velocidad normal al empezar un audio: se repone.
+    a.addEventListener('playing', () => { if (a === audio && a.playbackRate !== ritmo()) velocidad(); });
+    // Si algo de afuera corta el audio (una llamada, otra app), se sabe que ya no suena. La pausa
+    // de otro reproductor no cuenta, ni la del mismo si ya empezó otro audio (paused vuelve a false).
+    a.addEventListener('pause', () => { if (a === audio && !a.ended && a.paused) grabada = false; });
+  });
   // Que suene aunque el iPhone esté en silencio.
   try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
   // Silencio de los segundos que se pidan, como audio: con la pantalla bloqueada, Safari frena
@@ -289,18 +302,46 @@ const voz = (() => {
     return (silencios[seg] = URL.createObjectURL(new Blob([b], { type: 'audio/wav' })));
   }
   // En el iPhone, un audio solo puede empezar solo si antes sonó con un toque. El primer toque
-  // en la app lo despierta con un instante de silencio, y desde ahí puede seguir solo, también
-  // con la pantalla bloqueada.
+  // en la app despierta los tres reproductores con un instante de silencio, y desde ahí pueden
+  // seguir solos, también con la pantalla bloqueada.
   let despierto = false;
   document.addEventListener('click', () => {
     if (despierto) return;
     despierto = true;
-    audio.src = silencioDe(.1);
-    audio.play().catch(e => { if (e.name === 'NotAllowedError') despierto = false; });
+    reproductores.forEach(a => {
+      a.clave = ''; a.src = silencioDe(.1);
+      a.play().catch(e => { if (e.name === 'NotAllowedError') despierto = false; });
+    });
   }, true);
-  // Si algo de afuera corta el audio (una llamada, otra app), se sabe que ya no suena. Si ya
-  // empezó otro audio (paused vuelve a ser false), la pausa era del anterior y no cuenta.
-  audio.addEventListener('pause', () => { if (!audio.ended && audio.paused) grabada = false; });
+
+  // Cada reproductor recuerda qué tiene cargado (clave: la dirección del audio, o el silencio).
+  // tomar() da el que ya lo tiene, o carga uno libre; los otros se callan.
+  let queridas = [];
+  function tomar(clave, url) {
+    let a = reproductores.find(x => x.clave === clave && !x.error);
+    if (a && a.currentTime > 0) a.currentTime = 0;
+    if (!a) {
+      const libres = reproductores.filter(x => x !== audio);
+      a = libres.find(x => !queridas.includes(x.clave)) || libres[0];
+      a.clave = clave; a.src = url;
+    }
+    reproductores.forEach(x => { if (x !== a) { x.onended = x.onerror = null; if (!x.paused) x.pause(); } });
+    return (audio = a);
+  }
+  // Deja cargado en los reproductores libres lo que puede sonar después, lo más probable primero.
+  // lista: { clave, url, r }, donde r es la velocidad.
+  function anticipar(lista) {
+    lista = lista.filter((q, i) => q && lista.findIndex(x => x && x.clave === q.clave) === i).slice(0, reproductores.length - 1);
+    queridas = lista.map(q => q.clave);
+    const libres = reproductores.filter(x => x !== audio);
+    const faltan = lista.filter(q => !libres.some(x => x.clave === q.clave && !x.error));
+    const sobran = libres.filter(x => x.error || !queridas.includes(x.clave));
+    faltan.forEach((q, i) => { const a = sobran[i]; if (a) { a.clave = q.clave; a.src = q.url; ponerRitmo(a, q.r); } });
+  }
+  const conSilencio = s => ({ clave: 'silencio:' + s, url: silencioDe(s), r: 1 });
+  const conVoz = p => p && { clave: p.clave, url: p.url, r: cfg.velocidad };
+  // Lo primero que va a decir el paso siguiente (al.proximo), con la toma que le va a tocar.
+  const primeroDe = al => al.proximo && al.proximo.length ? conVoz(pista(al.proximo[0], false)) : null;
 
   // Las tomas de un mismo texto se van turnando, para que no suene a disco rayado.
   const tomas = {};
@@ -312,7 +353,7 @@ const voz = (() => {
     if (!t) return null;
     if (avanzar) tomas[texto] = n + 1;
     const url = urlDe(archivo, t);
-    return { url: enMemoria.get(url) || url, f: t.f };
+    return { clave: url, url: enMemoria.get(url) || url, f: t.f };
   }
   // Los audios del rezo se bajan de antemano y quedan en memoria: así cada oración empieza
   // enseguida. Pedirlos a la red en cada toque tardaba medio segundo o más (8 de octubre).
@@ -340,7 +381,12 @@ const voz = (() => {
     fila = primero ? [...new Set([...urls, ...fila])] : [...new Set([...fila, ...urls])];
     bajar();
   }
-  const preparar = partes => precargar(partes, true);
+  // Lo que se dice después: se baja primero y, si ahora no suena la voz grabada (un paso sin
+  // voz, como "¿Por quién rezás hoy?"), queda cargado para sonar enseguida.
+  function preparar(partes) {
+    precargar(partes, true);
+    if (!grabada) anticipar([primeroDe({ proximo: partes })]);
+  }
   function grabadas(partes, al, yo) {
     const pistas = partes.map(t => pista(t, false));
     if (pistas.some(p => !p)) return false;
@@ -359,21 +405,24 @@ const voz = (() => {
     const tocar = () => {
       if (yo !== turno) return;
       if (i >= pistas.length) { grabada = false; return despues(al, yo); }
-      audio.onended = () => { cancelAnimationFrame(cuadro); base += pistas[i].f.length; i++; tocar(); };
+      const a = tomar(pistas[i].clave, pistas[i].url);
+      a.onended = () => { cancelAnimationFrame(cuadro); base += pistas[i].f.length; i++; tocar(); };
       // Si un audio no carga (sin conexión, por ejemplo), sigue la voz del celular desde ahí.
-      audio.onerror = () => {
+      a.onerror = () => {
         if (yo !== turno) return;
         cancelAnimationFrame(cuadro); grabada = false;
         const desde = base;
         celular(partes.slice(i).flatMap(partir), { ...al, trozo: k => al.trozo && al.trozo(desde + k) }, 'es', yo);
       };
-      audio.src = pistas[i].url;
       enSilencio = false; velocidad();
-      audio.play().then(() => { if (yo === turno) marcar(); }).catch(e => {
+      a.play().then(() => { if (yo === turno) marcar(); }).catch(e => {
         if (yo !== turno || e.name === 'AbortError') return;
         grabada = false;
         if (al.falla) al.falla();
       });
+      // Lo que sigue solo y lo que viene con un toque, ya cargados.
+      const s = al.luego || 0;
+      anticipar([i + 1 < pistas.length ? conVoz(pistas[i + 1]) : s && despierto ? conSilencio(s) : primeroDe(al), primeroDe(al)]);
     };
     tocar();
     return true;
@@ -385,16 +434,17 @@ const voz = (() => {
     if (al.silencio) al.silencio(s);
     if (!despierto) { reloj = setTimeout(fin, s * 1000); return; }
     grabada = true;
-    audio.onended = fin;
-    audio.onerror = () => { reloj = setTimeout(fin, s * 1000); };
-    audio.src = silencioDe(s);
+    const q = conSilencio(s), a = tomar(q.clave, q.url);
+    a.onended = fin;
+    a.onerror = () => { reloj = setTimeout(fin, s * 1000); };
     enSilencio = true; velocidad();
-    audio.play().catch(e => { if (e.name !== 'AbortError') reloj = setTimeout(fin, s * 1000); });
+    a.play().catch(e => { if (e.name !== 'AbortError') reloj = setTimeout(fin, s * 1000); });
+    anticipar([primeroDe(al)]);
   }
 
   function callar() {
     turno++; clearTimeout(reloj); cancelAnimationFrame(cuadro); grabada = false;
-    audio.onended = audio.onerror = null;
+    reproductores.forEach(a => { a.onended = a.onerror = null; });
     if (!audio.paused) audio.pause();
     if (sintesis) sintesis.cancel();
   }
@@ -645,12 +695,16 @@ function hablar() {
   if (cfg.forma === 'solo' || pausa || (cfg.forma === 'guia' && cfg.mudo)) return;
   const { ses, pasos } = S, p = pasos[ses.paso], todos = $('.todos'), g = grupo(ses.grupo);
   const { partes, lengua } = locucion(p, g);
-  if (!partes.length) return;
+  // Lo primero que va a decir la voz después (saltando los pasos sin voz), para tenerlo listo.
+  let proximo = [];
+  for (let k = ses.paso + 1; k < pasos.length && !proximo.length; k++) proximo = locucion(pasos[k], g).partes;
+  if (!partes.length) return voz.preparar(proximo);
   const marcas = cfg.forma === 'todo' && p.t === 'oracion' ? todos.querySelectorAll('span') : [];
   sonando = true;
   ponerMedios(p, g);
   const escuchar = cfg.forma === 'todo';
   voz.decir(partes, {
+    proximo,
     // Escuchando, la app sigue sola: un respiro después de cada oración, uno más largo después
     // del anuncio, y ocho segundos de silencio después de la pregunta para tu vida.
     luego: !escuchar ? 0 : p.t === 'vida' ? 8 : p.t === 'ofrece' ? ofrecida().espera : p.t === 'anuncio' ? 1.5 : .7,
@@ -676,8 +730,8 @@ function hablar() {
       $('.pista-rezo').textContent = aviso; $('.lector').textContent = aviso;
     },
   }, lengua);
-  // Lo que se dice en el paso siguiente se baja de antemano.
-  if (pasos[ses.paso + 1]) voz.preparar(locucion(pasos[ses.paso + 1], g).partes);
+  // Lo que se dice después se baja de antemano.
+  voz.preparar(proximo);
 }
 
 // Todo lo que va a decir la voz en este rezo, desde donde se está, se baja de antemano.
