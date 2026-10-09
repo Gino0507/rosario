@@ -194,10 +194,7 @@ window.DATOS = {
     {
      "titulo": "La Anunciación del ángel a María",
      "cita": "Lucas 1, 26-38",
-     "mirar": [
-      "Nazaret, un pueblo chico de Galilea. María está comprometida con José.",
-      "Un ángel le habla y ella se turba, pregunta cómo puede ser, y al final dice que sí: \"Yo soy la servidora del Señor\"."
-     ],
+     "contemplar": "Dios mira la tierra entera, tanta gente perdida, y decide que el Hijo se haga hombre para salvarla. Todo empieza en una casa de Nazaret, cuando María dice que sí.",
      "pedir": "la humildad",
      "vida": [
       "Dios, que todo lo puede, esperó el sí de una joven de Nazaret. ¿Cómo es un Dios que pide permiso antes de entrar?",
@@ -218,11 +215,7 @@ window.DATOS = {
     {
      "titulo": "La Visitación de María a su prima Isabel",
      "cita": "Lucas 1, 39-56",
-     "mirar": [
-      "Apenas se entera de que Isabel espera un hijo, María sale sin demora hacia un pueblo de las montañas de Judá.",
-      "Cuando la saluda, el bebé de Isabel salta en su vientre.",
-      "María se queda con ella unos tres meses."
-     ],
+     "contemplar": "María cruza las montañas con Dios escondido en su vientre: es el primer sagrario de la historia. Donde ella llega, llega Jesús, y el niño de Isabel salta de alegría.",
      "pedir": "la caridad con el prójimo",
      "vida": [
       "Antes de nacer, escondido en María, Jesús ya llenaba de alegría a Juan y a Isabel. ¿Qué descubrís de Dios en esa manera de llegar, sin hacer ruido?",
@@ -243,10 +236,7 @@ window.DATOS = {
     {
      "titulo": "El nacimiento de Jesús en Belén",
      "cita": "Lucas 2, 1-20",
-     "mirar": [
-      "No hay lugar para ellos en el albergue. Jesús nace y María lo acuesta en un pesebre, donde come el ganado.",
-      "Los primeros en enterarse son unos pastores que cuidaban sus ovejas de noche."
-     ],
+     "contemplar": "Es de noche y no había lugar para ellos. María envuelve al Niño y lo acuesta en un pesebre. Acercate como un pobre más, a servirlos: Dios nace así de pobre por vos.",
      "pedir": "el desapego de las cosas",
      "vida": [
       "El que hizo el universo llegó como un bebé que necesita que lo abriguen. ¿Por qué habrá elegido Dios llegar así de frágil?",
@@ -267,10 +257,7 @@ window.DATOS = {
     {
      "titulo": "La Presentación de Jesús en el Templo",
      "cita": "Lucas 2, 22-38",
-     "mirar": [
-      "José y María llevan al bebé al Templo de Jerusalén con la ofrenda de los pobres: un par de palomas.",
-      "Un anciano, Simeón, lo toma en brazos y le anuncia a María que una espada le va a atravesar el alma."
-     ],
+     "contemplar": "El anciano Simeón esperó toda su vida, y ahora tiene a Dios en sus brazos: ya puede morir en paz. María ofrece a su Hijo, y oye que una espada le atravesará el corazón.",
      "pedir": "la obediencia",
      "vida": [
       "Simeón tomó al niño en brazos y dijo: \"Mis ojos han visto la salvación\". Miralo vos también: ¿qué ves en ese niño?",
@@ -291,10 +278,7 @@ window.DATOS = {
     {
      "titulo": "Jesús perdido y hallado en el Templo",
      "cita": "Lucas 2, 41-52",
-     "mirar": [
-      "Jesús tiene doce años. Se queda en Jerusalén sin avisar y sus padres lo buscan durante tres días.",
-      "Lo encuentran en el Templo, sentado entre los maestros, escuchándolos y haciéndoles preguntas."
-     ],
+     "contemplar": "María y José lo buscan tres días, angustiados. Lo encuentran en el Templo, ocupado en los asuntos de su Padre. No lo entienden del todo, y María lo guarda en su corazón.",
      "pedir": "buscar a Dios siempre",
      "vida": [
       "Después del Templo, Jesús volvió a Nazaret y vivió años de trabajo y de casa, sin milagros. ¿Qué te enseña de Dios que haya elegido vivir así la mayor parte de su vida?",
@@ -323,10 +307,7 @@ window.DATOS = {
     {
      "titulo": "El Bautismo de Jesús en el Jordán",
      "cita": "Mateo 3, 13-17",
-     "mirar": [
-      "Jesús hace la fila con los que van a confesar sus pecados y le pide a Juan que lo bautice.",
-      "Juan se resiste. Cuando Jesús sale del agua se abre el cielo y se oye una voz: \"Este es mi Hijo muy querido\"."
-     ],
+     "contemplar": "Jesús baja al Jordán con los pecadores, cargando lo que no es suyo. Se abre el cielo y el Padre dice: «Este es mi Hijo muy querido». Por el bautismo, lo dice también de vos.",
      "pedir": "vivir como hijos de Dios",
      "vida": [
       "Jesús, que no tenía pecado, hizo la fila con los pecadores para bautizarse. ¿Qué te muestra eso de dónde elige ponerse Dios?",
@@ -347,10 +328,7 @@ window.DATOS = {
     {
      "titulo": "Las bodas de Caná",
      "cita": "Juan 2, 1-12",
-     "mirar": [
-      "Una boda en un pueblo de Galilea. En plena fiesta se termina el vino.",
-      "María se da cuenta antes que nadie, se lo dice a Jesús y después les dice a los sirvientes: \"Hagan todo lo que él les diga\"."
-     ],
+     "contemplar": "En plena fiesta se acaba el vino, y María se da cuenta antes que nadie. Le dice a Jesús: «No tienen vino», y él convierte el agua en el mejor vino. Así mira ella lo que le falta a tu vida.",
      "pedir": "hacer lo que Jesús nos diga",
      "vida": [
       "Jesús dijo que todavía no era su hora, y aun así hizo lo que le pidió su madre. ¿Qué te dice eso de cómo la escucha?",
@@ -371,11 +349,7 @@ window.DATOS = {
     {
      "titulo": "El anuncio del Reino de Dios",
      "cita": "Marcos 1, 14-15",
-     "mirar": [
-      "Jesús recorre Galilea a pie, de pueblo en pueblo.",
-      "Come con gente mal vista, toca a los enfermos y perdona pecados.",
-      "Lo primero que anuncia entra en una línea: \"Conviértanse y crean en la Buena Noticia\"."
-     ],
+     "contemplar": "Jesús recorre Galilea a pie: toca a los leprosos, come con los pecadores, perdona. En él, el Reino de Dios está cerca, a un paso. Convertirse es volverse hacia él.",
      "pedir": "la conversión",
      "vida": [
       "Jesús comía con los que nadie quería sentar a su mesa y tocaba a los enfermos que nadie se animaba a tocar. ¿Cómo te mira a vos alguien así?",
@@ -396,11 +370,7 @@ window.DATOS = {
     {
      "titulo": "La Transfiguración",
      "cita": "Lucas 9, 28-36",
-     "mirar": [
-      "Jesús sube a una montaña a rezar con Pedro, Santiago y Juan.",
-      "Mientras reza, su rostro cambia y su ropa se vuelve de un blanco deslumbrante.",
-      "Pedro, que se estaba durmiendo, propone armar tres carpas para quedarse ahí."
-     ],
+     "contemplar": "Mientras reza, el rostro de Jesús se llena de luz, y Moisés y Elías le hablan de su muerte en Jerusalén. Pedro querría quedarse ahí. El Padre dice: «Escúchenlo».",
      "pedir": "el deseo de ser santos",
      "vida": [
       "Jesús dejó que tres amigos vieran su gloria justo antes de ir a la cruz. ¿Qué te dice eso de cómo cuida a los suyos antes de una prueba?",
@@ -421,10 +391,7 @@ window.DATOS = {
     {
      "titulo": "La institución de la Eucaristía",
      "cita": "Lucas 22, 14-20",
-     "mirar": [
-      "Es la última cena antes de morir. Jesús toma el pan, da gracias, lo parte y se lo da a sus amigos: \"Esto es mi Cuerpo\".",
-      "Después hace lo mismo con el cáliz y les pide: \"Hagan esto en memoria mía\"."
-     ],
+     "contemplar": "«He deseado ardientemente comer esta Pascua con ustedes», dice Jesús. Sabe que lo van a entregar, y se adelanta: se da él mismo como pan, para no alejarse nunca de nosotros.",
      "pedir": "el amor a la Eucaristía",
      "vida": [
       "La noche en que lo iban a entregar, Jesús tomó el pan y dijo: \"Esto es mi Cuerpo, que se entrega por ustedes\". ¿Qué clase de amor responde así a una traición?",
@@ -453,11 +420,7 @@ window.DATOS = {
     {
      "titulo": "La agonía de Jesús en el huerto",
      "cita": "Lucas 22, 39-46",
-     "mirar": [
-      "Jesús reza solo, de rodillas. Los que más quiere duermen a pocos pasos.",
-      "Le pide al Padre que aparte de él ese cáliz y enseguida agrega que se haga su voluntad.",
-      "Su sudor cae a tierra como gotas de sangre."
-     ],
+     "contemplar": "Jesús siente miedo y una tristeza de muerte. Les pide a sus amigos que lo acompañen, y se duermen. Quedate vos despierto con él, mientras le dice al Padre que sí.",
      "pedir": "aceptar la voluntad de Dios",
      "vida": [
       "Jesús podía irse esa noche y se quedó, sabiendo lo que venía. ¿Por quién se quedó?",
@@ -478,10 +441,7 @@ window.DATOS = {
     {
      "titulo": "La flagelación",
      "cita": "Marcos 15, 6-15",
-     "mirar": [
-      "La multitud pide que suelten a Barrabás. Pilato sabe que Jesús es inocente, pero para conformar a la gente lo manda azotar.",
-      "Lo atan a una columna. Jesús no se defiende."
-     ],
+     "contemplar": "Lo atan a una columna y lo azotan. Jesús calla. Cada golpe lo recibe por nosotros: por sus heridas fuimos sanados. Acompañalo, y pedí sentir algo de su dolor.",
      "pedir": "el dominio de uno mismo",
      "vida": [
       "Quedate mirándolo un momento: recibe golpes que no merecía, y no se defiende. ¿Qué te dice eso de cuánto valés para él?",
@@ -502,11 +462,7 @@ window.DATOS = {
     {
      "titulo": "La coronación de espinas",
      "cita": "Mateo 27, 27-31",
-     "mirar": [
-      "Los soldados reúnen a toda la tropa a su alrededor.",
-      "Le ponen un manto rojo, una corona trenzada con espinas y una caña en la mano derecha.",
-      "Se arrodillan delante de él para burlarse: \"Salud, rey de los judíos\"."
-     ],
+     "contemplar": "Los soldados le ponen una corona de espinas y se arrodillan para burlarse. No saben que es Rey de verdad, y que reina así, amando. Arrodillate vos también, para adorarlo.",
      "pedir": "el valor de no esconder la fe",
      "vida": [
       "Pilato lo sacó afuera, coronado de espinas, y dijo: \"¡Aquí tienen al hombre!\". ¿Qué ves vos en ese hombre?",
@@ -527,11 +483,7 @@ window.DATOS = {
     {
      "titulo": "Jesús carga con la cruz camino del Calvario",
      "cita": "Lucas 23, 26-32",
-     "mirar": [
-      "Jesús sale de la ciudad con la cruz a cuestas.",
-      "Los soldados obligan a Simón de Cirene, que volvía del campo, a cargarla detrás de él.",
-      "Por el camino lo sigue mucha gente, y unas mujeres lloran por él."
-     ],
+     "contemplar": "Agotado y sangrando, Jesús carga la cruz, y en ella pesan nuestros pecados. A Simón lo obligan a ayudarlo; vos podés caminar detrás de él por amor.",
      "pedir": "la paciencia",
      "vida": [
       "Agotado, camino de la cruz, Jesús se dio vuelta para hablarles a unas mujeres que lloraban. ¿Qué te muestra eso de su corazón?",
@@ -552,11 +504,7 @@ window.DATOS = {
     {
      "titulo": "La crucifixión y muerte de Jesús",
      "cita": "Juan 19, 17-30",
-     "mirar": [
-      "Junto a la cruz están su madre y el discípulo que él amaba.",
-      "Jesús los mira y le dice a ella: \"Mujer, aquí tienes a tu hijo\". Y al discípulo: \"Aquí tienes a tu madre\".",
-      "Después dice \"Todo se ha cumplido\", inclina la cabeza y entrega su espíritu."
-     ],
+     "contemplar": "Jesús muere amando: perdona a los que lo crucifican y nos da a su madre. «Todo se ha cumplido». Miralo así, colgado en la cruz, y hablale como a un amigo.",
      "pedir": "la perseverancia",
      "vida": [
       "Desde la cruz, Jesús le prometió el Paraíso a un ladrón que se lo pidió a último momento. ¿Qué te dice eso de su misericordia?",
@@ -585,10 +533,7 @@ window.DATOS = {
     {
      "titulo": "La Resurrección de Jesús",
      "cita": "Mateo 28, 1-10",
-     "mirar": [
-      "El domingo, apenas amanece, María Magdalena y la otra María van al sepulcro.",
-      "Un ángel les dice que Jesús no está ahí. Corren a avisar a los discípulos, asustadas y llenas de alegría, y en el camino Jesús les sale al encuentro."
-     ],
+     "contemplar": "Amanece, y el sepulcro está vacío. Jesús sale al encuentro de las mujeres y les dice: «Alégrense». Ellas se abrazan a sus pies. Pedí alegrarte con su alegría.",
      "pedir": "la fe",
      "vida": [
       "Sus discípulos lo habían abandonado, y al resucitar Jesús los llama \"mis hermanos\". ¿Qué descubrís ahí de su manera de perdonar?",
@@ -609,10 +554,7 @@ window.DATOS = {
     {
      "titulo": "La Ascensión de Jesús al cielo",
      "cita": "Hechos 1, 6-11",
-     "mirar": [
-      "Cuarenta días después de resucitar, Jesús les promete a los discípulos la fuerza del Espíritu Santo y una nube lo oculta de su vista.",
-      "Ellos se quedan mirando al cielo hasta que dos hombres vestidos de blanco les preguntan qué hacen ahí parados."
-     ],
+     "contemplar": "Jesús sube al cielo con su cuerpo, el mismo que nació de María y murió en la cruz. Va adelante a prepararte un lugar. Allá está tu casa, y él te espera.",
      "pedir": "la esperanza",
      "vida": [
       "Lo último que hizo Jesús en la tierra fue levantar las manos para bendecir a sus amigos. ¿Con qué mirada te ve hoy, desde el cielo?",
@@ -633,11 +575,7 @@ window.DATOS = {
     {
      "titulo": "La venida del Espíritu Santo",
      "cita": "Hechos 1, 14 y 2, 1-13",
-     "mirar": [
-      "Los discípulos rezan juntos en una casa de Jerusalén, con María.",
-      "De golpe, un ruido como de viento fuerte llena la casa y sobre cada uno se posa algo parecido a una lengua de fuego.",
-      "Salen a hablar y los extranjeros que están en la ciudad los escuchan cada uno en su propio idioma."
-     ],
+     "contemplar": "Los discípulos rezan con María, esperando. Llega el Espíritu Santo como viento y fuego, y Pedro, que había negado a Jesús, sale a anunciarlo. Ese fuego quiere arder en vos.",
      "pedir": "los dones del Espíritu Santo",
      "vida": [
       "Las lenguas de fuego bajaron por separado sobre cada uno de ellos. ¿Qué te dice de Dios que se dé así, a cada uno en persona?",
@@ -658,10 +596,7 @@ window.DATOS = {
     {
      "titulo": "La Asunción de María al cielo",
      "cita": "Lucas 1, 46-55 (el Magníficat)",
-     "mirar": [
-      "Terminada su vida en la tierra, María es llevada al cielo en cuerpo y alma.",
-      "Es lo que ella misma había cantado de joven, en casa de Isabel: \"Todas las generaciones me llamarán feliz\"."
-     ],
+     "contemplar": "Terminada su vida en la tierra, María es llevada al cielo en cuerpo y alma. El Hijo que ella tuvo en brazos la recibe en los suyos. Llega primero adonde Dios nos espera.",
      "pedir": "el amor a María",
      "vida": [
       "En María, Dios ya cumplió lo que promete para todos: llevarnos con él, enteros. ¿Qué te dice eso del final que quiere para tu vida?",
@@ -682,10 +617,7 @@ window.DATOS = {
     {
      "titulo": "La coronación de María",
      "cita": "Apocalipsis 12, 1",
-     "mirar": [
-      "Juan ve en el cielo a una mujer vestida de sol, con la luna bajo sus pies y una corona de doce estrellas.",
-      "La Iglesia reconoce en ella a María, reina junto a su Hijo."
-     ],
+     "contemplar": "La servidora del Señor es coronada Reina del cielo y de la tierra. Reina como madre: cuida a cada uno de sus hijos que todavía caminan. Ponete bajo su amparo.",
      "pedir": "la confianza en María",
      "vida": [
       "La que se llamó a sí misma \"la servidora del Señor\" es hoy reina del cielo. ¿Qué te enseña eso de lo que Dios mira en una persona?",

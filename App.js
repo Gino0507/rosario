@@ -604,7 +604,7 @@ const INTENCION = {
 const PAUSAS = ['vida', 'intencion', 'ofrece']; // pasos donde un toque suelto no sigue de largo
 const ofrecida = () => INTENCION[S.ses.intencion === 'papa' ? 'papa' : 'propias'];
 // La primera vez que aparecen en cada rezo, el Gloria y el Oh Jesús mío llevan una línea que los
-// explica (en lugar de la frase para mirar). Borrador para Pablo.
+// explica (en lugar de "Para contemplar"). Borrador para Pablo.
 const NOTA_PRIMERA = {
   gloria: 'Alabamos a Dios, que es Padre, Hijo y Espíritu Santo.',
   ohjesus: 'La pidió la Virgen en Fátima, en 1917: pedimos perdón y el cielo para todos.',
@@ -673,11 +673,6 @@ function locucion(p, g) {
   if (p.t === 'ofrece') return { lengua: 'es', partes: [ofrecida().voz] };
   const partes = partesDe(p), guia = partes.filter(x => x.quien === 'guia');
   return { lengua: cfg.lengua, partes: (cfg.forma === 'guia' && guia.length ? guia : partes).map(x => x.texto) };
-}
-
-function fraseMirar(mis, p) {
-  const n = mis.mirar.length;
-  return mis.mirar[Math.min(n - 1, Math.floor(p.k * n / 11))];
 }
 
 /* ---------- Rezo ---------- */
@@ -920,7 +915,7 @@ function actualizar() {
   // octubre). Las líneas que explican una oración (p.nota) se ven siempre.
   r.classList.toggle('con-frase', p.t === 'oracion' && enMisterio && !p.nota);
   r.classList.toggle('mira-abierta', cfg.contemplar);
-  ponerTexto($('.mira-t'), p.t === 'oracion' ? (p.nota || (enMisterio ? fraseMirar(mis, p) : '')) : '');
+  ponerTexto($('.mira-t'), p.t === 'oracion' ? (p.nota || (enMisterio ? mis.contemplar : '')) : '');
   $('.fruto').textContent = enMisterio ? mis.pedir : '';
   $('.credito').innerHTML = enMisterio && conCredito(mis) ? `${esc(mis.autor)}, <em>${esc(mis.obra)}</em>` : '';
 
@@ -1311,7 +1306,7 @@ function pintarPractica() {
   [q, ...q.querySelectorAll('.foco')].forEach(x => x.classList.remove('foco'));
   if (P) (P.en === 'pantalla' ? q : [...q.querySelectorAll(`[data-v="${P.en}"]`)].find(x => x.getClientRects().length)).classList.add('foco');
   q.classList.toggle('guiando', !!P && P.en !== 'pantalla');
-  ponerTexto(q.querySelector('.mq-mira-t'), fraseMirar(RP.mis, { k: c }));
+  q.querySelector('.mq-mira-t').textContent = RP.mis.contemplar;
   // La oración y su nombre, como en el rezo: a dos voces, separadas.
   const t = textos({ o: c === 0 ? 'padre' : c > 10 ? 'gloria' : 'ave' }), separar = cfg.forma === 'guia';
   q.querySelector('.mq-guia').textContent = separar ? t.guia : '';
