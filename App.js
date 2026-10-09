@@ -22,6 +22,7 @@ const ICONOS = {
   'arrow-left': '<path d="M5 12l14 0"/><path d="M5 12l6 6"/><path d="M5 12l6 -6"/>',
   'book-2': '<path d="M19 4v16h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12z"/><path d="M19 16h-12a2 2 0 0 0 -2 2"/><path d="M9 8h6"/>',
   'chevron-down': '<path d="M6 9l6 6l6 -6"/>',
+  'chevron-left': '<path d="M15 6l-6 6l6 6"/>',
   'chevron-right': '<path d="M9 6l6 6l-6 6"/>',
   'chevron-up': '<path d="M6 15l6 -6l6 6"/>',
   'photo': '<path d="M15 8h.01"/><path d="M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12z"/><path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5"/><path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3"/>',
@@ -1213,7 +1214,8 @@ const MAPA = [
 function pasoMapa(n) {
   RV.tiempos.forEach(clearTimeout); RV.tiempos = [];
   RV.paso = n;
-  const svg = $('.pv .ros'), P = MAPA[n];
+  // El mismo dibujo está en "Es mi primera vez" y en el primer capítulo de "Acerca del Rosario".
+  const svg = $('.ros[data-accion="pvCuenta"]'), P = MAPA[n];
   if (!svg) return;
   const k = { c: n > 3 && n < 10 ? 3 : 0, d: [n > 6 && n < 10 ? 10 : 0, ...[1, 2, 3, 4].map(() => n === 8 || n === 9 ? 10 : 0)] };
   const poner = () => ponerCuentasMapa(svg, m => k.d[m], k.c);
@@ -1228,6 +1230,8 @@ function pasoMapa(n) {
   svg.querySelectorAll('[data-pos]').forEach(e => e.classList.toggle('marca', P.pos.includes(e.dataset.pos)));
   ponerTexto($('.pv-aqui b'), P.t);
   ponerTexto($('.pv-aqui span'), P.b);
+  const num = $('.mapa-n');
+  if (num) num.textContent = `${n + 1} de ${MAPA.length}`;
 }
 // Las cuentas del dibujo son chicas para el dedo: vale la más cercana al toque.
 function tocarCuenta(svg, e) {
@@ -1491,26 +1495,321 @@ function vistaPrimera(i, atras) {
 }
 
 /* ---------- Acerca del Rosario ---------- */
-const CAPITULOS = [
-  ['Qué es el Rosario', 'Las oraciones, los misterios y cómo se reza'],
-  ['Su historia', 'De los 150 salmos de los monjes a los misterios luminosos de 2002'],
-  ['Por qué rezarlo', 'Lo que dijeron los papas y los santos'],
-  ['Lo que dice la ciencia', 'Qué se midió y qué no'],
-  ['Con María hacia Jesús', 'La idea que da origen a este proyecto'],
-  ['Preguntas honestas', '¿No es repetitivo? ¿Por qué rezarle a María?'],
-];
+// Ocho capítulos para conocerlo a fondo (ver Decisiones.md, 9 de octubre). Los textos están en
+// Contenido/Acerca del Rosario.md (borrador para Pablo) y llegan en D.acerca como bloques: párrafos,
+// citas, subtítulos y partes interactivas (MODULOS). Acá va solo cómo se ve cada cosa.
+const ROMANOS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+const NUMEROS = ['', 'un', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez', 'once', 'doce'];
+const MISTERIOS = D.grupos.flatMap(g => g.misterios);
+const misterioDe = nombre => MISTERIOS.find(m => m.imagen === `Arte/${nombre}.jpg`) || MISTERIOS[0];
+// Los textos de Contenido/ marcan las *cursivas* así.
+const md = t => esc(t || '').replace(/\*(.+?)\*/g, '<em>$1</em>');
+// La miniatura de un misterio en el estilo elegido (sin imágenes: la luz de su grupo).
+function urlMini(mis) {
+  if (cfg.imagenes === 'ninguna') return null;
+  return cfg.imagenes === 'ilustraciones' && mis.miniIlustracion ? mis.miniIlustracion : mis.mini;
+}
+function miniEstilo(mis) {
+  const u = urlMini(mis);
+  return u ? `background-image:url('${u}');background-position:${u === mis.mini ? mis.foco : '50% 30%'}` : luz(grupoDe(mis));
+}
+
 function vistaAcerca() {
+  RV.tiempos.forEach(clearTimeout); RV.tiempos = [];
+  const n = D.acerca.length;
   app.innerHTML = `
-  <section class="vista acerca">
-    ${heroHTML(grupo('gloriosos').misterios[4])}
+  <section class="vista acerca indice-ac">
+    ${heroHTML(misterioDe('Gloriosos-1'))}
     <header class="barra"><button class="ic" data-accion="inicio" aria-label="Volver al inicio">${icono('arrow-left')}</button><span></span></header>
+    <div class="aire"></div>
     <div class="cuerpo">
+      <span class="k-ac">Para conocerlo a fondo</span>
       <h1 class="t1">Acerca del Rosario</h1>
-      <p class="sub">Para conocerlo a fondo, de a un capítulo.</p>
-      ${CAPITULOS.map(([t, d]) => `<div class="capitulo"><div><b>${t}</b><span>${d}</span></div><em>En preparación</em></div>`).join('')}
+      <p class="sub">${cap(NUMEROS[n] || String(n))} capítulos breves: qué es, de dónde viene, cómo se contempla, y lo que dicen la Iglesia, los santos y la ciencia.</p>
+      <ol class="capitulos">${D.acerca.map((c, i) => `
+        <li><button class="cap-fila" data-accion="capitulo" data-v="${i}">
+          <span class="cap-img" style="${miniEstilo(misterioDe(c.imagen))}" aria-hidden="true"></span>
+          <span class="cap-num" aria-hidden="true">${ROMANOS[i]}</span>
+          <span class="cap-txt"><b>${esc(c.titulo)}</b><small>${esc(c.bajada)}</small></span>
+          ${icono('chevron-right')}
+        </button></li>`).join('')}</ol>
     </div>
   </section>`;
   window.scrollTo(0, 0);
+  alLeer();
+}
+
+function vistaCapitulo(i) {
+  RV.tiempos.forEach(clearTimeout); RV.tiempos = [];
+  const c = D.acerca[i], sig = D.acerca[i + 1];
+  app.innerHTML = `
+  <section class="vista acerca cap${'IntersectionObserver' in window ? ' js-revelar' : ''}">
+    ${heroHTML(misterioDe(c.imagen))}
+    <header class="barra"><button class="ic" data-accion="acerca" aria-label="Volver a los capítulos">${icono('arrow-left')}</button><span class="leido" aria-hidden="true"><i></i></span></header>
+    <div class="aire"></div>
+    <article class="cuerpo">
+      <div class="cap-cab"><span class="cap-romano" aria-hidden="true">${ROMANOS[i]}</span><span class="k-ac">Capítulo ${i + 1} de ${D.acerca.length}</span></div>
+      <h1 class="t1">${esc(c.titulo)}</h1>
+      <p class="bajada">${md(c.bajada)}</p>
+      ${c.bloques.map(bloqueHTML).join('')}
+      ${c.fuentes ? `<p class="fuentes"><span class="k-ac">Fuentes</span>${md(c.fuentes)}</p>` : ''}
+      ${sig ? `
+      <button class="cap-sig" data-accion="capitulo" data-v="${i + 1}">
+        <span class="cap-img" style="${miniEstilo(misterioDe(sig.imagen))}" aria-hidden="true"></span>
+        <span class="cap-txt"><span class="k-ac">Sigue · Capítulo ${ROMANOS[i + 1]}</span><b>${esc(sig.titulo)}</b><small>${esc(sig.bajada)}</small></span>
+        ${icono('chevron-right')}
+      </button>` : finAcerca()}
+      <button class="enlace a-capitulos" data-accion="acerca">Volver a los capítulos</button>
+    </article>
+  </section>`;
+  window.scrollTo(0, 0);
+  montarCapitulo();
+}
+
+function bloqueHTML(b) {
+  if (b.t === 'p') return `<p>${md(b.texto)}</p>`;
+  if (b.t === 'h') return `<h2 class="h-ac">${md(b.texto)}</h2>`;
+  if (b.t === 'cita') return `<blockquote class="cita-ac revelar"><p>«${md(b.texto)}»</p>${b.fuente ? `<cite>${md(b.fuente)}</cite>` : ''}</blockquote>`;
+  return MODULOS[b.id] ? MODULOS[b.id](b.items) : '';
+}
+
+// Al final del último capítulo, una invitación a rezar.
+function finAcerca() {
+  const mis = misterioDeHoy();
+  return `
+      <div class="fin-ac revelar">
+        <span class="k-ac">Y ahora</span>
+        <p class="fin-ac-t">Lo mejor para conocer el Rosario es rezarlo.</p>
+        <button class="btn principal" data-accion="${yaReza() ? 'uno' : 'primerRezo'}"><span>Rezar un misterio<small>${esc(mis.titulo)}</small></span><span class="min">4 min</span></button>
+      </div>`;
+}
+
+/* Las partes interactivas, una por nombre de Contenido/Acerca del Rosario.md ([[nombre]]). */
+// Las etapas de la vida de Jesús de las veinte escenas, por grupo.
+let ETAPAS = {};
+// La mirada guiada por el nacimiento (San Ignacio): adónde va la mirada en cada paso, en
+// fracciones de la imagen (x, y) y cuánto se acerca. Una lista para la pintura y otra para la ilustración.
+const FOCOS_IGNACIO = {
+  pintura: [[.56, .5, 1], [.36, .8, 1.55], [.66, .52, 1.2], [.71, .4, 1.75], [.47, .72, 1.45], [.6, .66, 2.4]],
+  ilustracion: [[.5, .46, 1], [.83, .15, 2.1], [.5, .48, 1.3], [.5, .3, 2.1], [.47, .6, 1.9], [.45, .53, 2.9]],
+};
+const IGN = { paso: 0, items: [], pintura: false };
+
+const MODULOS = {
+  // De Nazaret a la gloria: las veinte escenas, para deslizar.
+  escenas: items => {
+    ETAPAS = Object.fromEntries(items.map(x => [x.titulo.toLowerCase(), x.campos.Etapa]));
+    let k = 0;
+    const tarjetas = D.grupos.map(g => g.misterios.map((m, j) => {
+      const u = urlMini(m);
+      return `<figure class="esc" data-g="${g.id}">
+        <span class="esc-img" style="${u ? '' : luz(g.id)}">${u ? `<img src="${u}" alt="" loading="lazy" decoding="async" style="object-position:${u === m.mini ? m.foco : '50% 30%'}">` : `<b aria-hidden="true">${j + 1}</b>`}</span>
+        <figcaption><span class="k-ac">${cap(SINGULAR[g.id])} · ${j + 1}</span><b>${esc(m.titulo)}</b><small>${esc(m.cita)}</small></figcaption>
+      </figure>`;
+    }).join('')).join('');
+    const marcas = D.grupos.map(g => `<span class="esc-tramo" style="--luz:${LUZ[g.id]}">${g.misterios.map(() => `<i data-i="${k++}"></i>`).join('')}</span>`).join('');
+    return `<div class="escenas">
+      <div class="esc-cab"><span class="esc-etapa">${esc(ETAPAS[D.grupos[0].id] || '')}</span><span class="esc-n">1 de ${MISTERIOS.length}</span></div>
+      <div class="esc-marcas" aria-hidden="true">${marcas}</div>
+      <div class="esc-pista desliza" tabindex="0" role="group" aria-label="Las veinte escenas, en el orden de la vida de Jesús">${tarjetas}</div>
+    </div>`;
+  },
+  // El Rosario dibujado, el mismo de "Es mi primera vez": tocar una cuenta dice qué se reza ahí.
+  cuentas: () => `<div class="cuentas-ac revelar">
+      <svg class="ros" viewBox="0 0 200 272" data-accion="pvCuenta" role="img" aria-label="El Rosario dibujado, con la parte que se explica marcada"></svg>
+      <div class="pv-aqui" role="status"><b></b><span></span></div>
+      <div class="mapa-nav">
+        <button class="ic chico" data-accion="mapaPaso" data-v="-1" aria-label="Paso anterior">${icono('chevron-left')}</button>
+        <span class="mapa-n"></span>
+        <button class="ic chico" data-accion="mapaPaso" data-v="1" aria-label="Paso siguiente">${icono('chevron-right')}</button>
+      </div>
+    </div>`,
+  // El Avemaría por partes; el nombre de Jesús, en el centro y abierto de entrada.
+  avemaria: items => `<div class="ave-ac con-abierta">${items.map(x => {
+    const centro = x.campos['Quién'] === 'El centro';
+    return `<div class="ave-p${centro ? ' centro abierto' : ''}">
+      <button class="ave-f" data-accion="aveFrase" aria-expanded="${centro}">
+        <span class="ave-quien"><span>${md(x.campos['Quién'])}</span><em>${md(x.campos['Dónde'])}</em></span>
+        <span class="ave-t">${esc(centro ? x.titulo.replace(/\.$/, '') : x.titulo)}</span>
+      </button>
+      <div class="ave-exp"><div><p>${md(x.campos['Explicación'])}</p></div></div>
+    </div>`;
+  }).join('')}</div>`,
+  // Contemplar el nacimiento paso a paso, con la mirada que va a cada parte de la imagen.
+  ignacio: items => {
+    const mis = grupo('gozosos').misterios[2];
+    IGN.items = items; IGN.paso = 0;
+    IGN.pintura = cfg.imagenes === 'pinturas' || !mis.ilustracion;
+    return `<div class="ign revelar">
+      <div class="ign-marco"><img class="ign-img" src="${IGN.pintura ? mis.imagen : mis.ilustracion}" alt="${esc(mis.titulo)}" decoding="async"><span class="ign-velo"></span></div>
+      <div class="ign-puntos" aria-hidden="true">${items.map(() => '<i></i>').join('')}</div>
+      <div class="ign-texto" aria-live="polite"></div>
+      <div class="ign-nav">
+        <button class="btn alt" data-accion="ignPaso" data-v="-1">Anterior</button>
+        <button class="btn principal centro" data-accion="ignPaso" data-v="1">Siguiente</button>
+      </div>
+    </div>`;
+  },
+  // El triple coloquio de los Ejercicios (63): de vos a María, a Jesús y al Padre.
+  coloquio: items => {
+    IGN.coloquio = items;
+    return `<div class="col revelar">
+      <div class="col-camino">${items.map((x, k) => `${k ? '<span class="col-tramo"></span>' : ''}<button class="col-nodo" data-accion="colNodo" data-v="${k}" aria-pressed="${k === 0}"><span>${esc(x.titulo)}</span></button>`).join('')}</div>
+      <div class="col-texto" aria-live="polite"></div>
+    </div>`;
+  },
+  // La historia, de arriba abajo: la línea dorada crece mientras se lee.
+  historia: items => `<ol class="hist">${items.map(x => `
+    <li class="hito revelar${x.titulo === 'Hoy' ? ' hoy' : ''}">
+      <span class="hito-anio">${esc(x.titulo)}</span>
+      <b>${md(x.campos['Título'])}</b>
+      <p>${md(x.campos.Texto)}</p>
+      ${x.campos.Fuente ? `<cite>${md(x.campos.Fuente)}</cite>` : ''}
+    </li>`).join('')}</ol>`,
+  // Los santos, en tarjetas para deslizar.
+  personas: items => `<div class="pers">
+    <div class="pers-pista desliza" tabindex="0" role="group" aria-label="Seis santos que rezaron el Rosario">${items.map(x => `
+      <article class="per">
+        <span class="per-fondo" aria-hidden="true">${esc((x.campos['Años'] || '').slice(0, 4))}</span>
+        <span class="k-ac">${md(x.campos['Quién era'])}</span>
+        <h3>${esc(x.titulo)}</h3>
+        <span class="per-anios">${esc((x.campos['Años'] || '').replace('-', ' – '))}</span>
+        <p>${md(x.campos.Texto)}</p>
+        ${x.campos.Cita ? `<blockquote>«${md(x.campos.Cita)}»</blockquote>` : ''}
+        ${x.campos.Fuente ? `<cite>${md(x.campos.Fuente)}</cite>` : ''}
+      </article>`).join('')}</div>
+    <div class="pers-puntos" aria-hidden="true">${items.map(() => '<i></i>').join('')}</div>
+  </div>`,
+  // Los dos ritmos que se midieron, respirando en tiempo real.
+  respiracion: () => `<div class="resp revelar" role="img" aria-label="Dos círculos que respiran: uno a unas 14 respiraciones por minuto, como se respira normalmente; el otro a 6, como cuando se reza el Avemaría.">
+      <div class="resp-col"><span class="resp-aro" style="--t:${(60 / 14).toFixed(2)}s"><i></i></span><b>14</b><small>por minuto, respirando con normalidad</small></div>
+      <div class="resp-col lento"><span class="resp-aro" style="--t:10s"><i></i></span><b>6</b><small>por minuto, rezando el Avemaría</small></div>
+      <p class="resp-pie">Los dos ritmos, en tiempo real</p>
+    </div>`,
+  // Las preguntas, como los desplegables de "Es mi primera vez".
+  preguntas: items => `<div class="desplegables preg">${items.map(x => `
+    <div class="desplegable">
+      <button class="fila" data-accion="pvAbrir" aria-expanded="false"><span class="nombre"><b>${esc(x.titulo)}</b></span>${icono('chevron-down', 'flecha')}</button>
+      <div class="contenido"><div>${x.parrafos.map(p => `<p>${md(p)}</p>`).join('')}</div></div>
+    </div>`).join('')}</div>`,
+};
+
+// Lo que se hace después de mostrar un capítulo.
+let revelador = null;
+function montarCapitulo() {
+  const svg = $('.cuentas-ac .ros');
+  if (svg) { dibujarMapa(svg); pasoMapa(0); }
+  if ($('.ign')) { medirIgnacio(); pintarIgnacio(); const img = $('.ign-img'); if (img.complete) enfocar(); else img.addEventListener('load', enfocar); }
+  if ($('.col')) pintarColoquio(0);
+  document.querySelectorAll('.desliza').forEach(p => { p.addEventListener('scroll', () => pistaMovida(p), { passive: true }); pistaMovida(p); });
+  // Lo que entra en pantalla aparece con un fundido (una sola vez).
+  if (revelador) revelador.disconnect();
+  if ('IntersectionObserver' in window) {
+    revelador = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visto'); revelador.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.revelar').forEach(x => revelador.observe(x));
+  }
+  alLeer();
+}
+
+// Al leer: la barra de arriba toma fondo, la línea dorada marca cuánto se leyó y crece la de la historia.
+let leyendo = false;
+window.addEventListener('scroll', () => { if (!leyendo && $('.acerca')) { leyendo = true; requestAnimationFrame(alLeer); } }, { passive: true });
+function alLeer() {
+  leyendo = false;
+  const v = $('.acerca');
+  if (!v) return;
+  const y = window.scrollY, alto = document.documentElement.scrollHeight - innerHeight;
+  v.classList.toggle('bajando', y > 24);
+  const l = $('.leido i');
+  if (l) l.style.transform = `scaleX(${alto > 0 ? Math.min(1, y / alto) : 0})`;
+  const h = $('.hist');
+  if (h) {
+    const r = h.getBoundingClientRect(), hasta = innerHeight * .62;
+    h.style.setProperty('--p', Math.min(1, Math.max(0, (hasta - r.top) / r.height)).toFixed(3));
+    // Cada época se enciende cuando la línea llega a su punto.
+    h.querySelectorAll('.hito').forEach(x => x.classList.toggle('pasado', x.getBoundingClientRect().top + 16 < hasta));
+  }
+}
+window.addEventListener('resize', () => { if ($('.ign')) enfocar(); });
+
+// Las tiras que se deslizan (escenas y santos): la tarjeta del medio queda marcada.
+function pistaMovida(p) {
+  if (p.moviendo) return;
+  p.moviendo = true;
+  requestAnimationFrame(() => {
+    p.moviendo = false;
+    const hijos = p.children, paso = hijos.length > 1 ? hijos[1].offsetLeft - hijos[0].offsetLeft : 1;
+    const i = Math.max(0, Math.min(hijos.length - 1, Math.round(p.scrollLeft / paso)));
+    if (p.actual === i) return;
+    p.actual = i;
+    [...hijos].forEach((x, j) => x.classList.toggle('on', j === i));
+    const caja = p.parentElement;
+    if (p.matches('.esc-pista')) {
+      ponerTexto(caja.querySelector('.esc-etapa'), ETAPAS[hijos[i].dataset.g] || '');
+      caja.querySelector('.esc-n').textContent = `${i + 1} de ${hijos.length}`;
+      caja.querySelectorAll('.esc-marcas i').forEach((m, j) => m.classList.toggle('on', j === i));
+    } else caja.querySelectorAll('.pers-puntos i').forEach((m, j) => m.classList.toggle('on', j === i));
+  });
+}
+
+// El Avemaría: una parte abierta por vez; con una abierta, las otras se atenúan.
+function abrirFrase(b) {
+  const p = b.parentElement, abrir = !p.classList.contains('abierto');
+  p.parentElement.querySelectorAll('.ave-p').forEach(x => { x.classList.remove('abierto'); x.querySelector('.ave-f').setAttribute('aria-expanded', false); });
+  p.classList.toggle('abierto', abrir);
+  b.setAttribute('aria-expanded', abrir);
+  p.parentElement.classList.toggle('con-abierta', abrir);
+}
+
+// San Ignacio, paso a paso. El texto ocupa siempre lo del paso más largo, para que nada salte.
+function textoIgnacio(k) {
+  const x = IGN.items[k];
+  return `<span class="k-ac">Paso ${k + 1} de ${IGN.items.length}</span><b class="ign-t">${esc(x.titulo)}</b><p>${md(x.campos.Texto)}</p>
+    <blockquote><p>«${md(x.campos.Cita)}»</p><cite>San Ignacio, ${md(x.campos.Fuente).replace('Ejercicios Espirituales', '<em>Ejercicios</em>')}</cite></blockquote>`;
+}
+function medirIgnacio() {
+  const t = $('.ign-texto');
+  t.style.minHeight = '';
+  let alto = 0;
+  IGN.items.forEach((_, k) => { t.innerHTML = textoIgnacio(k); alto = Math.max(alto, t.offsetHeight); });
+  t.style.minHeight = alto + 'px';
+}
+function pintarIgnacio() {
+  const k = IGN.paso, n = IGN.items.length, t = $('.ign-texto');
+  t.innerHTML = textoIgnacio(k);
+  if (t.animate) t.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, easing: 'ease-out' });
+  document.querySelectorAll('.ign-puntos i').forEach((x, j) => x.classList.toggle('on', j <= k));
+  $('.ign').classList.toggle('enfocando', k > 0);
+  $('[data-accion="ignPaso"][data-v="-1"]').disabled = k === 0;
+  $('[data-accion="ignPaso"][data-v="1"]').textContent = k === n - 1 ? 'Volver a empezar' : 'Siguiente';
+  enfocar();
+}
+function moverIgnacio(d) {
+  const n = IGN.items.length;
+  IGN.paso = d > 0 && IGN.paso === n - 1 ? 0 : Math.max(0, Math.min(n - 1, IGN.paso + d));
+  pintarIgnacio();
+}
+// La imagen cubre el marco; en cada paso se acerca y lleva al centro la parte que se mira.
+function enfocar() {
+  const img = $('.ign-img'), marco = $('.ign-marco');
+  if (!img || !img.naturalWidth) return;
+  const W = marco.clientWidth, H = marco.clientHeight, base = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+  const w = img.naturalWidth * base, h = img.naturalHeight * base;
+  img.style.width = w + 'px'; img.style.height = h + 'px';
+  const [fx, fy, z] = FOCOS_IGNACIO[IGN.pintura ? 'pintura' : 'ilustracion'][IGN.paso] || [.5, .5, 1];
+  const entre = (v, a, b) => Math.min(b, Math.max(a, v));
+  const x = entre(W / 2 - fx * w * z, W - w * z, 0), y = entre(H / 2 - fy * h * z, H - h * z, 0);
+  img.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) scale(${z})`;
+}
+
+// El coloquio: el camino se ilumina hasta el paso tocado.
+function pintarColoquio(k) {
+  const x = IGN.coloquio[k];
+  document.querySelectorAll('.col-nodo').forEach((b, j) => { b.classList.toggle('on', j <= k); b.classList.toggle('ahora', j === k); b.setAttribute('aria-pressed', j === k); });
+  document.querySelectorAll('.col-tramo').forEach((t, j) => t.classList.toggle('on', j < k));
+  const t = $('.col-texto');
+  t.innerHTML = `<b>${esc(x.titulo)}</b>${x.campos['Oración'] ? `<span class="k-ac">Termina con: ${esc(x.campos['Oración'])}</span>` : ''}<p>${md(x.campos.Texto)}</p>`;
+  if (t.animate) t.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, easing: 'ease-out' });
 }
 
 /* ---------- Hojas ---------- */
@@ -1641,6 +1940,11 @@ const acciones = {
   // La primera vez, "Ya sé rezarlo" lleva al inicio de siempre (y queda recordado).
   yaSe: () => { guardar('yaReza', true); transicion(vistaInicio); },
   acerca: () => transicion(vistaAcerca),
+  capitulo: b => transicion(() => vistaCapitulo(+b.dataset.v)),
+  mapaPaso: b => pasoMapa(Math.max(0, Math.min(MAPA.length - 1, RV.paso + +b.dataset.v))),
+  aveFrase: b => abrirFrase(b),
+  ignPaso: b => moverIgnacio(+b.dataset.v),
+  colNodo: b => pintarColoquio(+b.dataset.v),
   grupos: () => hojaGrupos(),
   grupo: b => { grupoInicio = b.dataset.v; transicion(() => { cerrarHoja(); vistaInicio(); }); },
   ajustes: () => hojaAjustes(),

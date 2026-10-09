@@ -326,15 +326,176 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 }
 @keyframes onda{from{transform:scale(1);opacity:.9}to{transform:scale(1.7);opacity:0}}
 @keyframes latir{50%{transform:scale(.88)}}
-.acerca .hero{inset:0 0 auto 0;height:42dvh}
-.acerca .cuerpo{margin-top:30dvh}
-.acerca h1{font-size:calc(33px*var(--letra));line-height:1.06;margin-bottom:8px}
-.acerca .sub{margin-bottom:14px}
-.capitulo{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 0;border-bottom:1px solid var(--line)}
-.capitulo b{display:block;font-weight:600;font-size:calc(15px*var(--letra))}
-.capitulo span{font-size:calc(13px*var(--letra));color:var(--muted)}
-/* "En preparación" es un aviso, no un botón: texto suelto, sin borde. */
-.capitulo em{font-size:calc(12px*var(--letra));color:var(--muted);flex-shrink:0}
+/* Acerca del Rosario (ver Decisiones.md, 9 de octubre): un índice y ocho capítulos para leer, con
+   tono de libro: números romanos, citas con filete dorado, mucho aire. La imagen llega hasta arriba;
+   al bajar, la barra toma fondo y una línea dorada marca cuánto se leyó. */
+.acerca{overflow:clip}
+.acerca .hero{inset:0 0 auto 0;height:58dvh}
+.acerca .barra{position:sticky;top:0;padding-bottom:12px}
+.acerca .barra::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,var(--bg) calc(100% - 24px),rgba(var(--rgb),0));opacity:0;transition:opacity .35s}
+.acerca.bajando .barra::before{opacity:1}
+.acerca .aire{height:max(48px,calc(38dvh - var(--seguro) - 68px));flex-shrink:0}
+.acerca .cuerpo{margin-top:0;padding-bottom:calc(env(safe-area-inset-bottom) + 18px)}
+.k-ac{display:block;font-size:calc(11px*var(--letra));font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--oro-texto)}
+.acerca h1{font-size:calc(34px*var(--letra));line-height:1.06;margin:6px 0 10px}
+.indice-ac .sub{font-size:calc(14.5px*var(--letra));line-height:1.5}
+/* El índice: cada capítulo, con su número y su imagen que se funde a la derecha. */
+.capitulos{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:24px}
+.cap-fila,.cap-sig{position:relative;isolation:isolate;overflow:hidden;width:100%;display:grid;align-items:center;gap:12px;border:1px solid var(--line);border-radius:var(--radio-sup);background:rgba(var(--rgb),.6);text-align:left;transition:transform .2s cubic-bezier(.16,1,.3,1)}
+.cap-fila{grid-template-columns:40px 1fr 18px;min-height:80px;padding:14px 14px 14px 12px}
+.cap-fila:active,.cap-sig:active{transform:scale(.985)}
+.cap-img{position:absolute;inset:0 0 0 auto;z-index:-1;width:55%;background-color:var(--bg);background-size:cover;background-repeat:no-repeat;opacity:.55;-webkit-mask-image:linear-gradient(90deg,transparent,#000 80%);mask-image:linear-gradient(90deg,transparent,#000 80%)}
+.dia .cap-img{opacity:.4}
+.cap-num{font-family:Spectral,serif;font-weight:300;font-size:calc(28px*min(var(--letra),1.15));line-height:1;color:var(--mark);text-align:center}
+.cap-txt b{display:block;font-size:calc(15.5px*var(--letra));font-weight:600;line-height:1.25;text-shadow:0 1px 10px var(--glow)}
+.cap-txt small{display:block;margin-top:3px;font-size:calc(12.5px*var(--letra));line-height:1.35;color:var(--soft);text-shadow:0 1px 10px var(--glow)}
+.cap-fila > .ico,.cap-sig > .ico{width:18px;height:18px;color:var(--muted)}
+/* Un capítulo */
+.leido{flex:1;height:42px;margin-left:12px;padding:0 16px;display:flex;align-items:center;border-radius:999px;background:rgba(var(--rgb),.38) linear-gradient(var(--line),var(--line)) center/calc(100% - 32px) 3px no-repeat;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.leido i{display:block;width:100%;height:3px;border-radius:999px;background:var(--mark);transform-origin:left;transform:scaleX(0)}
+.cap-cab{display:flex;align-items:baseline;gap:12px}
+.cap-romano{font-family:Spectral,serif;font-weight:300;font-size:calc(46px*min(var(--letra),1.15));line-height:.9;color:var(--mark);text-shadow:0 1px 14px var(--glow)}
+.cap .cuerpo > .bajada{font-family:Spectral,serif;font-style:italic;font-weight:300;font-size:calc(19px*var(--letra));line-height:1.35;color:var(--soft);margin:0 0 26px;text-wrap:balance}
+.cap .cuerpo > p{font-size:calc(16px*var(--letra));line-height:1.62;color:var(--soft);margin-bottom:16px;text-wrap:pretty}
+.cap .cuerpo em{font-style:italic}
+.h-ac{font-family:Spectral,serif;font-weight:300;font-size:calc(24px*var(--letra));line-height:1.2;margin:38px 0 12px;text-wrap:balance}
+.h-ac::before{content:'';display:block;width:28px;height:1px;background:var(--mark);margin-bottom:16px}
+.cita-ac{margin:26px 0 28px;padding:2px 0 2px 18px;border-left:2px solid var(--mark)}
+.cita-ac p{font-family:Spectral,serif;font-style:italic;font-weight:300;font-size:calc(20px*var(--letra));line-height:1.36;color:var(--ink);text-wrap:pretty}
+.cita-ac cite,.hito cite,.per cite,.ign-texto cite{display:block;margin-top:8px;font-style:normal;font-size:calc(12px*var(--letra));line-height:1.45;color:var(--muted)}
+.cap .cuerpo > .fuentes{margin:36px 0 0;padding-top:16px;border-top:1px solid var(--line);font-size:calc(12px*var(--letra));line-height:1.6;color:var(--muted)}
+.fuentes .k-ac{margin-bottom:6px;color:var(--muted)}
+.cap-sig{grid-template-columns:1fr 18px;min-height:104px;margin-top:26px;padding:18px 16px 18px 18px}
+.cap-sig .cap-img{width:62%;opacity:.65}
+.cap-sig b{font-family:Spectral,serif;font-weight:300;font-size:calc(22px*var(--letra));line-height:1.15;margin:5px 0 2px}
+.a-capitulos{display:block;margin:12px auto 0}
+.fin-ac{margin-top:30px;padding:24px 20px 20px;border:1px solid var(--line);border-radius:var(--radio-sup);text-align:center}
+.fin-ac-t{font-family:Spectral,serif;font-weight:300;font-size:calc(23px*var(--letra));line-height:1.25;margin:8px 0 18px;text-wrap:balance}
+/* Lo que entra en pantalla aparece con un fundido, una sola vez. */
+.revelar{transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
+.js-revelar .revelar:not(.visto){opacity:0;transform:translateY(16px)}
+
+/* Las veinte escenas, para deslizar. Arriba, la etapa de la vida de Jesús y una marca por escena. */
+.escenas{margin:22px -26px 28px}
+.esc-cab{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:0 26px;margin-bottom:10px}
+.esc-etapa{font-family:Spectral,serif;font-weight:300;font-size:calc(20px*var(--letra));line-height:1.2}
+.esc-n{flex-shrink:0;font-size:calc(12px*var(--letra));color:var(--muted);font-variant-numeric:tabular-nums}
+.esc-marcas{display:flex;gap:7px;padding:0 26px;margin-bottom:16px}
+.esc-tramo{flex:1;display:flex;gap:3px}
+.esc-tramo i{flex:1;height:3px;border-radius:999px;background:rgba(var(--luz),.3);transition:background .3s,transform .3s}
+.esc-tramo i.on{background:rgb(var(--luz));transform:scaleY(1.9)}
+.desliza{display:flex;align-items:flex-start;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;padding:4px calc((min(100vw,520px) - var(--ancho))/2) 10px}
+.desliza::-webkit-scrollbar{display:none}
+.desliza:focus-visible{outline-offset:-2px}
+.esc-pista{--ancho:min(62vw,250px);gap:14px}
+.esc,.per{flex:0 0 var(--ancho);scroll-snap-align:center;transition:opacity .4s,transform .4s cubic-bezier(.16,1,.3,1)}
+.esc:not(.on){opacity:.5;transform:scale(.93)}
+.esc-img{display:block;aspect-ratio:3/4;overflow:hidden;border-radius:var(--radio-sup);background-color:var(--hoja);box-shadow:0 12px 30px rgba(0,0,0,.28)}
+.esc-img img{display:block;width:100%;height:100%;object-fit:cover}
+/* Sin imágenes: la luz del grupo y el número del misterio. */
+.esc-img > b{display:grid;place-items:center;height:100%;font-family:Spectral,serif;font-weight:300;font-size:96px;color:var(--ink);opacity:.5}
+.esc figcaption{padding:12px 4px 0;text-align:center}
+.esc figcaption b{display:block;font-family:Spectral,serif;font-weight:300;font-size:calc(18px*var(--letra));line-height:1.2;margin:4px 0 3px;text-wrap:balance}
+.esc figcaption small{font-size:calc(12px*var(--letra));color:var(--muted)}
+/* El Rosario dibujado */
+.cuentas-ac{margin:18px 0 8px;padding:18px 14px 10px;border:1px solid var(--line);border-radius:var(--radio-sup)}
+.cuentas-ac .ros{display:block;width:100%;height:min(46dvh,340px)}
+.cuentas-ac .pv-aqui{min-height:calc(7.4em*var(--letra));margin-top:8px}
+.mapa-nav{display:flex;justify-content:center;align-items:center;gap:6px}
+.mapa-n{min-width:64px;text-align:center;font-size:calc(12px*var(--letra));color:var(--muted);font-variant-numeric:tabular-nums}
+/* El Avemaría, por partes. El nombre de Jesús va en el centro, entre dos filetes dorados. */
+.ave-ac{margin:20px 0 28px;border-top:1px solid var(--line)}
+.ave-p{border-bottom:1px solid var(--line)}
+.ave-f{display:block;width:100%;padding:16px 0 14px}
+.ave-quien{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:calc(11px*var(--letra));font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--oro-texto)}
+.ave-quien em{flex-shrink:0;font-style:normal;font-weight:500;letter-spacing:0;text-transform:none;font-size:calc(12px*var(--letra));color:var(--muted)}
+.ave-t{display:block;margin-top:6px;font-family:Spectral,serif;font-weight:300;font-size:calc(21px*var(--letra));line-height:1.3;color:var(--ink);transition:opacity .35s}
+.ave-ac.con-abierta .ave-p:not(.abierto) .ave-t{opacity:.5}
+.ave-exp{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s cubic-bezier(.16,1,.3,1)}
+.ave-p.abierto .ave-exp{grid-template-rows:1fr}
+.ave-exp > div{overflow:hidden;min-height:0}
+.ave-exp p{padding:0 0 18px;font-size:calc(15px*var(--letra));line-height:1.58;color:var(--soft);text-wrap:pretty}
+.ave-p.centro .ave-f{padding:22px 0 14px;text-align:center}
+.ave-p.centro .ave-quien{justify-content:center;gap:8px}
+.ave-p.centro .ave-quien > em::before{content:"· "}
+.ave-p.centro .ave-t{display:flex;align-items:center;gap:18px;font-style:italic;font-size:calc(42px*var(--letra));line-height:1.1;color:var(--mark)}
+.ave-p.centro .ave-t::before,.ave-p.centro .ave-t::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mark))}
+.ave-p.centro .ave-t::after{background:linear-gradient(90deg,var(--mark),transparent)}
+.ave-p.centro .ave-exp p{text-align:center;text-wrap:balance}
+/* Contemplar con San Ignacio: la imagen y la mirada que va a cada parte. */
+.ign{margin:22px 0 28px}
+.ign-marco{position:relative;overflow:hidden;aspect-ratio:1/1.05;border-radius:var(--radio-sup);background:var(--hoja)}
+.ign-img{position:absolute;left:0;top:0;max-width:none;transform-origin:0 0;transition:transform 1.8s cubic-bezier(.45,0,.15,1)}
+.ign-velo{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 72% 64% at 50% 50%,transparent 42%,rgba(5,7,14,.62));opacity:0;transition:opacity 1.2s}
+.ign.enfocando .ign-velo{opacity:1}
+.ign-puntos{display:flex;gap:6px;margin:14px 0 6px}
+.ign-puntos i{flex:1;height:3px;border-radius:999px;background:var(--line);transition:background .4s}
+.ign-puntos i.on{background:var(--mark)}
+.ign-texto{padding-top:8px}
+.ign-texto .ign-t{display:block;font-family:Spectral,serif;font-weight:300;font-size:calc(25px*var(--letra));line-height:1.15;margin:4px 0 8px}
+.ign-texto > p{font-size:calc(15px*var(--letra));line-height:1.55;color:var(--soft);text-wrap:pretty}
+.ign-texto blockquote{margin-top:12px;padding-left:14px;border-left:2px solid var(--mark)}
+.ign-texto blockquote p{font-family:Spectral,serif;font-style:italic;font-weight:300;font-size:calc(17.5px*var(--letra));line-height:1.38;color:var(--ink);text-wrap:pretty}
+.ign-nav{display:flex;gap:10px;margin-top:16px}
+.ign-nav .btn.alt{margin-top:0;width:auto;flex:0 0 auto}
+.ign-nav .principal{flex:1}
+.ign-nav .btn:disabled{opacity:.35;cursor:default}
+/* El coloquio: cuatro pasos unidos por un camino que se ilumina. */
+.col{margin:22px 0 26px}
+.col-camino{display:flex;align-items:center}
+.col-tramo{position:relative;flex:1;height:2px;margin:0 -1px;background:var(--line);overflow:hidden}
+.col-tramo::after{content:'';position:absolute;inset:0;background:var(--mark);transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.16,1,.3,1)}
+.col-tramo.on::after{transform:none}
+.col-nodo{flex:0 0 auto;width:70px;height:70px;padding:6px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:var(--bg);font-family:Spectral,serif;font-size:calc(15px*min(var(--letra),1.1));line-height:1.05;text-align:center;color:var(--soft);transition:background .4s,color .4s,border-color .4s,transform .3s cubic-bezier(.16,1,.3,1)}
+.col-nodo.on{border-color:var(--mark);color:var(--ink)}
+.col-nodo.ahora{background:var(--accent);border-color:var(--accent);color:var(--on);transform:scale(1.06)}
+.col-texto{min-height:calc(8.6em*var(--letra));margin-top:18px;text-align:center}
+.col-texto b{display:block;font-family:Spectral,serif;font-weight:300;font-size:calc(24px*var(--letra));line-height:1.15}
+.col-texto .k-ac{margin-top:4px}
+.col-texto p{margin-top:8px;font-size:calc(15px*var(--letra));line-height:1.55;color:var(--soft);text-wrap:balance}
+/* La historia: una línea que se dibuja mientras se baja, con un punto por época. */
+.hist{--p:0;position:relative;list-style:none;margin:26px 0 8px;padding-left:30px}
+.hist::before,.hist::after{content:'';position:absolute;left:6px;top:10px;bottom:30px;width:1px;background:var(--line)}
+.hist::after{left:5.5px;width:2px;background:var(--mark);transform-origin:top;transform:scaleY(var(--p))}
+.hito{position:relative;padding-bottom:30px}
+.hito::before{content:'';position:absolute;z-index:1;left:-28px;top:12px;width:9px;height:9px;border-radius:50%;background:var(--bg);border:1.5px solid var(--muted);transition:background .4s,border-color .4s}
+.hito.pasado::before{background:var(--mark);border-color:var(--mark)}
+.hito-anio{display:block;font-family:Spectral,serif;font-weight:300;font-size:calc(30px*var(--letra));line-height:1.1;color:var(--mark)}
+.hito b{display:block;margin:3px 0 6px;font-size:calc(16px*var(--letra));font-weight:600;line-height:1.3}
+.hito p{font-size:calc(15px*var(--letra));line-height:1.58;color:var(--soft);text-wrap:pretty}
+.hito.hoy{padding-bottom:6px}
+.hito.hoy .hito-anio{font-style:italic}
+.hito.hoy b{font-family:Spectral,serif;font-weight:300;font-size:calc(24px*var(--letra))}
+/* Los santos, en tarjetas para deslizar. De fondo, el año en que nacieron. */
+.pers{margin:20px -26px 26px}
+.pers-pista{--ancho:min(84vw,400px);gap:12px}
+.per{position:relative;isolation:isolate;overflow:hidden;padding:22px 20px 20px;border:1px solid var(--line);border-radius:var(--radio-sup);background:rgba(127,127,127,.07)}
+.per:not(.on){opacity:.55}
+.per-fondo{position:absolute;z-index:-1;right:-8px;top:-18px;font-family:Spectral,serif;font-weight:300;font-size:118px;line-height:1;letter-spacing:-.04em;color:var(--mark);opacity:.1}
+.per h3{margin:8px 0 2px;font-family:Spectral,serif;font-weight:300;font-size:calc(25px*var(--letra));line-height:1.12;text-wrap:balance}
+.per-anios{display:block;margin-bottom:12px;font-size:calc(12px*var(--letra));color:var(--muted);font-variant-numeric:tabular-nums}
+.per p{font-size:calc(14.5px*var(--letra));line-height:1.56;color:var(--soft);text-wrap:pretty}
+.per blockquote{margin-top:14px;padding-left:14px;border-left:2px solid var(--mark);font-family:Spectral,serif;font-style:italic;font-weight:300;font-size:calc(18px*var(--letra));line-height:1.34;color:var(--ink);text-wrap:pretty}
+.pers-puntos{display:flex;justify-content:center;gap:8px;margin-top:12px}
+.pers-puntos i{width:6px;height:6px;border-radius:50%;background:var(--line);transition:background .3s,transform .3s}
+.pers-puntos i.on{background:var(--mark);transform:scale(1.3)}
+/* La respiración: dos ritmos que laten en tiempo real (quietos con movimiento reducido). */
+.resp{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0 26px;padding:24px 12px 16px;border:1px solid var(--line);border-radius:var(--radio-sup)}
+.resp-col{display:flex;flex-direction:column;align-items:center;text-align:center}
+.resp-aro{display:grid;place-items:center;width:min(34vw,132px);aspect-ratio:1;margin-bottom:12px;border-radius:50%;border:1px solid var(--line)}
+.resp-aro i{width:100%;height:100%;border-radius:50%;background:radial-gradient(circle,rgba(127,127,127,.42),rgba(127,127,127,.1));transform:scale(.42)}
+.resp-col.lento .resp-aro i{background:radial-gradient(circle,rgba(232,184,107,.85),rgba(232,184,107,.18))}
+.resp-col b{font-family:Spectral,serif;font-weight:300;font-size:calc(42px*var(--letra));line-height:1}
+.resp-col.lento b{color:var(--mark)}
+.resp-col small{display:block;max-width:13em;margin-top:4px;font-size:calc(12px*var(--letra));line-height:1.4;color:var(--muted)}
+.resp-pie{grid-column:1/-1;margin-top:6px;text-align:center;font-size:calc(11px*var(--letra));letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.resp.visto .resp-aro i{animation:respirar var(--t) ease-in-out infinite}}
+@keyframes respirar{0%,100%{transform:scale(.42)}46%{transform:scale(1)}}
+/* Las preguntas */
+.preg{margin-top:18px}
+.preg .fila b{font-size:calc(15.5px*var(--letra));line-height:1.35}
+.preg .contenido p{font-size:calc(15px*var(--letra));line-height:1.58;color:var(--soft);margin-bottom:12px;text-wrap:pretty}
+.preg .contenido p:last-child{margin-bottom:20px}
 
 /* Hojas (ajustes y elegir misterios) */
 .velo{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;animation:aparecer .25s}
@@ -380,5 +541,5 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 
 /* Con movimiento reducido se frenan el acercamiento, el latido de la cuenta y los deslizamientos.
    Los fundidos quedan: no marean. */
-@media (prefers-reduced-motion:reduce){.tira .ave,.ros .mov{transition:fill .35s,stroke .35s}.hoja{animation:aparecer .25s}.salidas{animation-name:aparecer2}}
+@media (prefers-reduced-motion:reduce){.tira .ave,.ros .mov{transition:fill .35s,stroke .35s}.hoja{animation:aparecer .25s}.salidas{animation-name:aparecer2}.ign-img{transition:none}.js-revelar .revelar:not(.visto){transform:none}.esc,.per{transition:opacity .4s}}
 @keyframes aparecer2{from{opacity:0;visibility:hidden}to{opacity:1;visibility:visible}}

@@ -207,6 +207,8 @@ window.DATOS = {
      "obra": "La Anunciación",
      "imagen": "Arte/Gozosos-1.jpg",
      "ilustracion": "Ilustraciones/Gozosos-1.jpg",
+     "mini": "Arte/Miniaturas/Gozosos-1.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Gozosos-1.jpg",
      "bajarIlustracion": 0,
      "foco": "36% 40%",
      "zoom": 1.0,
@@ -228,6 +230,8 @@ window.DATOS = {
      "obra": "La Visitación",
      "imagen": "Arte/Gozosos-2.jpg",
      "ilustracion": "Ilustraciones/Gozosos-2.jpg",
+     "mini": "Arte/Miniaturas/Gozosos-2.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Gozosos-2.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 22%",
      "zoom": 1.0,
@@ -249,6 +253,8 @@ window.DATOS = {
      "obra": "La adoración de los pastores",
      "imagen": "Arte/Gozosos-3.jpg",
      "ilustracion": "Ilustraciones/Gozosos-3.jpg",
+     "mini": "Arte/Miniaturas/Gozosos-3.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Gozosos-3.jpg",
      "bajarIlustracion": 0,
      "foco": "46% 50%",
      "zoom": 1.0,
@@ -270,6 +276,8 @@ window.DATOS = {
      "obra": "El cántico de Simeón",
      "imagen": "Arte/Gozosos-4.jpg",
      "ilustracion": "Ilustraciones/Gozosos-4.jpg",
+     "mini": "Arte/Miniaturas/Gozosos-4.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Gozosos-4.jpg",
      "bajarIlustracion": 0,
      "foco": "45% 40%",
      "zoom": 1.0,
@@ -291,6 +299,8 @@ window.DATOS = {
      "obra": "El hallazgo del Salvador en el Templo",
      "imagen": "Arte/Gozosos-5.jpg",
      "ilustracion": "Ilustraciones/Gozosos-5.jpg",
+     "mini": "Arte/Miniaturas/Gozosos-5.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Gozosos-5.jpg",
      "bajarIlustracion": 0,
      "foco": "64% 45%",
      "zoom": 1.0,
@@ -320,6 +330,8 @@ window.DATOS = {
      "obra": "El bautismo de Cristo",
      "imagen": "Arte/Luminosos-1.jpg",
      "ilustracion": "Ilustraciones/Luminosos-1.jpg",
+     "mini": "Arte/Miniaturas/Luminosos-1.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Luminosos-1.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 22%",
      "zoom": 1.0,
@@ -341,6 +353,8 @@ window.DATOS = {
      "obra": "Las bodas de Caná",
      "imagen": "Arte/Luminosos-2.jpg",
      "ilustracion": "Ilustraciones/Luminosos-2.jpg",
+     "mini": "Arte/Miniaturas/Luminosos-2.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Luminosos-2.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 40%",
      "zoom": 1.0,
@@ -362,6 +376,8 @@ window.DATOS = {
      "obra": "El sermón de la montaña",
      "imagen": "Arte/Luminosos-3.jpg",
      "ilustracion": "Ilustraciones/Luminosos-3.jpg",
+     "mini": "Arte/Miniaturas/Luminosos-3.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Luminosos-3.jpg",
      "bajarIlustracion": 0,
      "foco": "62% 30%",
      "zoom": 1.0,
@@ -383,6 +399,8 @@ window.DATOS = {
      "obra": "La Transfiguración",
      "imagen": "Arte/Luminosos-4.jpg",
      "ilustracion": "Ilustraciones/Luminosos-4.jpg",
+     "mini": "Arte/Miniaturas/Luminosos-4.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Luminosos-4.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 18%",
      "zoom": 1.0,
@@ -404,6 +422,8 @@ window.DATOS = {
      "obra": "La Última Cena",
      "imagen": "Arte/Luminosos-5.jpg",
      "ilustracion": "Ilustraciones/Luminosos-5.jpg",
+     "mini": "Arte/Miniaturas/Luminosos-5.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Luminosos-5.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 40%",
      "zoom": 1.0,
@@ -433,6 +453,8 @@ window.DATOS = {
      "obra": "Cristo en Getsemaní",
      "imagen": "Arte/Dolorosos-1.jpg",
      "ilustracion": "Ilustraciones/Dolorosos-1.jpg",
+     "mini": "Arte/Miniaturas/Dolorosos-1.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Dolorosos-1.jpg",
      "bajarIlustracion": 0,
      "foco": "36% 50%",
      "zoom": 1.0,
@@ -454,6 +476,8 @@ window.DATOS = {
      "obra": "La flagelación de Cristo",
      "imagen": "Arte/Dolorosos-2.jpg",
      "ilustracion": "Ilustraciones/Dolorosos-2.jpg",
+     "mini": "Arte/Miniaturas/Dolorosos-2.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Dolorosos-2.jpg",
      "bajarIlustracion": 36,
      "foco": "50% 38%",
      "zoom": 1.0,
@@ -475,6 +499,8 @@ window.DATOS = {
      "obra": "La coronación de espinas",
      "imagen": "Arte/Dolorosos-3.jpg",
      "ilustracion": "Ilustraciones/Dolorosos-3.jpg",
+     "mini": "Arte/Miniaturas/Dolorosos-3.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Dolorosos-3.jpg",
      "bajarIlustracion": 0,
      "foco": "46% 42%",
      "zoom": 1.0,
@@ -496,6 +522,8 @@ window.DATOS = {
      "obra": "Cristo camino del Calvario",
      "imagen": "Arte/Dolorosos-4.jpg",
      "ilustracion": "Ilustraciones/Dolorosos-4.jpg",
+     "mini": "Arte/Miniaturas/Dolorosos-4.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Dolorosos-4.jpg",
      "bajarIlustracion": 0,
      "foco": "32% 50%",
      "zoom": 1.0,
@@ -517,6 +545,8 @@ window.DATOS = {
      "obra": "Cristo crucificado",
      "imagen": "Arte/Dolorosos-5.jpg",
      "ilustracion": "Ilustraciones/Dolorosos-5.jpg",
+     "mini": "Arte/Miniaturas/Dolorosos-5.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Dolorosos-5.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 22%",
      "zoom": 1.0,
@@ -546,6 +576,8 @@ window.DATOS = {
      "obra": "La Resurrección",
      "imagen": "Arte/Gloriosos-1.jpg",
      "ilustracion": "Ilustraciones/Gloriosos-1.jpg",
+     "mini": "Arte/Miniaturas/Gloriosos-1.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Gloriosos-1.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 22%",
      "zoom": 1.0,
@@ -567,6 +599,8 @@ window.DATOS = {
      "obra": "La Ascensión",
      "imagen": "Arte/Gloriosos-2.jpg",
      "ilustracion": "Ilustraciones/Gloriosos-2.jpg",
+     "mini": "Arte/Miniaturas/Gloriosos-2.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Gloriosos-2.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 26%",
      "zoom": 1.0,
@@ -588,6 +622,8 @@ window.DATOS = {
      "obra": "Pentecostés",
      "imagen": "Arte/Gloriosos-3.jpg",
      "ilustracion": "Ilustraciones/Gloriosos-3.jpg",
+     "mini": "Arte/Miniaturas/Gloriosos-3.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Gloriosos-3.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 45%",
      "zoom": 1.0,
@@ -609,6 +645,8 @@ window.DATOS = {
      "obra": "La Asunción de la Virgen",
      "imagen": "Arte/Gloriosos-4.jpg",
      "ilustracion": "Ilustraciones/Gloriosos-4.jpg",
+     "mini": "Arte/Miniaturas/Gloriosos-4.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Gloriosos-4.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 25%",
      "zoom": 1.0,
@@ -630,12 +668,693 @@ window.DATOS = {
      "obra": "La coronación de la Virgen",
      "imagen": "Arte/Gloriosos-5.jpg",
      "ilustracion": "Ilustraciones/Gloriosos-5.jpg",
+     "mini": "Arte/Miniaturas/Gloriosos-5.jpg",
+     "miniIlustracion": "Ilustraciones/Miniaturas/Gloriosos-5.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 35%",
      "zoom": 1.0,
      "plena": false
     }
    ]
+  }
+ ],
+ "acerca": [
+  {
+   "titulo": "El Evangelio en tus manos",
+   "bloques": [
+    {
+     "t": "p",
+     "texto": "El Rosario es una oración sencilla: unas pocas oraciones que se repiten, contadas con cuentas. Pero lo que se reza ahí adentro es el Evangelio entero. Mientras pasan las Avemarías, se mira la vida de Jesús, escena por escena."
+    },
+    {
+     "t": "p",
+     "texto": "Esas escenas se llaman misterios. Son veinte, en cuatro grupos, y siguen el orden de su vida: de Nazaret a la gloria. Deslizá para recorrerlas."
+    },
+    {
+     "t": "modulo",
+     "id": "escenas",
+     "items": [
+      {
+       "titulo": "Gozosos",
+       "campos": {
+        "Etapa": "La encarnación y la infancia"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "Luminosos",
+       "campos": {
+        "Etapa": "La vida pública"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "Dolorosos",
+       "campos": {
+        "Etapa": "La Pasión"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "Gloriosos",
+       "campos": {
+        "Etapa": "La Resurrección y la gloria"
+       },
+       "parrafos": []
+      }
+     ]
+    },
+    {
+     "t": "p",
+     "texto": "Diecisiete de las veinte son escenas de la vida de Jesús, desde que es concebido hasta que sube al cielo. Las tres últimas muestran lo que viene después: el Espíritu Santo que él envía, y su Madre glorificada junto a él, anticipo de lo que nos promete a todos (Catecismo 966)."
+    },
+    {
+     "t": "cita",
+     "texto": "Aunque se distingue por su carácter mariano, es una oración centrada en la cristología.",
+     "fuente": "Juan Pablo II, *Rosarium Virginis Mariae*, 1"
+    },
+    {
+     "t": "h",
+     "texto": "Empieza y termina en la cruz"
+    },
+    {
+     "t": "p",
+     "texto": "El Rosario que tenés en la mano arranca en la cruz y vuelve a ella. Juan Pablo II lo señala como lo primero que hay que tener en cuenta:"
+    },
+    {
+     "t": "cita",
+     "texto": "En Cristo se centra la vida y la oración de los creyentes. Todo parte de Él, todo tiende hacia Él.",
+     "fuente": "Juan Pablo II, *Rosarium Virginis Mariae*, 36"
+    },
+    {
+     "t": "p",
+     "texto": "Tocá cualquier cuenta para ver qué se reza ahí."
+    },
+    {
+     "t": "modulo",
+     "id": "cuentas",
+     "items": []
+    }
+   ],
+   "bajada": "Qué es el Rosario y qué se mira en él",
+   "imagen": "Luminosos-4",
+   "fuentes": "Juan Pablo II, *Rosarium Virginis Mariae* (2002), 1, 19 y 36. Catecismo de la Iglesia Católica, 966."
+  },
+  {
+   "titulo": "El Avemaría, palabra por palabra",
+   "bloques": [
+    {
+     "t": "p",
+     "texto": "Es la oración que más se repite: diez veces en cada misterio. Su primera mitad está tomada, casi palabra por palabra, del Evangelio. Tocá cada parte para ver de dónde viene."
+    },
+    {
+     "t": "modulo",
+     "id": "avemaria",
+     "items": [
+      {
+       "titulo": "Dios te salve, María, llena eres de gracia, el Señor es contigo.",
+       "campos": {
+        "Quién": "El ángel Gabriel",
+        "Dónde": "Lucas 1, 28",
+        "Explicación": "Es el saludo del ángel a María, en Nazaret. En el Evangelio empieza con un «¡Alégrate!», y es Dios mismo quien la saluda por medio de su ángel. Está llena de gracia porque el Señor está con ella (Catecismo 2676)."
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "Bendita tú eres entre todas las mujeres, y bendito es el fruto de tu vientre,",
+       "campos": {
+        "Quién": "Isabel",
+        "Dónde": "Lucas 1, 42",
+        "Explicación": "Lo dijo Isabel, «llena del Espíritu Santo», cuando María llegó a su casa llevando a Jesús en el seno. Lo reconoció antes de que naciera: «¿Quién soy yo, para que la madre de mi Señor venga a visitarme?» (Lucas 1, 43)."
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "Jesús.",
+       "campos": {
+        "Quién": "El centro",
+        "Dónde": "*Rosarium Virginis Mariae*, 33",
+        "Explicación": "Entre las dos mitades está su nombre. Juan Pablo II lo llama el centro del Avemaría, «casi como engarce entre la primera y la segunda parte». Jesús quiere decir «Dios salva» (Catecismo 430). Por eso conviene decirlo despacio, sin pasarlo de largo."
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "Santa María, Madre de Dios,",
+       "campos": {
+        "Quién": "La Iglesia",
+        "Dónde": "Concilio de Éfeso, año 431",
+        "Explicación": "La llamamos Madre de Dios porque el que nació de ella es el Hijo eterno del Padre, verdadero Dios (Catecismo 495). El Concilio de Éfeso lo proclamó en el año 431 para defender quién es Jesús (Catecismo 466). Antes que un título de María, es una afirmación sobre él."
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "ruega por nosotros, pecadores, ahora y en la hora de nuestra muerte. Amén.",
+       "campos": {
+        "Quién": "La Iglesia",
+        "Dónde": "Siglos XV y XVI",
+        "Explicación": "Le pedimos que rece por nosotros, y nos reconocemos pecadores. Le confiamos el hoy y la hora de la muerte: que esté con nosotros como estuvo junto a la cruz de su Hijo, y nos lleve a él (Catecismo 2677)."
+       },
+       "parrafos": []
+      }
+     ]
+    },
+    {
+     "t": "p",
+     "texto": "Cada decena empieza con el Padrenuestro, la oración que nos enseñó Jesús (Mateo 6, 9-13), y termina con el Gloria, que alaba al Padre, al Hijo y al Espíritu Santo. El Avemaría queda en medio de una oración que va dirigida a Dios."
+    },
+    {
+     "t": "cita",
+     "texto": "La oración del Señor o dominical es, en verdad, el resumen de todo el Evangelio.",
+     "fuente": "Tertuliano, citado en el Catecismo, 2761"
+    }
+   ],
+   "bajada": "De dónde sale cada frase, y quién está en el centro",
+   "imagen": "Gozosos-1",
+   "fuentes": "Lucas 1, 26-43. Catecismo de la Iglesia Católica, 430, 466, 495, 2676, 2677 y 2761. Juan Pablo II, *Rosarium Virginis Mariae*, 33."
+  },
+  {
+   "titulo": "Contemplar una escena",
+   "bloques": [
+    {
+     "t": "p",
+     "texto": "San Ignacio de Loyola enseñó a rezar con la imaginación: entrar en una escena del Evangelio como si uno estuviera ahí, mirando, escuchando, acompañando. Es lo que hace el Rosario en cada misterio."
+    },
+    {
+     "t": "cita",
+     "texto": "La meditación hace intervenir al pensamiento, la imaginación, la emoción y el deseo.",
+     "fuente": "Catecismo de la Iglesia Católica, 2708"
+    },
+    {
+     "t": "p",
+     "texto": "Probalo con el nacimiento de Jesús, que es justo una de las escenas que Ignacio propone en los Ejercicios Espirituales."
+    },
+    {
+     "t": "modulo",
+     "id": "ignacio",
+     "items": [
+      {
+       "titulo": "Pedí lo que querés",
+       "campos": {
+        "Texto": "Antes de empezar, Ignacio propone pedir una gracia concreta. Para contemplar la vida de Jesús, pide esta.",
+        "Cita": "Conocimiento interno del Señor, que por mí se ha hecho hombre, para que más le ame y le siga.",
+        "Fuente": "Ejercicios Espirituales, 104"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "Mirá el lugar",
+       "campos": {
+        "Texto": "Imaginá el camino de Nazaret a Belén y el lugar donde nace. Ignacio pide mirarlo con detalle.",
+        "Cita": "Cuán grande, cuán pequeño, cuán bajo, cuán alto, y cómo estaba aparejado.",
+        "Fuente": "Ejercicios Espirituales, 112"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "Mirá a las personas",
+       "campos": {
+        "Texto": "María, José y el Niño. No como espectador: Ignacio pide entrar en la escena y servirlos.",
+        "Cita": "Haciéndome yo un pobrecito […], mirándolos, contemplándolos y sirviéndolos en sus necesidades, como si presente me hallase.",
+        "Fuente": "Ejercicios Espirituales, 114"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "Escuchá lo que dicen",
+       "campos": {
+        "Texto": "¿Qué se dirán María y José esa noche? ¿Qué le dirías vos al Niño? Escuchá sin apuro.",
+        "Cita": "Mirar, advertir y contemplar lo que hablan.",
+        "Fuente": "Ejercicios Espirituales, 115"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "Mirá lo que hacen",
+       "campos": {
+        "Texto": "Lo que empieza en Belén ya apunta a la cruz. Ignacio lo dice así.",
+        "Cita": "Para que el Señor sea nacido en suma pobreza, y al cabo de tantos trabajos […] para morir en cruz; y todo esto por mí.",
+        "Fuente": "Ejercicios Espirituales, 116"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "Hablale",
+       "campos": {
+        "Texto": "Al final, hablale a Jesús con tus palabras: agradecé, pedí, contale lo tuyo. Ignacio lo llama coloquio.",
+        "Cita": "Así como un amigo habla a otro.",
+        "Fuente": "Ejercicios Espirituales, 54"
+       },
+       "parrafos": []
+      }
+     ]
+    },
+    {
+     "t": "p",
+     "texto": "En el Rosario, esto pasa mientras se rezan las diez Avemarías: las palabras marcan el ritmo y la escena queda delante. Para eso, en cada misterio, la app tiene «Para contemplar»."
+    },
+    {
+     "t": "cita",
+     "texto": "No el mucho saber harta y satisface al ánima, mas el sentir y gustar de las cosas internamente.",
+     "fuente": "San Ignacio de Loyola, *Ejercicios Espirituales*, 2"
+    }
+   ],
+   "bajada": "El método de san Ignacio, paso a paso",
+   "imagen": "Gozosos-4",
+   "fuentes": "San Ignacio de Loyola, *Ejercicios Espirituales*, 2, 54, 104 y 110-117 (texto autógrafo). Catecismo de la Iglesia Católica, 2708."
+  },
+  {
+   "titulo": "Con María, hacia Jesús",
+   "bloques": [
+    {
+     "t": "p",
+     "texto": "El Rosario se reza con María porque nadie miró a Jesús como ella: lo llevó en el seno, lo crió, lo siguió hasta la cruz."
+    },
+    {
+     "t": "cita",
+     "texto": "Nadie se ha dedicado con la asiduidad de María a la contemplación del rostro de Cristo.",
+     "fuente": "Juan Pablo II, *Rosarium Virginis Mariae*, 10"
+    },
+    {
+     "t": "h",
+     "texto": "Lo último que dice"
+    },
+    {
+     "t": "p",
+     "texto": "En las bodas de Caná, cuando se acaba el vino, María les habla a los sirvientes. Son sus últimas palabras que guarda el Evangelio, y señalan a su Hijo:"
+    },
+    {
+     "t": "cita",
+     "texto": "Hagan todo lo que él les diga.",
+     "fuente": "Juan 2, 5"
+    },
+    {
+     "t": "p",
+     "texto": "Por eso la tradición la pinta señalando a Jesús con la mano: es la Odigitria, «la que muestra el Camino». El Catecismo lo dice así: Jesús es el único Mediador y el Camino de nuestra oración; María es «pura transparencia de Él» (2674)."
+    },
+    {
+     "t": "h",
+     "texto": "El camino de san Ignacio"
+    },
+    {
+     "t": "p",
+     "texto": "En los Ejercicios, Ignacio enseña a pedir lo más importante en tres conversaciones seguidas, un camino que va de María al Padre. Tocá cada paso."
+    },
+    {
+     "t": "modulo",
+     "id": "coloquio",
+     "items": [
+      {
+       "titulo": "Vos",
+       "campos": {
+        "Texto": "Ignacio propone pedir algo concreto, lo que de verdad necesitás. Y no lo pide una sola vez: lo lleva por tres conversaciones seguidas."
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "María",
+       "campos": {
+        "Oración": "Avemaría",
+        "Texto": "Primero, a ella, «para que me alcance gracia de su Hijo y Señor»."
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "Jesús",
+       "campos": {
+        "Oración": "Alma de Cristo",
+        "Texto": "Después, lo mismo al Hijo, «para que me alcance del Padre»."
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "El Padre",
+       "campos": {
+        "Oración": "Padrenuestro",
+        "Texto": "Por último, al Padre, «para que el mismo Señor eterno me lo conceda»."
+       },
+       "parrafos": []
+      }
+     ]
+    },
+    {
+     "t": "p",
+     "texto": "Es el movimiento del Rosario: le hablamos a María, ella nos lleva a su Hijo, y Jesús, en cada uno de sus misterios, nos lleva al Padre (*Rosarium Virginis Mariae*, 32)."
+    },
+    {
+     "t": "cita",
+     "texto": "Si la repetición del Ave Maria se dirige directamente a María, el acto de amor, con Ella y por Ella, se dirige a Jesús.",
+     "fuente": "Juan Pablo II, *Rosarium Virginis Mariae*, 26"
+    },
+    {
+     "t": "h",
+     "texto": "Una Madre para el camino"
+    },
+    {
+     "t": "p",
+     "texto": "Desde la cruz, Jesús le dio a Juan su madre: «Aquí tienes a tu madre». Y desde aquel momento, el discípulo la recibió en su casa (Juan 19, 27). Rezar el Rosario es hacer lo mismo: recibirla en casa, para que nos enseñe a mirar a su Hijo (Catecismo 2679)."
+    }
+   ],
+   "bajada": "Por qué se reza con ella, y adónde lleva",
+   "imagen": "Luminosos-2",
+   "fuentes": "Juan 2, 1-11 y 19, 25-27. Catecismo de la Iglesia Católica, 2674 y 2679. Juan Pablo II, *Rosarium Virginis Mariae*, 10, 26 y 32. San Ignacio de Loyola, *Ejercicios Espirituales*, 63 y 147."
+  },
+  {
+   "titulo": "Su historia",
+   "bloques": [
+    {
+     "t": "p",
+     "texto": "El Rosario no lo inventó nadie de un día para el otro. Se fue formando durante siglos, a partir de algo muy simple: rezar mucho sin perder la cuenta."
+    },
+    {
+     "t": "modulo",
+     "id": "historia",
+     "items": [
+      {
+       "titulo": "Siglo IV",
+       "campos": {
+        "Título": "Piedritas en el desierto",
+        "Texto": "En el desierto de Egipto, un monje llamado Pablo rezaba trescientas oraciones por día. Para no perder la cuenta, se ponía trescientas piedritas en el regazo y tiraba una con cada oración.",
+        "Fuente": "Paladio, *Historia Lausíaca*, 20"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "Edad Media",
+       "campos": {
+        "Título": "El salterio de los que no sabían leer",
+        "Texto": "Los monjes rezaban los 150 salmos. Quienes no sabían leer los reemplazaban por 150 Padrenuestros, contados con cordones de nudos o de cuentas, y con el tiempo, por 150 Avemarías. Así nació el Rosario: una forma popular de la oración de la Iglesia.",
+        "Fuente": "Catecismo, 2678"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "Siglo XIII",
+       "campos": {
+        "Título": "Santo Domingo",
+        "Texto": "Una antigua tradición une el origen del Rosario a santo Domingo de Guzmán. Los historiadores discuten cuánto hay de cierto; lo seguro es que sus hijos, los dominicos, fueron durante siglos sus grandes predicadores."
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "Hacia 1410",
+       "campos": {
+        "Título": "La vida de Jesús, Avemaría por Avemaría",
+        "Texto": "Domingo de Prusia, un monje cartujo de Tréveris, propuso rezar cincuenta Avemarías agregándole a cada una una frase sobre la vida de Jesús. De ahí viene la costumbre de contemplar escenas mientras se reza."
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "Siglo XV",
+       "campos": {
+        "Título": "Las cofradías",
+        "Texto": "El dominico Alano de la Rupe lo predicó por el norte de Francia, Flandes y los Países Bajos. Nacieron las cofradías del Rosario, grupos que se comprometían a rezarlo. Una de las primeras y más famosas, la de Colonia, es de 1475."
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "1569",
+       "campos": {
+        "Título": "Una forma para toda la Iglesia",
+        "Texto": "El papa san Pío V, dominico, fijó la forma que se rezó durante siglos: quince decenas, mientras se meditan los misterios de la vida de Cristo.",
+        "Fuente": "Pío V, bula *Consueverunt Romani Pontifices*"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "1571",
+       "campos": {
+        "Título": "Lepanto",
+        "Texto": "El 7 de octubre, frente a las costas de Grecia, la flota de la Liga Santa venció a la otomana. San Pío V había pedido rezar el Rosario. La victoria se atribuyó a la intercesión de la Virgen, y por eso cada 7 de octubre la Iglesia celebra a Nuestra Señora del Rosario."
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "1883",
+       "campos": {
+        "Título": "Octubre, mes del Rosario",
+        "Texto": "León XIII escribió una larga serie de documentos sobre el Rosario y lo propuso especialmente para el mes de octubre. Juan Pablo II lo llamó «el Papa del Rosario».",
+        "Fuente": "León XIII, *Supremi apostolatus officio*. *Rosarium Virginis Mariae*, 8"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "1917",
+       "campos": {
+        "Título": "Fátima",
+        "Texto": "En Portugal, tres pastorcitos, Lucía, Francisco y Jacinta, contaron que la Virgen les pedía rezar el Rosario todos los días. En la última aparición dijo: «Soy la Señora del Rosario». La Iglesia reconoció estas apariciones. Como toda revelación privada, no agregan nada a la fe: ayudan a vivirla.",
+        "Fuente": "Catecismo, 67"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "1974",
+       "campos": {
+        "Título": "Una oración del Evangelio",
+        "Texto": "San Pablo VI la describió como una «oración evangélica centrada en el misterio de la Encarnación redentora», de «orientación profundamente cristológica».",
+        "Fuente": "Pablo VI, *Marialis cultus*, 46"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "2002",
+       "campos": {
+        "Título": "Los misterios luminosos",
+        "Texto": "San Juan Pablo II agregó cinco misterios de la vida pública de Jesús, del Bautismo a la Eucaristía, para que el Rosario fuera «más plenamente \"compendio del Evangelio\"».",
+        "Fuente": "*Rosarium Virginis Mariae*, 19"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "Hoy",
+       "campos": {
+        "Título": "En tu mano",
+        "Texto": "Pasó de mano en mano durante siglos: monjes y campesinos, marineros y papas, estudiantes y abuelas. Ahora está en la tuya."
+       },
+       "parrafos": []
+      }
+     ]
+    }
+   ],
+   "bajada": "De las piedritas de un monje a tu mano",
+   "imagen": "Gloriosos-3",
+   "fuentes": "Paladio, *Historia Lausíaca*, 20. Catecismo de la Iglesia Católica, 67 y 2678. Pío V, *Consueverunt Romani Pontifices* (1569). León XIII, *Supremi apostolatus officio* (1883). Pablo VI, *Marialis cultus* (1974), 46. Juan Pablo II, *Rosarium Virginis Mariae* (2002), 8 y 19."
+  },
+  {
+   "titulo": "Los que lo rezaron",
+   "bloques": [
+    {
+     "t": "p",
+     "texto": "Juan Pablo II escribió que sería imposible nombrar a todos los santos que encontraron en el Rosario «un auténtico camino de santificación». Acá van seis, muy distintos entre sí. Deslizá para conocerlos."
+    },
+    {
+     "t": "modulo",
+     "id": "personas",
+     "items": [
+      {
+       "titulo": "San Luis María Grignion de Montfort",
+       "campos": {
+        "Años": "1673-1716",
+        "Quién era": "Sacerdote misionero",
+        "Texto": "Recorrió a pie el oeste de Francia predicando misiones en los pueblos, con el Rosario en la mano. Escribió *El secreto admirable del Santísimo Rosario*. De él tomó Juan Pablo II su lema: *Totus tuus*, «todo tuyo».",
+        "Fuente": "*Rosarium Virginis Mariae*, 8 y 15"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "San Bartolo Longo",
+       "campos": {
+        "Años": "1841-1926",
+        "Quién era": "Abogado",
+        "Texto": "Estudiando Derecho en Nápoles se alejó de la fe y terminó metido en el espiritismo. Cuando volvió a Dios, una frase que sintió en lo hondo le cambió la vida. Levantó el santuario de Pompeya y fundó obras para huérfanos y para hijos de presos. León XIV lo canonizó en 2025.",
+        "Cita": "¡Quien propaga el Rosario se salva!",
+        "Fuente": "*Rosarium Virginis Mariae*, 8"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "San Francisco Marto",
+       "campos": {
+        "Años": "1908-1919",
+        "Quién era": "Pastorcito de Fátima",
+        "Texto": "Tenía ocho años cuando vio a la Virgen. Ella dijo que iría al cielo, pero que antes tenía que rezar muchos Rosarios, y los rezó. Pasaba horas frente al sagrario para hacerle compañía a Jesús, a quien llamaba «Jesús escondido». Murió a los diez años.",
+        "Fuente": "Memorias de la hermana Lucía"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "San Pier Giorgio Frassati",
+       "campos": {
+        "Años": "1901-1925",
+        "Quién era": "Estudiante de ingeniería",
+        "Texto": "Fue a un colegio de los jesuitas y después estudió Ingeniería Mecánica, con especialización en minas, en el Politécnico de Turín. Montañista, con sus amigos fundó la «Sociedad de los Tipos Turbios», y pasaba su tiempo libre visitando familias pobres. Llevaba un Rosario en el bolsillo y lo rezaba todos los días. Murió a los 24 años.",
+        "Cita": "Jesús viene a mí cada mañana en la Comunión, y yo le devuelvo la visita yendo a servir a los pobres.",
+        "Fuente": "Biografía de la Santa Sede para su canonización (2025). Carta del Maestro de la Orden de Predicadores (2024)"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "San Juan Pablo II",
+       "campos": {
+        "Años": "1920-2005",
+        "Quién era": "Papa",
+        "Texto": "En la Polonia ocupada por los nazis trabajó en una cantera y en una fábrica química, mientras estudiaba a escondidas para ser sacerdote. Dos semanas después de ser elegido Papa, dijo lo que sigue. En 2002 sumó los misterios luminosos.",
+        "Cita": "El Rosario es mi oración predilecta. ¡Plegaria maravillosa!",
+        "Fuente": "*Rosarium Virginis Mariae*, 2"
+       },
+       "parrafos": []
+      },
+      {
+       "titulo": "San Carlo Acutis",
+       "campos": {
+        "Años": "1991-2006",
+        "Quién era": "Programador",
+        "Texto": "Iba a un colegio de los jesuitas en Milán y aprendió a hacer páginas web. Con la computadora armó un esquema para rezar el Rosario, y lo rezaba todos los días. Murió de leucemia a los quince años. León XIV lo canonizó en 2025, el mismo día que a Frassati.",
+        "Cita": "El Rosario es la escalera más corta para subir al cielo.",
+        "Fuente": "Biografía de la Santa Sede para su canonización (2025). Testimonio de sus padres"
+       },
+       "parrafos": []
+      }
+     ]
+    },
+    {
+     "t": "p",
+     "texto": "Vidas muy distintas, con algo en común: miraron a Jesús todos los días, y el Rosario fue una de sus maneras de hacerlo."
+    }
+   ],
+   "bajada": "Seis santos, seis vidas muy distintas",
+   "imagen": "Luminosos-3",
+   "fuentes": "Juan Pablo II, *Rosarium Virginis Mariae*, 2, 8 y 15. Santa Sede, libreto de la canonización de Pier Giorgio Frassati y Carlo Acutis (7 de septiembre de 2025). Orden de Predicadores, carta sobre la canonización de Pier Giorgio Frassati (21 de noviembre de 2024)."
+  },
+  {
+   "titulo": "Lo que dice la ciencia",
+   "bloques": [
+    {
+     "t": "p",
+     "texto": "En 2001, un equipo de médicos italianos publicó en el *British Medical Journal* algo que habían descubierto casi por casualidad: rezar el Avemaría cambia el ritmo de la respiración."
+    },
+    {
+     "t": "modulo",
+     "id": "respiracion",
+     "items": []
+    },
+    {
+     "t": "p",
+     "texto": "Midieron a 23 adultos sanos, en Florencia y en Pavía. Respirando con normalidad hacían unas 14 respiraciones por minuto. Rezando el Avemaría en latín a dos voces (uno decía la primera parte y otro respondía), bajaron casi exactamente a 6: un Avemaría por respiración, de unos diez segundos."
+    },
+    {
+     "t": "p",
+     "texto": "A ese ritmo, la respiración se acompasa con unas ondas naturales del corazón y de la presión que también duran unos diez segundos. Esas ondas se volvieron más amplias y parejas, y aumentó la sensibilidad del barorreflejo, el mecanismo con que el cuerpo regula la presión. Con un mantra de yoga pasó lo mismo: el efecto viene del ritmo lento y parejo."
+    },
+    {
+     "t": "p",
+     "texto": "Hay pocos estudios más, y son chicos. En 2008, en una universidad católica de Estados Unidos, doce estudiantes que rezaron el Rosario bajaron más su ansiedad que dieciocho que vieron un video religioso. En 2025, una encuesta a 361 personas de Italia, Polonia y España encontró que rezarlo va de la mano de menos depresión y más empatía. Una encuesta muestra que dos cosas van juntas, pero no cuál causa cuál."
+    },
+    {
+     "t": "h",
+     "texto": "Lo que no dice"
+    },
+    {
+     "t": "p",
+     "texto": "Que el Rosario cure enfermedades, que funcione mejor que otra oración, o que haya que rezarlo para sentirse bien. Lo que pasa entre vos y Dios no lo registra ningún aparato."
+    },
+    {
+     "t": "h",
+     "texto": "San Ignacio ya lo intuía"
+    },
+    {
+     "t": "p",
+     "texto": "Más de cuatro siglos antes, en los Ejercicios, Ignacio propuso un modo de orar «por compás»: una palabra del Padrenuestro o del Avemaría con cada respiración, pensando en lo que significa."
+    },
+    {
+     "t": "cita",
+     "texto": "Con cada un anhélito o resollo se ha de orar mentalmente diciendo una palabra del Pater noster.",
+     "fuente": "San Ignacio de Loyola, *Ejercicios Espirituales*, 258"
+    },
+    {
+     "t": "p",
+     "texto": "A la Iglesia no le resulta extraño. Dios se comunica «respetando nuestra naturaleza y sus ritmos vitales», y la oración cristiana compromete a toda la persona, también al cuerpo (*Rosarium Virginis Mariae*, 27). Pero rezar es hablar con Dios, y el Catecismo advierte contra reducirlo a «una simple operación psicológica» (2726). Que además le haga bien al cuerpo es un regalo, no el motivo para rezar."
+    }
+   ],
+   "bajada": "Qué se midió, y qué no",
+   "imagen": "Luminosos-1",
+   "fuentes": "L. Bernardi y otros, «Effect of rosary prayer and yoga mantras on autonomic cardiovascular rhythms: comparative study», *BMJ* 323 (2001), 1446-1449. M. W. Anastasi y A. B. Newberg, «A preliminary study of the acute effects of religious ritual on anxiety», *Journal of Alternative and Complementary Medicine* 14 (2008), 163-165. L. Oviedo y otros, «Is the Rosary Still Relevant? Exploring its Impact on Mental Health and Well-Being: A Multinational Study», *Journal of Religion and Health* 64 (2025), 1173-1194. San Ignacio de Loyola, *Ejercicios Espirituales*, 258. Juan Pablo II, *Rosarium Virginis Mariae*, 27. Catecismo de la Iglesia Católica, 2726."
+  },
+  {
+   "titulo": "Preguntas honestas",
+   "bloques": [
+    {
+     "t": "p",
+     "texto": "Si nunca rezaste el Rosario, es normal que tengas preguntas. Estas son las más comunes."
+    },
+    {
+     "t": "modulo",
+     "id": "preguntas",
+     "items": [
+      {
+       "titulo": "¿No es repetir lo mismo una y otra vez?",
+       "campos": {},
+       "parrafos": [
+        "Jesús advirtió contra rezar «hablando mucho», como quien cree que por mucho hablar Dios lo va a escuchar (Mateo 6, 7). Pero él mismo, la noche del huerto, «oró por tercera vez, repitiendo las mismas palabras» (Mateo 26, 44).",
+        "Quien ama, repite. Tres veces le respondió Pedro a Jesús que lo quería: «Señor, tú lo sabes todo; sabes que te quiero» (Juan 21, 17). Juan Pablo II dice que, para entender el Rosario, hay que entrar en «la dinámica psicológica que es propia del amor» (*Rosarium Virginis Mariae*, 26).",
+        "La clave está en la escena: mientras la boca repite, la atención queda libre para mirar a Jesús. Sin eso, advierte Pablo VI, el Rosario es «un cuerpo sin alma» (*Marialis cultus*, 47)."
+       ]
+      },
+      {
+       "titulo": "¿Por qué rezarle a María, si puedo hablar directo con Dios?",
+       "campos": {},
+       "parrafos": [
+        "Podés, y en el Rosario lo hacés: cada decena empieza con el Padrenuestro y termina con el Gloria. En el Avemaría le pedimos a María que rece «por nosotros», como le pedís a un amigo que rece por vos. El Catecismo lo dice simple: «Podemos orar con ella y orarle a ella» (2679).",
+        "Ella no ocupa el lugar de Jesús. Él es el único Mediador, y lo que hace María «de ninguna manera disminuye o hace sombra a la única mediación de Cristo, sino que manifiesta su eficacia» (Catecismo 970)."
+       ]
+      },
+      {
+       "titulo": "¿Los católicos adoran a María?",
+       "campos": {},
+       "parrafos": [
+        "No. La adoración se le debe solo a Dios: «Adorarás al Señor tu Dios y sólo a él darás culto», dice Jesús (Catecismo 2096). A María la Iglesia la honra de un modo especial, pero ese culto es «esencialmente diferente del culto de adoración» que se da a Dios (Catecismo 971)."
+       ]
+      },
+      {
+       "titulo": "¿Y si me distraigo todo el tiempo?",
+       "campos": {},
+       "parrafos": [
+        "Es lo más común, y el Catecismo lo dice tal cual: «La dificultad habitual de la oración es la distracción». Su consejo es no ponerse a perseguirla, porque eso «es caer en sus redes»: basta con volver (2729). Cada vez que volvés a la escena, también estás rezando."
+       ]
+      },
+      {
+       "titulo": "¿Y si no siento nada?",
+       "campos": {},
+       "parrafos": [
+        "Les pasa sobre todo a los que rezan en serio. El Catecismo lo llama sequedad, y dice que es «el momento en que la fe es más pura, la fe que se mantiene firme junto a Jesús en su agonía y en el sepulcro» (2731). Seguir rezando así vale mucho."
+       ]
+      },
+      {
+       "titulo": "¿Y si tengo dudas de fe?",
+       "campos": {},
+       "parrafos": [
+        "Rezalo con tus dudas. Un padre le pidió a Jesús que curara a su hijo, y le dijo: «Creo, ayúdame porque tengo poca fe» (Marcos 9, 24). Jesús lo escuchó y sanó al chico."
+       ]
+      },
+      {
+       "titulo": "¿Hay que rezarlo entero, y todos los días?",
+       "campos": {},
+       "parrafos": [
+        "No es una obligación. Es una devoción, una de las formas de piedad que la Iglesia valora y recomienda (Catecismo 1674). Hay quienes lo rezan entero cada día, y Juan Pablo II reconoce que muchos van a rezar solo una parte (*Rosarium Virginis Mariae*, 38). Empezar por un misterio está muy bien."
+       ]
+      },
+      {
+       "titulo": "¿El Rosario protege, como un amuleto?",
+       "campos": {},
+       "parrafos": [
+        "No. Juan Pablo II advierte justamente contra eso: que el rosario termine considerado «como un amuleto o un objeto mágico» (*Rosarium Virginis Mariae*, 28). Las cuentas sirven para rezar sin perder la cuenta, y llevarlo encima puede recordarte rezar. Lo que vale es la oración, y Aquel a quien se dirige."
+       ]
+      }
+     ]
+    }
+   ],
+   "bajada": "Las dudas de siempre, con respuestas claras",
+   "imagen": "Dolorosos-1",
+   "fuentes": "Mateo 6, 7 y 26, 44. Marcos 9, 24. Juan 21, 15-17. Catecismo de la Iglesia Católica, 970, 971, 1674, 2096, 2679, 2729 y 2731. Pablo VI, *Marialis cultus*, 47 (citado en *Rosarium Virginis Mariae*, 12). Juan Pablo II, *Rosarium Virginis Mariae*, 26, 28 y 38."
   }
  ]
 };
