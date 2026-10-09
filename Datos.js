@@ -631,7 +631,8 @@ window.DATOS = {
      ],
      "pedir": "la confianza en María",
      "vida": [
-      "María es reina y sigue siendo madre. ¿Qué le querés confiar hoy?"
+      "María es reina y sigue siendo madre. ¿Qué le querés confiar hoy?",
+      "María sostuvo su sí desde Nazaret hasta la cruz, y Dios la coronó. ¿Qué sí te está costando sostener a vos?"
      ],
      "autor": "Diego Velázquez",
      "obra": "La coronación de la Virgen",
