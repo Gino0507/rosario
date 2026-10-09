@@ -143,17 +143,21 @@ const grupo = id => D.grupos.find(g => g.id === id);
 const rezados = id => leer('rezados.' + hoyISO() + '.' + id, []);
 function marcarRezado(id, m) { const r = rezados(id); if (!r.includes(m)) { r.push(m); guardar('rezados.' + hoyISO() + '.' + id, r); } }
 function proximo(id) { const r = rezados(id); for (let i = 0; i < 5; i++) if (!r.includes(i)) return i; return 0; }
-// Cada misterio tiene dos preguntas para tu vida, que se turnan (ver Decisiones.md, 9 de octubre).
-// Los grupos que se rezan dos días por semana usan una cada día (lunes y sábado, martes y viernes,
-// miércoles y domingo); los luminosos, que se rezan solo los jueves, cambian cada semana. Con
-// misterios de otro día, toca la del último día que les correspondió.
+// Cada misterio tiene cinco preguntas para tu vida, una de cada tipo (ver Contenido/Misterios.md):
+// contemplarlo, agradecer, mirar tu vida, seguirlo y rezar por otros. En un mismo rezo cada
+// misterio tiene una distinta, y cada vez que se reza el grupo, cada misterio pasa a la siguiente.
+// Se cuentan los días en que tocan esos misterios (lunes y sábado, martes y viernes, miércoles y
+// domingo, los jueves); con misterios de otro día, cuenta el último día que les correspondió.
+// Si una pregunta todavía no está escrita, va la que le sigue.
 function preguntaVida(g, m) {
   const vidas = g.misterios[m].vida, dias = [1, 2, 3, 4, 5, 6, 0].filter(d => DEL_DIA[d] === g.id);
   const d = new Date();
   while (!dias.includes(d.getDay())) d.setDate(d.getDate() - 1);
   // Semanas de lunes a domingo, contadas desde el lunes 1 de enero de 2024.
   const semanas = Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(2024, 0, 1)) / 6048e5);
-  return vidas[(semanas * dias.length + dias.indexOf(d.getDay())) % vidas.length];
+  const vez = semanas * dias.length + dias.indexOf(d.getDay());
+  for (let i = 0; i < vidas.length; i++) { const q = vidas[(vez + m + i) % vidas.length]; if (q) return q; }
+  return '';
 }
 
 /* ---------- Tamaño de letra ---------- */
@@ -541,7 +545,7 @@ const NOTA_SALVE = 'Saludamos a María, nuestra Madre.';
 // acostumbra en la Iglesia. voz: lo que dice la voz, igual que INTENCIONES en Generar audios.py;
 // espera: los segundos de silencio, escuchando. Borrador para Pablo.
 const INTENCION = {
-  pregunta: 'Podés ofrecer este rezo por alguien o por algo que te importa: un examen, tu familia, un amigo que la está pasando mal. Si hoy no traés nada en particular, la Iglesia acostumbra rezar por las intenciones del Papa.',
+  pregunta: 'Podés ofrecer este rezo por alguien o por algo que te importa: tu trabajo, tu familia, un amigo que la está pasando mal. Si hoy no traés nada en particular, la Iglesia acostumbra rezar por las intenciones del Papa.',
   propias: { titulo: 'Tus intenciones', texto: 'Decíselas a María, en silencio o en voz baja: por quién rezás, qué te preocupa, qué querés agradecer. Ella se las presenta a su Hijo.',
     voz: 'Ponemos en manos de María nuestras intenciones, para que ella se las presente a Jesús.', espera: 20, pista: 'Un momento para tus intenciones, y el rezo sigue solo.' },
   papa: { titulo: 'Por las intenciones del Papa', texto: 'Rezar por lo que pide el Papa es unirse a la oración de toda la Iglesia.',

@@ -200,8 +200,11 @@ window.DATOS = {
      ],
      "pedir": "la humildad",
      "vida": [
+      "Dios, que todo lo puede, esperó el sí de una joven de Nazaret. ¿Cómo es un Dios que pide permiso antes de entrar?",
+      "La vida de Jesús empezó escondida en el vientre de María, como empezó la tuya. ¿Qué te gustaría agradecerle de tu propia vida, tal como es?",
       "María preguntó antes de decir que sí. ¿Qué le preguntarías vos a Dios?",
-      "María le abrió a Dios toda su vida, también sus planes. ¿Qué parte de la tuya todavía le tenés cerrada?"
+      "María le abrió a Dios toda su vida, también sus planes. ¿Qué parte de la tuya todavía le tenés cerrada?",
+      "¿Quién de los que conocés está frente a una decisión importante? Pedí que, como María, descubra lo que Dios le pide."
      ],
      "autor": "Carl Bloch",
      "obra": "La Anunciación",
@@ -222,8 +225,11 @@ window.DATOS = {
      ],
      "pedir": "la caridad con el prójimo",
      "vida": [
+      "Antes de nacer, escondido en María, Jesús ya llenaba de alegría a Juan y a Isabel. ¿Qué descubrís de Dios en esa manera de llegar, sin hacer ruido?",
+      "María respondió con un canto de gracias: \"El Todopoderoso ha hecho en mí grandes cosas\". ¿Qué cosa grande hizo Dios en la tuya?",
       "¿A quién podrías ir a ver esta semana, aunque te quede lejos o te dé fiaca?",
-      "María se quedó tres meses ayudando a Isabel. ¿En qué podrías ayudar en tu casa esta semana, sin esperar que te lo agradezcan?"
+      "María se quedó tres meses ayudando a Isabel. ¿En qué podrías ayudar en tu casa esta semana, sin esperar que te lo agradezcan?",
+      "María fue a cuidar a Isabel. Hoy hay muchos que cuidan a un enfermo o a un familiar mayor, y se cansan. ¿Conocés a alguien así? Rezá por esa persona."
      ],
      "autor": "Philippe de Champaigne",
      "obra": "La Visitación",
@@ -243,8 +249,11 @@ window.DATOS = {
      ],
      "pedir": "el desapego de las cosas",
      "vida": [
+      "El que hizo el universo llegó como un bebé que necesita que lo abriguen. ¿Por qué habrá elegido Dios llegar así de frágil?",
+      "Jesús nació sin un lugar propio. ¿Cuándo fue la última vez que diste gracias por tener techo, comida y gente que te espera?",
       "\"María conservaba estas cosas y las meditaba en su corazón.\" ¿Qué te pasó esta semana que valga la pena guardar así?",
-      "En un pesebre, el Hijo de Dios se hizo pobre por nosotros. ¿De qué cosa que te gusta te desprenderías, para dársela a alguien que la necesite?"
+      "En un pesebre, el Hijo de Dios se hizo pobre por nosotros. ¿De qué cosa que te gusta te desprenderías, para dársela a alguien que la necesite?",
+      "No había lugar para ellos en el albergue. Hoy también hay familias sin casa, o lejos de su tierra. Rezá por ellas, y por alguna que conozcas."
      ],
      "autor": "Gerard van Honthorst",
      "obra": "La adoración de los pastores",
@@ -264,8 +273,11 @@ window.DATOS = {
      ],
      "pedir": "la obediencia",
      "vida": [
+      "Simeón tomó al niño en brazos y dijo: \"Mis ojos han visto la salvación\". Miralo vos también: ¿qué ves en ese niño?",
+      "Jesús llegó al Templo en brazos de sus padres. ¿En brazos de quién llegaste vos a Dios? Dale gracias por esa persona.",
       "Simeón esperó años sin cansarse. ¿Qué estás esperando vos, y cómo lo esperás?",
-      "José y María llevaron a Jesús al Templo para ofrecérselo a Dios. ¿Te animás a ofrecerle tu día apenas te levantás, antes de agarrar el celular?"
+      "José y María llevaron a Jesús al Templo para ofrecérselo a Dios. ¿Te animás a ofrecerle tu día apenas te levantás, antes de agarrar el celular?",
+      "Ana tenía ochenta y cuatro años y seguía rezando en el Templo. ¿Qué abuelo o persona mayor querés poner hoy en manos de Dios?"
      ],
      "autor": "Rembrandt",
      "obra": "El cántico de Simeón",
@@ -285,8 +297,11 @@ window.DATOS = {
      ],
      "pedir": "buscar a Dios siempre",
      "vida": [
+      "Después del Templo, Jesús volvió a Nazaret y vivió años de trabajo y de casa, sin milagros. ¿Qué te enseña de Dios que haya elegido vivir así la mayor parte de su vida?",
+      "Al tercer día lo encontraron en el Templo, en la casa de su Padre. ¿Cuándo lo encontraste vos, después de un tiempo lejos? Dale gracias por buscarte incansablemente y, a la vez, dejarse encontrar.",
       "María no entendió lo que Jesús le respondió y aun así lo guardó en su corazón. ¿Qué no entendés todavía de tu propia vida?",
-      "María y José lo buscaron tres días, angustiados, hasta encontrarlo. Cuando rezás y no sentís nada, ¿lo seguís buscando o aflojás?"
+      "María y José lo buscaron tres días, angustiados, hasta encontrarlo. Cuando rezás y no sentís nada, ¿lo seguís buscando o aflojás?",
+      "\"Tu padre y yo te buscábamos angustiados\", le dijo María a Jesús. Hoy hay padres que sufren por un hijo que se alejó. Rezá por ellos, y por alguno que conozcas."
      ],
      "autor": "William Holman Hunt",
      "obra": "El hallazgo del Salvador en el Templo",
@@ -314,8 +329,11 @@ window.DATOS = {
      ],
      "pedir": "vivir como hijos de Dios",
      "vida": [
+      "Jesús, que no tenía pecado, hizo la fila con los pecadores para bautizarse. ¿Qué te muestra eso de dónde elige ponerse Dios?",
+      "En el Jordán, el Padre llamó a Jesús su Hijo querido; en el Bautismo, nos hizo hijos suyos a nosotros. ¿Le diste gracias alguna vez por el tuyo?",
       "Jesús escuchó que era querido antes de hacer un solo milagro. ¿Te animás a creer que Dios te quiere antes de que hagas nada?",
-      "Después del Bautismo, el Espíritu llevó a Jesús al desierto a ayunar. ¿De qué vas a ayunar estos días, para hacerle lugar a Dios?"
+      "Después del Bautismo, el Espíritu llevó a Jesús al desierto a ayunar. ¿De qué vas a ayunar estos días, para hacerle lugar a Dios?",
+      "Hoy hay mucha gente que se siente poco querida, o que nunca escuchó que Dios la quiere. ¿A quién conocés así? Rezá por esa persona."
      ],
      "autor": "Guido Reni",
      "obra": "El bautismo de Cristo",
@@ -335,8 +353,11 @@ window.DATOS = {
      ],
      "pedir": "hacer lo que Jesús nos diga",
      "vida": [
+      "Jesús dijo que todavía no era su hora, y aun así hizo lo que le pidió su madre. ¿Qué te dice eso de cómo la escucha?",
+      "En Caná, Jesús no dejó que se apagara la alegría de una fiesta. ¿Qué alegría de estos días le querés agradecer?",
       "María vio lo que faltaba antes de que alguien se lo pidiera. ¿Qué le pedirías que le diga a Jesús de tu parte?",
-      "Los sirvientes llenaron las tinajas hasta el borde, aunque era solo agua. ¿Qué venís haciendo a medias que podrías llenar hasta el borde?"
+      "Los sirvientes llenaron las tinajas hasta el borde, aunque era solo agua. ¿Qué venís haciendo a medias que podrías llenar hasta el borde?",
+      "Jesús hizo su primer milagro en una boda. Hoy hay matrimonios que están pasando un momento difícil. ¿Conocés alguno? Pedile a María que interceda por ellos, como en Caná."
      ],
      "autor": "Carl Bloch",
      "obra": "Las bodas de Caná",
@@ -357,8 +378,11 @@ window.DATOS = {
      ],
      "pedir": "la conversión",
      "vida": [
+      "Jesús comía con los que nadie quería sentar a su mesa y tocaba a los enfermos que nadie se animaba a tocar. ¿Cómo te mira a vos alguien así?",
+      "La Buena Noticia que Jesús anunció pasó de mano en mano hasta llegarte a vos, cuando muchos todavía no la escucharon. ¿Le das gracias por el regalo de conocerla?",
       "Convertirse quiere decir cambiar de rumbo. Si te lo tomaras en serio, ¿qué cambiarías primero?",
-      "Jesús perdonaba a los que se le acercaban, y lo sigue haciendo en la confesión. ¿Qué te frena para ir a buscar ese perdón?"
+      "Jesús perdonaba a los que se le acercaban, y lo sigue haciendo en la confesión. ¿Qué te frena para ir a buscar ese perdón?",
+      "Hay gente que carga una culpa que no se anima a soltar, y no sabe que Jesús la espera para perdonarla. Rezá por alguien que necesite sentirse perdonado."
      ],
      "autor": "Carl Bloch",
      "obra": "El sermón de la montaña",
@@ -379,8 +403,11 @@ window.DATOS = {
      ],
      "pedir": "el deseo de ser santos",
      "vida": [
+      "Jesús dejó que tres amigos vieran su gloria justo antes de ir a la cruz. ¿Qué te dice eso de cómo cuida a los suyos antes de una prueba?",
+      "En la montaña, Pedro dijo: \"¡Qué bien estamos aquí!\". ¿Cuándo sentiste vos algo así cerca de Dios? Agradecéselo hoy.",
       "Pedro quería quedarse arriba, pero había que bajar. ¿Qué momento lindo te cuesta soltar para volver a lo de todos los días?",
-      "Desde la nube, el Padre pidió una sola cosa: \"Escúchenlo\". ¿Qué ruido de tu día apagarías para escucharlo?"
+      "Desde la nube, el Padre pidió una sola cosa: \"Escúchenlo\". ¿Qué ruido de tu día apagarías para escucharlo?",
+      "Hoy hay quienes no logran ver ninguna luz: tristeza, depresión, desánimo. ¿Conocés a alguien así? Pedile a Jesús que le muestre un poco de la suya."
      ],
      "autor": "Rafael",
      "obra": "La Transfiguración",
@@ -400,8 +427,11 @@ window.DATOS = {
      ],
      "pedir": "el amor a la Eucaristía",
      "vida": [
+      "La noche en que lo iban a entregar, Jesús tomó el pan y dijo: \"Esto es mi Cuerpo, que se entrega por ustedes\". ¿Qué clase de amor responde así a una traición?",
+      "En la última cena, Jesús tomó el pan y dio gracias. \"Eucaristía\" quiere decir eso: acción de gracias. ¿Qué vas a agradecer en la próxima misa?",
       "¿Qué te acerca a la misa del domingo, y qué te aleja?",
-      "Jesús se quedó en la Eucaristía, y te espera en el sagrario de cualquier iglesia. ¿Cuándo podrías pasar un rato, solo a estar con él?"
+      "Jesús se quedó en la Eucaristía, y te espera en el sagrario de cualquier iglesia. ¿Cuándo podrías pasar un rato, solo a estar con él?",
+      "Cada misa existe porque un sacerdote un día dijo que sí. Rezá por los sacerdotes, para que sean santos y nos guíen en la búsqueda de la Verdad, y por alguno que conozcas por su nombre."
      ],
      "autor": "Carl Bloch",
      "obra": "La Última Cena",
@@ -430,8 +460,11 @@ window.DATOS = {
      ],
      "pedir": "aceptar la voluntad de Dios",
      "vida": [
+      "Jesús podía irse esa noche y se quedó, sabiendo lo que venía. ¿Por quién se quedó?",
+      "Esa misma noche, Jesús le dijo a Pedro: \"Yo he rogado por ti, para que no te falte la fe\". También reza por vos: ¿le diste gracias alguna vez por eso?",
       "Jesús le dijo al Padre lo que sentía, sin hacerse el fuerte. ¿Qué le dirías hoy vos, sin maquillarlo?",
-      "Jesús les pidió dos veces: \"Oren para no caer en la tentación\". ¿Cuál es la tentación que más te gana, y en qué momento suele aparecer?"
+      "Jesús les pidió dos veces: \"Oren para no caer en la tentación\". ¿Cuál es la tentación que más te gana, y en qué momento suele aparecer?",
+      "Hoy hay quienes esperan con angustia algo que se viene: un diagnóstico, una operación, una noticia difícil. ¿A quién conocés que esté así? Acompañalo ahora con tu oración."
      ],
      "autor": "Carl Bloch",
      "obra": "Cristo en Getsemaní",
@@ -451,8 +484,11 @@ window.DATOS = {
      ],
      "pedir": "el dominio de uno mismo",
      "vida": [
+      "Quedate mirándolo un momento: recibe golpes que no merecía, y no se defiende. ¿Qué te dice eso de cuánto valés para él?",
+      "Isaías lo había anunciado: \"Por sus heridas fuimos sanados\". ¿De qué herida te fue sanando Dios, que hoy le podés agradecer?",
       "Pilato cedió para no tener problemas. ¿En qué situación te cuesta sostener lo que sabés que está bien?",
-      "Jesús se dejó atar a la columna para desatarnos a nosotros. ¿Qué te tiene atado hoy, y qué primer paso darías para soltarte?"
+      "Jesús se dejó atar a la columna para desatarnos a nosotros. ¿Qué te tiene atado hoy, y qué primer paso darías para soltarte?",
+      "Hoy también hay personas golpeadas, maltratadas o abusadas, que no se pueden defender. Rezá por ellas, y por alguien que conozcas que la esté pasando así."
      ],
      "autor": "Caravaggio",
      "obra": "La flagelación de Cristo",
@@ -473,8 +509,11 @@ window.DATOS = {
      ],
      "pedir": "el valor de no esconder la fe",
      "vida": [
+      "Pilato lo sacó afuera, coronado de espinas, y dijo: \"¡Aquí tienen al hombre!\". ¿Qué ves vos en ese hombre?",
+      "A Jesús lo humillaron delante de todos. Por eso sabe lo que se siente cuando te pasa a vos. ¿Le das gracias por tener un Dios que te entiende desde adentro?",
       "A Jesús lo ridiculizaron por lo que era. ¿Alguna vez te dio vergüenza que supieran que creés?",
-      "A Jesús, que era rey de verdad, lo coronaron para reírse de él. ¿Qué hacés solamente para que te vean bien?"
+      "A Jesús, que era rey de verdad, lo coronaron para reírse de él. ¿Qué hacés solamente para que te vean bien?",
+      "Hoy hay cristianos que son burlados, encarcelados o perseguidos por su fe en muchos países. Rezá por ellos, y también por los que los persiguen."
      ],
      "autor": "Anton van Dyck",
      "obra": "La coronación de espinas",
@@ -495,8 +534,11 @@ window.DATOS = {
      ],
      "pedir": "la paciencia",
      "vida": [
+      "Agotado, camino de la cruz, Jesús se dio vuelta para hablarles a unas mujeres que lloraban. ¿Qué te muestra eso de su corazón?",
+      "Simón de Cirene le alivió a Jesús el peso de la cruz. ¿A quién le agradecés haberte ayudado a cargar la tuya?",
       "A Simón lo obligaron a ayudar y terminó caminando al lado de Jesús. ¿Qué carga ajena te tocó llevar sin buscarla?",
-      "\"Que cargue con su cruz cada día y me siga\", había dicho Jesús. ¿Cuál es tu cruz de todos los días, y la estás llevando con él?"
+      "\"Que cargue con su cruz cada día y me siga\", había dicho Jesús. ¿Cuál es tu cruz de todos los días, y la estás llevando con él?",
+      "Hay quienes cargan una enfermedad larga, día tras día, sin ver el final. ¿Quién de los que conocés está cargando una cruz así? Nombralo delante de María."
      ],
      "autor": "Tiziano",
      "obra": "Cristo camino del Calvario",
@@ -517,8 +559,11 @@ window.DATOS = {
      ],
      "pedir": "la perseverancia",
      "vida": [
+      "Desde la cruz, Jesús le prometió el Paraíso a un ladrón que se lo pidió a último momento. ¿Qué te dice eso de su misericordia?",
+      "San Pablo escribió: \"Me amó y se entregó por mí\". ¿Podés decirle hoy, con tus palabras: \"Gracias por entregarte por mí\"?",
       "Desde la cruz, Jesús le dio a Juan su propia madre. ¿Qué lugar tiene María en tu vida?",
-      "Desde la cruz, Jesús rezó por los que lo crucificaban: \"Padre, perdónalos\". ¿A quién te cuesta perdonar? ¿Rezarías hoy por esa persona?"
+      "Desde la cruz, Jesús rezó por los que lo crucificaban: \"Padre, perdónalos\". ¿A quién te cuesta perdonar? ¿Rezarías hoy por esa persona?",
+      "María acompañó a su Hijo hasta el último momento. Pedile que acompañe a los que van a morir hoy, y a alguien que conozcas que esté cerca del final."
      ],
      "autor": "Diego Velázquez",
      "obra": "Cristo crucificado",
@@ -546,8 +591,11 @@ window.DATOS = {
      ],
      "pedir": "la fe",
      "vida": [
+      "Sus discípulos lo habían abandonado, y al resucitar Jesús los llama \"mis hermanos\". ¿Qué descubrís ahí de su manera de perdonar?",
+      "Por la Resurrección, la muerte no tiene la última palabra. ¿Por quién que ya partió le das gracias a Dios hoy, con la esperanza del reencuentro?",
       "Las mujeres salieron corriendo a contarlo. ¿A quién le contarías algo bueno que Dios hizo en tu vida?",
-      "Jesús resucitado salió al encuentro de los suyos para consolarlos. ¿Quién anda triste cerca tuyo, y cómo podrías acompañarlo esta semana?"
+      "Jesús resucitado salió al encuentro de los suyos para consolarlos. ¿Quién anda triste cerca tuyo, y cómo podrías acompañarlo esta semana?",
+      "María Magdalena lloraba junto al sepulcro, y Jesús la consoló. ¿Quién de los que conocés está de duelo? Pedile a Jesús que consuele también a esa persona."
      ],
      "autor": "Carl Bloch",
      "obra": "La Resurrección",
@@ -567,8 +615,11 @@ window.DATOS = {
      ],
      "pedir": "la esperanza",
      "vida": [
+      "Lo último que hizo Jesús en la tierra fue levantar las manos para bendecir a sus amigos. ¿Con qué mirada te ve hoy, desde el cielo?",
+      "Antes de irse, Jesús prometió: \"Yo estaré siempre con ustedes\". ¿En qué cosa chica de esta semana lo descubriste a tu lado, para darle gracias?",
       "Jesús se fue y dejó la tarea en manos de sus amigos. ¿Qué parte de esa tarea te toca a vos?",
-      "Jesús se fue a prepararnos un lugar. ¿Qué decisión tuya cambiaría si la miraras desde el cielo?"
+      "Jesús se fue a prepararnos un lugar. ¿Qué decisión tuya cambiaría si la miraras desde el cielo?",
+      "Jesús mandó a sus amigos a ser sus testigos \"hasta los confines de la tierra\". Rezá por los que lo anuncian lejos de su casa, y por los que todavía no lo conocen."
      ],
      "autor": "Rembrandt",
      "obra": "La Ascensión",
@@ -589,8 +640,11 @@ window.DATOS = {
      ],
      "pedir": "los dones del Espíritu Santo",
      "vida": [
+      "Las lenguas de fuego bajaron por separado sobre cada uno de ellos. ¿Qué te dice de Dios que se dé así, a cada uno en persona?",
+      "El Espíritu Santo reparte sus dones a cada uno, como él quiere. ¿Qué don tuyo le agradecés hoy, sin compararte con nadie?",
       "Cada uno escuchó el mensaje en su propio idioma. ¿Cómo le hablarías de Dios a un amigo que no cree, con sus palabras?",
-      "El mismo Espíritu te habla hoy por dentro, sin viento ni fuego. ¿Qué te viene pidiendo hace tiempo que todavía no hiciste?"
+      "El mismo Espíritu te habla hoy por dentro, sin viento ni fuego. ¿Qué te viene pidiendo hace tiempo que todavía no hiciste?",
+      "En Pentecostés, gente de pueblos distintos pudo entenderse. ¿Qué familia o qué país enfrentado conocés? Pedí que el Espíritu Santo los vuelva a unir."
      ],
      "autor": "Juan Bautista Maíno",
      "obra": "Pentecostés",
@@ -610,8 +664,11 @@ window.DATOS = {
      ],
      "pedir": "el amor a María",
      "vida": [
+      "En María, Dios ya cumplió lo que promete para todos: llevarnos con él, enteros. ¿Qué te dice eso del final que quiere para tu vida?",
+      "Dios llevó a María al cielo entera, también con su cuerpo. ¿Qué le agradecés hoy de tu salud y de las fuerzas que tenés para cada día?",
       "María está en el cielo con su cuerpo. ¿Cómo estás cuidando el tuyo: el descanso, la comida, lo que mirás?",
-      "Desde el cielo, María nos cuida como madre. ¿Y si le rezaras tres Avemarías cada noche, antes de dormir?"
+      "Desde el cielo, María nos cuida como madre. ¿Y si le rezaras tres Avemarías cada noche, antes de dormir?",
+      "María ya llegó al cielo. Rezá por tus difuntos, para que lleguen pronto adonde ella está: ¿por quién querés pedir hoy?"
      ],
      "autor": "Guido Reni",
      "obra": "La Asunción de la Virgen",
@@ -631,8 +688,11 @@ window.DATOS = {
      ],
      "pedir": "la confianza en María",
      "vida": [
+      "La que se llamó a sí misma \"la servidora del Señor\" es hoy reina del cielo. ¿Qué te enseña eso de lo que Dios mira en una persona?",
+      "La reina del cielo es también nuestra madre, y Dios nos dio otra en la tierra. ¿Qué le agradecés hoy de la tuya, o de quien te cuidó como una madre?",
       "María es reina y sigue siendo madre. ¿Qué le querés confiar hoy?",
-      "María sostuvo su sí desde Nazaret hasta la cruz, y Dios la coronó. ¿Qué sí te está costando sostener a vos?"
+      "María sostuvo su sí desde Nazaret hasta la cruz, y Dios la coronó. ¿Qué sí te está costando sostener a vos?",
+      "Muchos chicos crecen sin una familia que los cuide. Pedile a María, que es madre de todos, que los cuide ella, y rezá por alguno que conozcas."
      ],
      "autor": "Diego Velázquez",
      "obra": "La coronación de la Virgen",
