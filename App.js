@@ -1108,7 +1108,7 @@ const PARTES = [
 const RECORRIDO = [
   { id: 'portada' },
   { id: 'escenas', parte: 0 }, { id: 'grupos', parte: 0 }, { id: 'cuentas', parte: 0 }, { id: 'oraciones', parte: 0 }, { id: 'repetir', parte: 0 },
-  { id: 'tiempo', parte: 1 }, { id: 'misterio', parte: 1 }, { id: 'practica', parte: 1 },
+  { id: 'tiempo', parte: 1 }, { id: 'practica', parte: 1 },
   { id: 'rezar', parte: 2 }, { id: 'ver', parte: 2 }, { id: 'acompana', parte: 2 },
   { id: 'listo' },
 ];
@@ -1192,27 +1192,6 @@ function desplegar(b) {
   b.setAttribute('aria-expanded', abrir);
 }
 
-// Un misterio, de punta a punta: cada momento con su marca (la cruz, una cuenta grande, las chicas, el hilo).
-const HITOS = {
-  punto: '<circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/>',
-  cruz: '<path d="M10.6 3.5h2.8v5h4.6v2.8h-4.6v9.2h-2.8v-9.2H6v-2.8h4.6z" fill="currentColor"/>',
-  grande: '<circle cx="12" cy="12" r="6.2" fill="currentColor"/>',
-  chicas: '<circle cx="5" cy="12" r="3.2" fill="currentColor"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/><circle cx="19" cy="12" r="3.2" fill="currentColor"/>',
-  hilo: '<path d="M3 12h18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>',
-};
-function unMisterio() {
-  return [
-    ['punto', 'Por quién rezás', 'Antes de empezar, la app te pregunta si rezás por tus intenciones o por las del Papa.'],
-    ['cruz', 'Señal de la cruz', 'Y un momento para ofrecer lo que vas a rezar.'],
-    ['punto', 'El anuncio', 'El nombre del misterio, dónde se cuenta en el Evangelio y lo que pedimos en él.'],
-    ['grande', 'Padrenuestro', ''],
-    ['chicas', 'Diez Avemarías', 'Mientras tanto, mirás la escena. Arriba de la oración, una frase te ayuda a imaginarla.'],
-    ['hilo', cfg.ohJesus ? 'Gloria y Oh Jesús mío' : 'Gloria', ''],
-    cfg.vida && ['punto', 'Una pregunta para tu vida', 'Para pensarla en silencio antes de seguir.'],
-    ['punto', 'Amén', 'Y si querés, un misterio más, o la Salve para terminar.'],
-  ].filter(Boolean);
-}
-
 // La práctica: la pantalla de rezo en chico, que no guarda nada. Pide una cosa por vez y sigue
 // cuando se hace; mientras tanto, todo funciona como en el rezo de verdad.
 let RP = null;
@@ -1245,9 +1224,10 @@ function pintarPractica() {
   const pasos = pasosPractica(), P = pasos[RP.paso], c = RP.cuenta, m = RP.m;
   ponerTexto($('.pr-guia p'), P ? P.t : FIN_PRACTICA);
   $('.pr-n').textContent = P ? `${RP.paso + 1} de ${pasos.length}` : 'Listo';
-  // Lo que hay que tocar, marcado.
+  // Lo que hay que tocar, marcado; si es un botón, lo demás se atenúa.
   [q, ...q.querySelectorAll('.foco')].forEach(x => x.classList.remove('foco'));
   if (P) (P.en === 'pantalla' ? q : q.querySelector(`[data-v="${P.en}"]`)).classList.add('foco');
+  q.classList.toggle('guiando', !!P && P.en !== 'pantalla');
   q.classList.toggle('sin-texto', !RP.texto);
   q.classList.toggle('con-mapa', RP.mapa);
   // La oración y su nombre, como en el rezo: a dos voces, separadas.
@@ -1339,11 +1319,6 @@ const PANTALLAS = {
       <div class="btn alt"><span>El Rosario entero</span><span class="min">20 min</span></div>
     </div>
     <p>También podés rezarlos de a uno a lo largo del día. Si dejás uno por la mitad, la app te ofrece retomarlo donde quedaste.</p>` }; },
-  misterio: () => ({ forma: 'larga', arte: grupo('gloriosos').misterios[0], html: `
-    <h1 class="t1">Un misterio, de punta a punta</h1>
-    <p>Así es rezar un misterio con la app, en unos cuatro minutos.</p>
-    <ol class="linea">${unMisterio().map(([h, t, d]) => `<li><svg class="hito" viewBox="0 0 24 24" aria-hidden="true">${HITOS[h]}</svg><div><b>${t}</b>${d ? `<small>${d}</small>` : ''}</div></li>`).join('')}</ol>
-    <p class="nota-pv">En el Rosario entero, al comienzo se suman el Credo, un Padrenuestro y tres Avemarías; después vienen los cinco misterios seguidos y, al final, la Salve.</p>` }),
   practica: () => {
     const g = grupo(grupoInicio), m = proximo(g.id), mis = g.misterios[m], arte = urlArte(mis);
     RP = { paso: 0, cuenta: 1, texto: true, mapa: false, vel: cfg.velocidad, mudo: false, m };
@@ -1355,6 +1330,7 @@ const PANTALLAS = {
     <div class="pr-guia"><span class="pr-n"></span><p role="status"></p></div>
     <div class="maqueta" data-accion="pr" data-v="pantalla" role="group" aria-label="Pantalla de rezo, para practicar">
       <div class="mq-arte" style="${fondo}"></div>
+      <span class="toque" aria-hidden="true"></span>
       <div class="mq-barra">
         <span class="mq-chico" data-accion="nada" aria-hidden="true">${icono('x')}</span>
         <span class="cinco" aria-hidden="true">${[0, 1, 2, 3, 4].map(i => `<i class="${i === m ? 'ahora' : ''}"></i>`).join('')}</span>
