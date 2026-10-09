@@ -143,6 +143,18 @@ const grupo = id => D.grupos.find(g => g.id === id);
 const rezados = id => leer('rezados.' + hoyISO() + '.' + id, []);
 function marcarRezado(id, m) { const r = rezados(id); if (!r.includes(m)) { r.push(m); guardar('rezados.' + hoyISO() + '.' + id, r); } }
 function proximo(id) { const r = rezados(id); for (let i = 0; i < 5; i++) if (!r.includes(i)) return i; return 0; }
+// Cada misterio tiene dos preguntas para tu vida, que se turnan (ver Decisiones.md, 9 de octubre).
+// Los grupos que se rezan dos días por semana usan una cada día (lunes y sábado, martes y viernes,
+// miércoles y domingo); los luminosos, que se rezan solo los jueves, cambian cada semana. Con
+// misterios de otro día, toca la del último día que les correspondió.
+function preguntaVida(g, m) {
+  const vidas = g.misterios[m].vida, dias = [1, 2, 3, 4, 5, 6, 0].filter(d => DEL_DIA[d] === g.id);
+  const d = new Date();
+  while (!dias.includes(d.getDay())) d.setDate(d.getDate() - 1);
+  // Semanas de lunes a domingo, contadas desde el lunes 1 de enero de 2024.
+  const semanas = Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(2024, 0, 1)) / 6048e5);
+  return vidas[(semanas * dias.length + dias.indexOf(d.getDay())) % vidas.length];
+}
 
 /* ---------- Tamaño de letra ---------- */
 // Todos los tamaños de letra de Estilos.css se multiplican por --letra (los íconos no).
@@ -602,7 +614,7 @@ function textos(p) {
 // El anuncio tiene que coincidir con el que graba Generar audios.py.
 function locucion(p, g) {
   if (p.t === 'anuncio') { const mis = g.misterios[p.m]; return { lengua: 'es', partes: [`${cap(ORDINAL[p.m])} misterio ${SINGULAR[g.id]}. ${mis.titulo}. En este misterio pedimos ${mis.pedir}.`] }; }
-  if (p.t === 'vida') return { lengua: 'es', partes: cfg.forma === 'todo' ? [g.misterios[p.m].vida] : [] };
+  if (p.t === 'vida') return { lengua: 'es', partes: cfg.forma === 'todo' ? [preguntaVida(g, p.m)] : [] };
   if (p.t === 'intencion') return { lengua: 'es', partes: [] };
   if (p.t === 'ofrece') return { lengua: 'es', partes: [ofrecida().voz] };
   const partes = partesDe(p), guia = partes.filter(x => x.quien === 'guia');
@@ -871,7 +883,7 @@ function actualizar() {
     '<button class="btn alt centro" data-accion="intencion" data-v="papa">Por las intenciones del Papa</button>';
   else if (p.t === 'ofrece') acc.innerHTML = '<button class="btn principal centro" data-accion="seguir">Seguir</button>';
   else if (p.t === 'vida') {
-    $('.vida-q').textContent = mis.vida;
+    $('.vida-q').textContent = preguntaVida(g, p.m);
     const siguiente = !p.ultimo ? 'Siguiente misterio' : (ses.modo === 'entero' ? 'Rezar la Salve' : 'Terminar');
     acc.innerHTML = `<button class="btn principal centro" data-accion="seguir">${siguiente}</button>` +
       (!p.ultimo ? '<button class="enlace" data-accion="terminar">Terminar acá</button>' : '');
@@ -879,7 +891,7 @@ function actualizar() {
   ponerEtiqueta(p);
   // Para el lector de pantalla, un aviso corto por paso (no todo el texto de nuevo).
   $('.lector').textContent = p.t === 'oracion' ? p.etq : explica || papa ? `${kicker}. ${titulo}. ${explica || papa}`
-    : `${kicker}. ${p.t === 'vida' ? mis.vida : mis.titulo}`;
+    : `${kicker}. ${p.t === 'vida' ? preguntaVida(g, p.m) : mis.titulo}`;
 
   // Cinco círculos: uno por misterio del grupo
   const propios = pasos.filter(x => x.m === p.m);
@@ -1042,7 +1054,7 @@ function actualizarMapa(p, mis, g) {
   // En la pausa final, la pregunta va abajo del mapa y un toque sigue de largo.
   const vida = p.t === 'vida', aqui = $('.aqui');
   aqui.classList.toggle('es-pregunta', vida);
-  if (vida) aqui.innerHTML = `<span class="k">Antes de seguir</span>${esc(mis.vida)}`;
+  if (vida) aqui.innerHTML = `<span class="k">Antes de seguir</span>${esc(preguntaVida(g, p.m))}`;
   else aqui.textContent = 'Estás acá: ' + (p.t === 'anuncio' ? 'anuncio del misterio' : p.etq);
   $('.pista').textContent = !vida ? 'Tocá para seguir rezando desde acá'
     : !p.ultimo ? 'Tocá para pasar al siguiente misterio' : ses.modo === 'entero' ? 'Tocá para rezar la Salve' : 'Tocá para terminar';

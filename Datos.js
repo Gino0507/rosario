@@ -199,7 +199,10 @@ window.DATOS = {
       "Un ángel le habla y ella se turba, pregunta cómo puede ser, y al final dice que sí: \"Yo soy la servidora del Señor\"."
      ],
      "pedir": "la humildad",
-     "vida": "María preguntó antes de decir que sí. ¿Qué le preguntarías vos a Dios?",
+     "vida": [
+      "María preguntó antes de decir que sí. ¿Qué le preguntarías vos a Dios?",
+      "María le abrió a Dios toda su vida, también sus planes. ¿Qué parte de la tuya todavía le tenés cerrada?"
+     ],
      "autor": "Carl Bloch",
      "obra": "La Anunciación",
      "imagen": "Arte/Gozosos-1.jpg",
@@ -218,7 +221,10 @@ window.DATOS = {
       "María se queda con ella unos tres meses."
      ],
      "pedir": "la caridad con el prójimo",
-     "vida": "¿A quién podrías ir a ver esta semana, aunque te quede lejos o te dé fiaca?",
+     "vida": [
+      "¿A quién podrías ir a ver esta semana, aunque te quede lejos o te dé fiaca?",
+      "María se quedó tres meses ayudando a Isabel. ¿En qué podrías ayudar en tu casa esta semana, sin esperar que te lo agradezcan?"
+     ],
      "autor": "Philippe de Champaigne",
      "obra": "La Visitación",
      "imagen": "Arte/Gozosos-2.jpg",
@@ -236,7 +242,10 @@ window.DATOS = {
       "Los primeros en enterarse son unos pastores que cuidaban sus ovejas de noche."
      ],
      "pedir": "el desapego de las cosas",
-     "vida": "\"María conservaba estas cosas y las meditaba en su corazón.\" ¿Qué te pasó esta semana que valga la pena guardar así?",
+     "vida": [
+      "\"María conservaba estas cosas y las meditaba en su corazón.\" ¿Qué te pasó esta semana que valga la pena guardar así?",
+      "En un pesebre, el Hijo de Dios se hizo pobre por nosotros. ¿De qué cosa que te gusta te desprenderías, para dársela a alguien que la necesite?"
+     ],
      "autor": "Gerard van Honthorst",
      "obra": "La adoración de los pastores",
      "imagen": "Arte/Gozosos-3.jpg",
@@ -254,7 +263,10 @@ window.DATOS = {
       "Un anciano, Simeón, lo toma en brazos y le anuncia a María que una espada le va a atravesar el alma."
      ],
      "pedir": "la obediencia",
-     "vida": "Simeón esperó años sin cansarse. ¿Qué estás esperando vos, y cómo lo esperás?",
+     "vida": [
+      "Simeón esperó años sin cansarse. ¿Qué estás esperando vos, y cómo lo esperás?",
+      "José y María llevaron a Jesús al Templo para ofrecérselo a Dios. ¿Te animás a ofrecerle tu día apenas te levantás, antes de agarrar el celular?"
+     ],
      "autor": "Rembrandt",
      "obra": "El cántico de Simeón",
      "imagen": "Arte/Gozosos-4.jpg",
@@ -272,7 +284,10 @@ window.DATOS = {
       "Lo encuentran en el Templo, sentado entre los maestros, escuchándolos y haciéndoles preguntas."
      ],
      "pedir": "buscar a Dios siempre",
-     "vida": "María no entendió lo que Jesús le respondió y aun así lo guardó en su corazón. ¿Qué no entendés todavía de tu propia vida?",
+     "vida": [
+      "María no entendió lo que Jesús le respondió y aun así lo guardó en su corazón. ¿Qué no entendés todavía de tu propia vida?",
+      "María y José lo buscaron tres días, angustiados, hasta encontrarlo. Cuando rezás y no sentís nada, ¿lo seguís buscando o aflojás?"
+     ],
      "autor": "William Holman Hunt",
      "obra": "El hallazgo del Salvador en el Templo",
      "imagen": "Arte/Gozosos-5.jpg",
@@ -298,7 +313,10 @@ window.DATOS = {
       "Juan se resiste. Cuando Jesús sale del agua se abre el cielo y se oye una voz: \"Este es mi Hijo muy querido\"."
      ],
      "pedir": "vivir como hijos de Dios",
-     "vida": "Jesús escuchó que era querido antes de hacer un solo milagro. ¿Te animás a creer que Dios te quiere antes de que hagas nada?",
+     "vida": [
+      "Jesús escuchó que era querido antes de hacer un solo milagro. ¿Te animás a creer que Dios te quiere antes de que hagas nada?",
+      "Después del Bautismo, el Espíritu llevó a Jesús al desierto a ayunar. ¿De qué vas a ayunar estos días, para hacerle lugar a Dios?"
+     ],
      "autor": "Guido Reni",
      "obra": "El bautismo de Cristo",
      "imagen": "Arte/Luminosos-1.jpg",
@@ -316,7 +334,10 @@ window.DATOS = {
       "María se da cuenta antes que nadie, se lo dice a Jesús y después les dice a los sirvientes: \"Hagan todo lo que él les diga\"."
      ],
      "pedir": "hacer lo que Jesús nos diga",
-     "vida": "María vio lo que faltaba antes de que alguien se lo pidiera. ¿Qué le pedirías que le diga a Jesús de tu parte?",
+     "vida": [
+      "María vio lo que faltaba antes de que alguien se lo pidiera. ¿Qué le pedirías que le diga a Jesús de tu parte?",
+      "Los sirvientes llenaron las tinajas hasta el borde, aunque era solo agua. ¿Qué venís haciendo a medias que podrías llenar hasta el borde?"
+     ],
      "autor": "Carl Bloch",
      "obra": "Las bodas de Caná",
      "imagen": "Arte/Luminosos-2.jpg",
@@ -335,7 +356,10 @@ window.DATOS = {
       "Lo primero que anuncia entra en una línea: \"Conviértanse y crean en la Buena Noticia\"."
      ],
      "pedir": "la conversión",
-     "vida": "Convertirse quiere decir cambiar de rumbo. Si te lo tomaras en serio, ¿qué cambiarías primero?",
+     "vida": [
+      "Convertirse quiere decir cambiar de rumbo. Si te lo tomaras en serio, ¿qué cambiarías primero?",
+      "Jesús perdonaba a los que se le acercaban, y lo sigue haciendo en la confesión. ¿Qué te frena para ir a buscar ese perdón?"
+     ],
      "autor": "Carl Bloch",
      "obra": "El sermón de la montaña",
      "imagen": "Arte/Luminosos-3.jpg",
@@ -354,7 +378,10 @@ window.DATOS = {
       "Pedro, que se estaba durmiendo, propone armar tres carpas para quedarse ahí."
      ],
      "pedir": "el deseo de ser santos",
-     "vida": "Pedro quería quedarse arriba, pero había que bajar. ¿Qué momento lindo te cuesta soltar para volver a lo de todos los días?",
+     "vida": [
+      "Pedro quería quedarse arriba, pero había que bajar. ¿Qué momento lindo te cuesta soltar para volver a lo de todos los días?",
+      "Desde la nube, el Padre pidió una sola cosa: \"Escúchenlo\". ¿Qué ruido de tu día apagarías para escucharlo?"
+     ],
      "autor": "Rafael",
      "obra": "La Transfiguración",
      "imagen": "Arte/Luminosos-4.jpg",
@@ -372,7 +399,10 @@ window.DATOS = {
       "Después hace lo mismo con el cáliz y les pide: \"Hagan esto en memoria mía\"."
      ],
      "pedir": "el amor a la Eucaristía",
-     "vida": "¿Qué te acerca a la misa del domingo, y qué te aleja?",
+     "vida": [
+      "¿Qué te acerca a la misa del domingo, y qué te aleja?",
+      "Jesús se quedó en la Eucaristía, y te espera en el sagrario de cualquier iglesia. ¿Cuándo podrías pasar un rato, solo a estar con él?"
+     ],
      "autor": "Carl Bloch",
      "obra": "La Última Cena",
      "imagen": "Arte/Luminosos-5.jpg",
@@ -399,7 +429,10 @@ window.DATOS = {
       "Su sudor cae a tierra como gotas de sangre."
      ],
      "pedir": "aceptar la voluntad de Dios",
-     "vida": "Jesús le dijo al Padre lo que sentía, sin hacerse el fuerte. ¿Qué le dirías hoy vos, sin maquillarlo?",
+     "vida": [
+      "Jesús le dijo al Padre lo que sentía, sin hacerse el fuerte. ¿Qué le dirías hoy vos, sin maquillarlo?",
+      "Jesús les pidió dos veces: \"Oren para no caer en la tentación\". ¿Cuál es la tentación que más te gana, y en qué momento suele aparecer?"
+     ],
      "autor": "Carl Bloch",
      "obra": "Cristo en Getsemaní",
      "imagen": "Arte/Dolorosos-1.jpg",
@@ -417,7 +450,9 @@ window.DATOS = {
       "Lo atan a una columna. Jesús no se defiende."
      ],
      "pedir": "el dominio de uno mismo",
-     "vida": "Pilato cedió para no tener problemas. ¿En qué situación te cuesta sostener lo que sabés que está bien?",
+     "vida": [
+      "Pilato cedió para no tener problemas. ¿En qué situación te cuesta sostener lo que sabés que está bien?"
+     ],
      "autor": "Caravaggio",
      "obra": "La flagelación de Cristo",
      "imagen": "Arte/Dolorosos-2.jpg",
@@ -436,7 +471,10 @@ window.DATOS = {
       "Se arrodillan delante de él para burlarse: \"Salud, rey de los judíos\"."
      ],
      "pedir": "el valor de no esconder la fe",
-     "vida": "A Jesús lo ridiculizaron por lo que era. ¿Alguna vez te dio vergüenza que supieran que creés?",
+     "vida": [
+      "A Jesús lo ridiculizaron por lo que era. ¿Alguna vez te dio vergüenza que supieran que creés?",
+      "A Jesús, que era rey de verdad, lo coronaron para reírse de él. ¿Qué hacés solamente para que te vean bien?"
+     ],
      "autor": "Anton van Dyck",
      "obra": "La coronación de espinas",
      "imagen": "Arte/Dolorosos-3.jpg",
@@ -455,7 +493,9 @@ window.DATOS = {
       "Por el camino lo sigue mucha gente, y unas mujeres lloran por él."
      ],
      "pedir": "la paciencia",
-     "vida": "A Simón lo obligaron a ayudar y terminó caminando al lado de Jesús. ¿Qué carga ajena te tocó llevar sin buscarla?",
+     "vida": [
+      "A Simón lo obligaron a ayudar y terminó caminando al lado de Jesús. ¿Qué carga ajena te tocó llevar sin buscarla?"
+     ],
      "autor": "Tiziano",
      "obra": "Cristo camino del Calvario",
      "imagen": "Arte/Dolorosos-4.jpg",
@@ -474,7 +514,10 @@ window.DATOS = {
       "Después dice \"Todo se ha cumplido\", inclina la cabeza y entrega su espíritu."
      ],
      "pedir": "la perseverancia",
-     "vida": "Desde la cruz, Jesús le dio a Juan su propia madre. ¿Qué lugar tiene María en tu vida?",
+     "vida": [
+      "Desde la cruz, Jesús le dio a Juan su propia madre. ¿Qué lugar tiene María en tu vida?",
+      "Desde la cruz, Jesús rezó por los que lo crucificaban: \"Padre, perdónalos\". ¿A quién te cuesta perdonar? ¿Rezarías hoy por esa persona?"
+     ],
      "autor": "Diego Velázquez",
      "obra": "Cristo crucificado",
      "imagen": "Arte/Dolorosos-5.jpg",
@@ -500,7 +543,10 @@ window.DATOS = {
       "Un ángel les dice que Jesús no está ahí. Corren a avisar a los discípulos, asustadas y llenas de alegría, y en el camino Jesús les sale al encuentro."
      ],
      "pedir": "la fe",
-     "vida": "Las mujeres salieron corriendo a contarlo. ¿A quién le contarías algo bueno que Dios hizo en tu vida?",
+     "vida": [
+      "Las mujeres salieron corriendo a contarlo. ¿A quién le contarías algo bueno que Dios hizo en tu vida?",
+      "Jesús resucitado salió al encuentro de los suyos para consolarlos. ¿Quién anda triste cerca tuyo, y cómo podrías acompañarlo esta semana?"
+     ],
      "autor": "Carl Bloch",
      "obra": "La Resurrección",
      "imagen": "Arte/Gloriosos-1.jpg",
@@ -518,7 +564,10 @@ window.DATOS = {
       "Ellos se quedan mirando al cielo hasta que dos hombres vestidos de blanco les preguntan qué hacen ahí parados."
      ],
      "pedir": "la esperanza",
-     "vida": "Jesús se fue y dejó la tarea en manos de sus amigos. ¿Qué parte de esa tarea te toca a vos?",
+     "vida": [
+      "Jesús se fue y dejó la tarea en manos de sus amigos. ¿Qué parte de esa tarea te toca a vos?",
+      "Jesús se fue a prepararnos un lugar. ¿Qué decisión tuya cambiaría si la miraras desde el cielo?"
+     ],
      "autor": "Rembrandt",
      "obra": "La Ascensión",
      "imagen": "Arte/Gloriosos-2.jpg",
@@ -537,7 +586,10 @@ window.DATOS = {
       "Salen a hablar y los extranjeros que están en la ciudad los escuchan cada uno en su propio idioma."
      ],
      "pedir": "los dones del Espíritu Santo",
-     "vida": "Cada uno escuchó el mensaje en su propio idioma. ¿Cómo le hablarías de Dios a un amigo que no cree, con sus palabras?",
+     "vida": [
+      "Cada uno escuchó el mensaje en su propio idioma. ¿Cómo le hablarías de Dios a un amigo que no cree, con sus palabras?",
+      "El mismo Espíritu te habla hoy por dentro, sin viento ni fuego. ¿Qué te viene pidiendo hace tiempo que todavía no hiciste?"
+     ],
      "autor": "Juan Bautista Maíno",
      "obra": "Pentecostés",
      "imagen": "Arte/Gloriosos-3.jpg",
@@ -555,7 +607,10 @@ window.DATOS = {
       "Es lo que ella misma había cantado de joven, en casa de Isabel: \"Todas las generaciones me llamarán feliz\"."
      ],
      "pedir": "el amor a María",
-     "vida": "María está en el cielo con su cuerpo. ¿Cómo estás cuidando el tuyo: el descanso, la comida, lo que mirás?",
+     "vida": [
+      "María está en el cielo con su cuerpo. ¿Cómo estás cuidando el tuyo: el descanso, la comida, lo que mirás?",
+      "Desde el cielo, María nos cuida como madre. ¿Y si le rezaras tres Avemarías cada noche, antes de dormir?"
+     ],
      "autor": "Guido Reni",
      "obra": "La Asunción de la Virgen",
      "imagen": "Arte/Gloriosos-4.jpg",
@@ -573,7 +628,9 @@ window.DATOS = {
       "La Iglesia reconoce en ella a María, reina junto a su Hijo."
      ],
      "pedir": "la confianza en María",
-     "vida": "María es reina y sigue siendo madre. ¿Qué le querés confiar hoy?",
+     "vida": [
+      "María es reina y sigue siendo madre. ¿Qué le querés confiar hoy?"
+     ],
      "autor": "Diego Velázquez",
      "obra": "La coronación de la Virgen",
      "imagen": "Arte/Gloriosos-5.jpg",
