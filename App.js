@@ -468,7 +468,7 @@ function estiloArte(mis) {
   if (cfg.imagenes === 'ninguna') return luz(grupoDe(mis)) + ';--z:1;top:0;-webkit-mask-image:none;mask-image:none';
   // Ancladas arriba: si la pantalla las recorta, que sea abajo, donde va el texto, y no el aire de arriba.
   if (cfg.imagenes === 'ilustraciones' && mis.ilustracion) return `background-image:url('${mis.ilustracion}');background-position:50% 0;--z:1;--pleno:1;--extra:${mis.bajarIlustracion || 0}px`;
-  return `background-image:url('${mis.imagen}');background-position:${mis.foco};--z:${mis.zoom}`;
+  return `background-image:url('${mis.imagen}');background-position:${mis.foco};--z:${mis.zoom};--pleno:${mis.plena ? 1 : 0}`;
 }
 const conCredito = mis => cfg.imagenes === 'pinturas' || (cfg.imagenes === 'ilustraciones' && !mis.ilustracion);
 

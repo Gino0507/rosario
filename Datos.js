@@ -206,7 +206,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Gozosos-1.jpg",
      "bajarIlustracion": 0,
      "foco": "36% 40%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": true
     },
     {
      "titulo": "La Visitación de María a su prima Isabel",
@@ -224,7 +225,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Gozosos-2.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 22%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": true
     },
     {
      "titulo": "El nacimiento de Jesús en Belén",
@@ -241,7 +243,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Gozosos-3.jpg",
      "bajarIlustracion": 0,
      "foco": "46% 50%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": true
     },
     {
      "titulo": "La Presentación de Jesús en el Templo",
@@ -258,7 +261,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Gozosos-4.jpg",
      "bajarIlustracion": 0,
      "foco": "45% 40%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": true
     },
     {
      "titulo": "Jesús perdido y hallado en el Templo",
@@ -275,7 +279,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Gozosos-5.jpg",
      "bajarIlustracion": 0,
      "foco": "64% 45%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": true
     }
    ]
   },
@@ -300,7 +305,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Luminosos-1.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 22%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": true
     },
     {
      "titulo": "Las bodas de Caná",
@@ -317,7 +323,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Luminosos-2.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 40%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": true
     },
     {
      "titulo": "El anuncio del Reino de Dios",
@@ -335,7 +342,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Luminosos-3.jpg",
      "bajarIlustracion": 0,
      "foco": "62% 30%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": true
     },
     {
      "titulo": "La Transfiguración",
@@ -353,7 +361,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Luminosos-4.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 18%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": false
     },
     {
      "titulo": "La institución de la Eucaristía",
@@ -370,7 +379,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Luminosos-5.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 40%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": true
     }
    ]
   },
@@ -396,7 +406,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Dolorosos-1.jpg",
      "bajarIlustracion": 0,
      "foco": "36% 50%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": true
     },
     {
      "titulo": "La flagelación",
@@ -413,7 +424,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Dolorosos-2.jpg",
      "bajarIlustracion": 36,
      "foco": "50% 38%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": true
     },
     {
      "titulo": "La coronación de espinas",
@@ -431,7 +443,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Dolorosos-3.jpg",
      "bajarIlustracion": 0,
      "foco": "46% 42%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": true
     },
     {
      "titulo": "Jesús carga con la cruz camino del Calvario",
@@ -449,7 +462,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Dolorosos-4.jpg",
      "bajarIlustracion": 0,
      "foco": "32% 50%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": false
     },
     {
      "titulo": "La crucifixión y muerte de Jesús",
@@ -467,7 +481,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Dolorosos-5.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 22%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": false
     }
    ]
   },
@@ -492,7 +507,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Gloriosos-1.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 22%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": true
     },
     {
      "titulo": "La Ascensión de Jesús al cielo",
@@ -509,7 +525,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Gloriosos-2.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 26%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": true
     },
     {
      "titulo": "La venida del Espíritu Santo",
@@ -527,7 +544,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Gloriosos-3.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 45%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": false
     },
     {
      "titulo": "La Asunción de María al cielo",
@@ -544,7 +562,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Gloriosos-4.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 25%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": false
     },
     {
      "titulo": "La coronación de María",
@@ -561,7 +580,8 @@ window.DATOS = {
      "ilustracion": "Ilustraciones/Gloriosos-5.jpg",
      "bajarIlustracion": 0,
      "foco": "50% 35%",
-     "zoom": 1.0
+     "zoom": 1.0,
+     "plena": false
     }
    ]
   }
