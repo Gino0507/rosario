@@ -200,10 +200,11 @@ function vibrar() {
 // Un texto nuevo aparece con un fundido; si no cambió, queda quieto.
 function fundir(el) { if (el.animate && el.textContent) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 700, easing: 'ease-out' }); }
 function ponerTexto(el, t) { if (el.textContent !== t) { el.textContent = t; fundir(el); } }
-// Fundido entre pantallas (View Transitions). Donde no existe, el cambio es directo. Si el
-// navegador lo saltea (por ejemplo, con la pantalla oculta), el cambio igual se hace.
+// Fundido entre pantallas (View Transitions). Donde no existe, o con la pantalla oculta, el
+// cambio es directo. El fundido espera a que se dibuje la pantalla: lo que no puede esperar
+// (la voz) va por fuera, ver irAlPaso().
 function transicion(fn) {
-  if (!document.startViewTransition) return fn();
+  if (!document.startViewTransition || document.visibilityState !== 'visible') return fn();
   document.startViewTransition(fn).ready.catch(() => {});
 }
 
@@ -679,9 +680,18 @@ function locucion(p, g) {
 /* ---------- Rezo ---------- */
 let S = null; // { ses, pasos }
 let pausa = false, sonando = false;
+// La frase que está diciendo la voz, resaltada en la oración (escuchando). Se busca la oración en
+// pantalla cada vez, porque la voz puede empezar antes de que la pantalla cambie (ver avanzar()).
+let frase = -1;
+function marcarFrase() {
+  const todos = $('.todos'), p = S.pasos[S.ses.paso];
+  const marcas = frase >= 0 && cfg.forma === 'todo' && p.t === 'oracion' ? todos.querySelectorAll('span') : [];
+  todos.classList.toggle('sonando', marcas.length > 0);
+  marcas.forEach((s, j) => s.classList.toggle('ahora', j === frase));
+}
 
 function silencio() {
-  voz.callar(); sonando = false;
+  voz.callar(); sonando = false; frase = -1;
   const b = $('.esperando');
   if (b) b.classList.remove('esperando');
 }
@@ -689,13 +699,12 @@ function silencio() {
 function hablar() {
   silencio();
   if (cfg.forma === 'solo' || pausa || (cfg.forma === 'guia' && cfg.mudo)) return;
-  const { ses, pasos } = S, p = pasos[ses.paso], todos = $('.todos'), g = grupo(ses.grupo);
+  const { ses, pasos } = S, p = pasos[ses.paso], g = grupo(ses.grupo);
   const { partes, lengua } = locucion(p, g);
   // Lo primero que va a decir la voz después (saltando los pasos sin voz), para tenerlo listo.
   let proximo = [];
   for (let k = ses.paso + 1; k < pasos.length && !proximo.length; k++) proximo = locucion(pasos[k], g).partes;
   if (!partes.length) return voz.preparar(proximo);
-  const marcas = cfg.forma === 'todo' && p.t === 'oracion' ? todos.querySelectorAll('span') : [];
   sonando = true;
   ponerMedios(p, g);
   const escuchar = cfg.forma === 'todo';
@@ -704,7 +713,7 @@ function hablar() {
     // Escuchando, la app sigue sola: un respiro después de cada oración, uno más largo después
     // del anuncio, y ocho segundos de silencio después de la pregunta para tu vida.
     luego: !escuchar ? 0 : p.t === 'vida' ? 8 : p.t === 'ofrece' ? ofrecida().espera : p.t === 'anuncio' ? 1.5 : .7,
-    trozo: i => { todos.classList.toggle('sonando', marcas.length > 0); marcas.forEach((s, j) => s.classList.toggle('ahora', j === i)); },
+    trozo: i => { frase = i; marcarFrase(); },
     // Para que se vea que el rezo sigue y no que se cortó: el botón se va llenando mientras dura
     // el silencio, y una línea lo dice.
     silencio: s => {
@@ -714,11 +723,11 @@ function hablar() {
       $('.pista-rezo').textContent = p.t === 'vida' ? 'Un momento en silencio, y el rezo sigue solo.' : ofrecida().pista;
     },
     fin: () => {
-      sonando = false; todos.classList.remove('sonando');
+      sonando = false; frase = -1; marcarFrase();
       if (escuchar) avanzar(true);
     },
     falla: () => {
-      sonando = false; todos.classList.remove('sonando');
+      sonando = false; frase = -1; marcarFrase();
       if (!escuchar) return;
       // Escuchando, la app queda en pausa y dice por qué (antes se detenía sin avisar).
       ponerPausa(true);
@@ -885,7 +894,7 @@ function ponerArte(mis) {
   if (visible) visible.classList.remove('on');
 }
 
-function actualizar() {
+function actualizar(conVoz = true) {
   const { ses, pasos } = S, p = pasos[ses.paso], g = grupo(ses.grupo);
   const enMisterio = p.m != null;
   // La Salve cierra el Rosario: lleva la última pintura rezada, no la del comienzo.
@@ -934,8 +943,8 @@ function actualizar() {
     if (cfg.forma === 'todo') todos.innerHTML = partesDe(p).map(x => partir(x.texto).map(f => `<span>${esc(f)}</span>`).join('')).join(' ');
     else todos.textContent = entera;
     if (todos.textContent !== antes) fundir(todos);
-    todos.classList.remove('sonando');
     todos.classList.toggle('largo', entera.length > 230);
+    marcarFrase();
   }
   const acc = $('.acciones');
   if (p.t === 'anuncio') acc.innerHTML = '<button class="btn principal centro" data-accion="seguir">Empezar</button>';
@@ -966,23 +975,31 @@ function actualizar() {
 
   actualizarMapa(p, mis, g);
   guardar('sesion', ses);
-  hablar();
+  if (conVoz) hablar();
 }
 
 // Pasar de una oración a otra es inmediato; pasar del anuncio a la oración, o de la oración a la
-// pregunta para tu vida, cambia la pantalla entera y lleva un fundido.
+// pregunta para tu vida, cambia la pantalla entera y lleva un fundido. La voz no espera al
+// fundido: el fundido espera a que el celular dibuje la pantalla, y con la pantalla bloqueada
+// a veces no la dibuja hasta desbloquear (en "Escuchar" se quedaba callado al pasar de un
+// misterio a otro, 10 de octubre).
+function irAlPaso(antes) {
+  if (S.pasos[S.ses.paso].t === antes.t) return actualizar();
+  hablar();
+  transicion(() => actualizar(false));
+}
 function avanzar(solo) {
   const { ses, pasos } = S, p = pasos[ses.paso];
   if (p.o === 'gloria' && p.m != null) marcarRezado(ses.grupo, p.m);
   if (ses.paso < pasos.length - 1) {
     ses.paso++;
     if (!solo) vibrar();
-    if (pasos[ses.paso].t !== p.t) transicion(actualizar); else actualizar();
-  } else transicion(terminar);
+    irAlPaso(p);
+  } else { silencio(); musica.parar(); transicion(terminar); }
 }
 function atras() {
   const { ses, pasos } = S;
-  if (ses.paso > 0) { ses.paso--; if (pasos[ses.paso].t !== pasos[ses.paso + 1].t) transicion(actualizar); else actualizar(); }
+  if (ses.paso > 0) { ses.paso--; irAlPaso(pasos[ses.paso + 1]); }
 }
 
 function terminar() {
